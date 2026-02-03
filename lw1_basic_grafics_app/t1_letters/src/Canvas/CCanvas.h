@@ -12,7 +12,7 @@
 class CCanvas : public ICanvas
 {
 public:
-	using UpdateCallback = std::function<void(ICanvas &)>;
+	using UpdateCallback = std::function<void(ICanvas &, float)>;
 
 	CCanvas(unsigned width, unsigned height)
 		: m_width(width), m_height(height)
@@ -77,23 +77,22 @@ public:
 		sf::RenderWindow window(sf::VideoMode(m_width, m_height), "Canvas");
 		window.setFramerateLimit(300);
 
+		sf::Clock clock;
+
 		while (window.isOpen())
 		{
 			ProcessEvents(window);
 
-			// Очищаем текстуру
 			m_renderTexture->clear(sf::Color(0x1A1A1AFF));
+			float deltaTime = clock.restart().asSeconds();
 
-			// Вызываем пользовательскую функцию обновления
 			if (updateCallback)
 			{
-				updateCallback(*this);
+				updateCallback(*this, deltaTime);
 			}
 
-			// Отображаем на текстуре
 			m_renderTexture->display();
 
-			// Отображаем текстуру в окне
 			sf::Sprite sprite(m_renderTexture->getTexture());
 			window.clear();
 			window.draw(sprite);
