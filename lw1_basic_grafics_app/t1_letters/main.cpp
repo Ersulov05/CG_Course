@@ -17,20 +17,20 @@ int main()
         CCanvas canvas(WIDTH, HEIGHT);
         auto letterAStrategy = std::make_unique<LetterAStrategy>();
         auto letterEStrategy = std::make_unique<LetterEStrategy>();
-        auto jumpEStrategy = std::make_unique<JumpStrategy>(200);
-        auto jumpA1Strategy = std::make_unique<JumpStrategy>(100);
+        auto jumpEStrategy = std::make_unique<JumpStrategy>(-200);
+        auto jumpA1Strategy = std::make_unique<JumpStrategy>(-100);
         auto jumpA2Strategy = std::make_unique<JumpStrategy>(0);
 
-        Letter letterE(std::move(letterEStrategy), std::move(jumpEStrategy), RED_COLOR, {100, 100});
-        Letter letterA1(std::move(letterAStrategy->Clone()), std::move(jumpA1Strategy), RED_COLOR, {250, 100});
-        Letter letterA2(std::move(letterAStrategy), std::move(jumpA2Strategy), RED_COLOR, {400, 100});
+        Letter letterE(std::move(letterEStrategy), std::move(jumpEStrategy), RED_COLOR, {100, 300});
+        Letter letterA1(std::move(letterAStrategy->Clone()), std::move(jumpA1Strategy), RED_COLOR, {250, 300});
+        Letter letterA2(std::move(letterAStrategy), std::move(jumpA2Strategy), RED_COLOR, {400, 300});
 
         canvas.RunWindow(
-            [&](ICanvas &canvasRef)
+            [&](ICanvas &canvasRef, float deltaTime)
             {
-                letterE.Move();
-                letterA1.Move();
-                letterA2.Move();
+                letterE.Update(deltaTime);
+                letterA1.Update(deltaTime);
+                letterA2.Update(deltaTime);
 
                 canvas.Clear(0x1A1A1AFF);
                 letterE.Draw(canvas);

@@ -4,39 +4,35 @@
 #include "./IMovementStrategy.h"
 #include <vector>
 
+const unsigned PIXEL_PER_METER = 100;
+
 class JumpStrategy : public IMovementStrategy
 {
 public:
-    JumpStrategy(float startJump = 0) : m_jump(startJump)
+    JumpStrategy(float startJumpPos = 0) : m_yPos(startJumpPos)
     {
-        if (startJump < 0)
-        {
-            m_jump = 0;
-        }
-        else if (startJump > MAX_JUMP)
-        {
-            m_jump = MAX_JUMP;
-            jump_acc *= -1;
-        }
     }
 
-    void Move() override
+    void Update(float deltaTime) override
     {
-        m_jump += jump_acc;
+        m_jumpSpeed += JUMP_G * deltaTime;
+        m_yPos += m_jumpSpeed * PIXEL_PER_METER * deltaTime;
 
-        if (m_jump > MAX_JUMP || m_jump < 0)
+        if (m_yPos >= 0)
         {
-            jump_acc *= -1;
+            m_yPos = 0;
+            m_jumpSpeed = -START_JUMP_SPEED;
         }
     }
 
     const Point GetPosition() const override
     {
-        return {0, m_jump};
+        return {0, m_yPos};
     }
 
 private:
-    float m_jump = 0;
-    float jump_acc = 0.5;
-    static const int MAX_JUMP = 200;
+    float m_yPos = 0;
+    float m_jumpSpeed = 0;
+    static constexpr float START_JUMP_SPEED = 5;
+    static constexpr float JUMP_G = 9.8;
 };

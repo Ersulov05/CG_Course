@@ -26,9 +26,9 @@ public:
         assert(m_movementStrategy);
     };
 
-    void Move()
+    void Update(float deltaTime)
     {
-        m_movementStrategy->Move();
+        m_movementStrategy->Update(deltaTime);
     }
 
     void Draw(ICanvas &canvas) const

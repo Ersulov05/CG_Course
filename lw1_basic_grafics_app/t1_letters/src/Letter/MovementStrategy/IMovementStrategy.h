@@ -6,6 +6,6 @@ class IMovementStrategy
 {
 public:
     virtual ~IMovementStrategy() = default;
-    virtual void Move() = 0;
+    virtual void Update(float deltaTime) = 0;
     virtual const Point GetPosition() const = 0;
 };
