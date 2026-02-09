@@ -83,7 +83,7 @@ private:
 
     void HandleMousePress(const sf::Event::MouseButtonEvent &mouseButton)
     {
-        if (mouseButton.button == sf::Mouse::Left)
+        if (!m_dragState.IsDragging() && mouseButton.button == sf::Mouse::Left)
         {
             Point mousePos(mouseButton.x, mouseButton.y);
             m_dragPictureId = m_controller.GetPictureIdByPoint(mousePos);

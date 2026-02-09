@@ -33,7 +33,7 @@ public:
         m_thirdPoint.y += dy;
     }
 
-    bool IsPointInsideShape(const Point &point) const
+    bool IsPointInsideShape(const Point &point) const override
     {
         auto a = GetPointSide(m_firstPoint, m_secondPoint, point);
         if (a == 0)
