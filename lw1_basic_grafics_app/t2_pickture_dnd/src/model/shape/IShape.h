@@ -9,8 +9,8 @@ class IShape
 public:
     virtual ~IShape() = default;
     virtual void Move(float dx, float dy) = 0;
-    virtual unsigned GetId() const = 0;
     virtual std::vector<Point> GetPoints() const = 0;
     virtual Color GetFillColor() const = 0;
     virtual Color GetOutlineColor() const = 0;
+    virtual bool IsPointInsideShape(const Point &point) const = 0;
 };

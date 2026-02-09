@@ -1,35 +1,61 @@
 #pragma once
 
+#include "../model/scene/Scene.h"
 #include "../model/picture/Picture.h"
 #include "../model/shape/Rectangle.h"
+#include "../model/shape/Triangle.h"
 #include "../model/shape/IShape.h"
 #include "../model/common/Point.h"
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <optional>
 
 class AppController
 {
 public:
-    AppController(Picture &picture) : m_picture(picture) {}
+    AppController(Scene &scene) : m_scene(scene) {}
 
-    void AddRectangle(float x, float y, float width, float height)
+    void AddRectangleToPicture(unsigned pictureId, float x, float y, float width, float height, Color fillColor = 0xFFFFFFFF, Color outlineColor = 0x0)
     {
-        auto shapeId = m_picture.getNextId();
-        auto shape = std::make_shared<Rectangle>(shapeId, Point(x, y), width, height, 0xFFFFFFFF, 0xFFFFFFFF);
-        m_picture.AddShape(shape);
+        auto shape = std::make_shared<Rectangle>(Point(x, y), width, height, fillColor, outlineColor);
+        m_scene.AddShapeToPicture(pictureId, shape);
     }
 
-    void MoveShape(unsigned shapeId, float dx, float dy)
+    void AddTriangleToPicture(unsigned pictureId, Point firstPoint, Point secondPoint, Point thirdPoint, Color fillColor = 0xFFFFFFFF, Color outlineColor = 0x0)
     {
-        m_picture.MoveShape(shapeId, dx, dy);
+        auto shape = std::make_shared<Triangle>(firstPoint, secondPoint, thirdPoint, fillColor, outlineColor);
+        m_scene.AddShapeToPicture(pictureId, shape);
     }
 
-    std::vector<std::shared_ptr<const IShape>> GetShapes()
+    unsigned CreatePicture()
     {
-        return m_picture.GetShapes();
+        auto pictureId = m_scene.getNextId();
+        auto picture = std::make_shared<Picture>(pictureId);
+        m_scene.AddPicture(picture);
+        return pictureId;
+    }
+
+    void MovePicture(unsigned pictureId, float dx, float dy)
+    {
+        m_scene.MovePicture(pictureId, dx, dy);
+    }
+
+    std::vector<std::shared_ptr<const Picture>> GetPictures() const
+    {
+        return m_scene.GetPictures();
+    }
+
+    std::optional<unsigned> GetPictureIdByPoint(const Point &point) const
+    {
+        return m_scene.GetPictureIdByPoint(point);
+    }
+
+    const Scene GetScene() const
+    {
+        return m_scene;
     }
 
 private:
-    Picture &m_picture;
+    Scene &m_scene;
 };

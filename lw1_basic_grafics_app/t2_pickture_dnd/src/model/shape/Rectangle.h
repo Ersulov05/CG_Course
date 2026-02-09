@@ -7,8 +7,8 @@
 class Rectangle : public Shape
 {
 public:
-    Rectangle(unsigned shapeId, Point position, float width, float height, Color fillColor, Color outlineColor)
-        : Shape(shapeId, fillColor, outlineColor),
+    Rectangle(Point position, float width, float height, Color fillColor, Color outlineColor)
+        : Shape(fillColor, outlineColor),
           m_position(position),
           m_width(width),
           m_height(height)
@@ -17,13 +17,23 @@ public:
 
     std::vector<Point> GetPoints() const override
     {
-        return std::vector<Point>{};
+        return std::vector<Point>{
+            {m_position.x, m_position.y},
+            {m_position.x + m_width, m_position.y},
+            {m_position.x + m_width, m_position.y + m_height},
+            {m_position.x, m_position.y + m_height}};
     }
 
     void Move(float dx, float dy) override
     {
         m_position.x += dx;
         m_position.y += dy;
+    }
+
+    bool IsPointInsideShape(const Point &point) const
+    {
+        return point.x >= m_position.x && point.x <= m_position.x + m_width &&
+               point.y >= m_position.y && point.y <= m_position.y + m_height;
     }
 
 private:

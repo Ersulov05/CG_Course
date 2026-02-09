@@ -8,35 +8,19 @@
 class Picture
 {
 public:
+    Picture(unsigned id) : m_id(id) {}
+
     void AddShape(std::shared_ptr<IShape> shape)
     {
-        if (!shape)
-            return;
-
-        auto shapeId = shape->GetId();
-
-        if (m_shapeMap.find(shapeId) != m_shapeMap.end())
-        {
-            throw std::runtime_error("Shape with ID " + std::to_string(shapeId) + " already exists");
-        }
-
         m_shapes.push_back(shape);
-        m_shapeMap[shapeId] = shape;
     }
 
-    void MoveShape(unsigned shapeId, float dx, float dy)
+    void Move(float dx, float dy)
     {
-        auto it = m_shapeMap.find(shapeId);
-        if (it != m_shapeMap.end() && it->second)
+        for (auto &shape : m_shapes)
         {
-            it->second->Move(dx, dy);
+            shape->Move(dx, dy);
         }
-    }
-
-    std::shared_ptr<const IShape> GetShapeById(unsigned shapeId) const
-    {
-        auto it = m_shapeMap.find(shapeId);
-        return (it != m_shapeMap.end()) ? std::static_pointer_cast<const IShape>(it->second) : nullptr;
     }
 
     std::vector<std::shared_ptr<const IShape>> GetShapes() const
@@ -57,24 +41,25 @@ public:
         return m_shapes.size();
     }
 
-    // std::shared_ptr<IShape> GetMutableShapeById(unsigned shapeId) override
-    // {
-    //     auto it = m_shapeMap.find(shapeId);
-    //     return (it != m_shapeMap.end()) ? it->second : nullptr;
-    // }
-
-    // std::vector<std::shared_ptr<IShape>> GetMutableShapes() override
-    // {
-    //     return m_shapes;
-    // }
-
-    unsigned getNextId()
+    unsigned GetId() const
     {
-        return m_nextId++;
+        return m_id;
+    }
+
+    bool IsPointInsidePicture(const Point &point) const
+    {
+        for (const auto &shape : m_shapes)
+        {
+            if (shape->IsPointInsideShape(point))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 private:
+    unsigned m_id;
     std::vector<std::shared_ptr<IShape>> m_shapes;
-    std::unordered_map<unsigned, std::shared_ptr<IShape>> m_shapeMap;
-    unsigned m_nextId = 0;
 };
