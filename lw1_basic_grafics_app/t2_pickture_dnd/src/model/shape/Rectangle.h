@@ -30,7 +30,7 @@ public:
         m_position.y += dy;
     }
 
-    bool IsPointInsideShape(const Point &point) const
+    bool IsPointInsideShape(const Point &point) const override
     {
         return point.x >= m_position.x && point.x <= m_position.x + m_width &&
                point.y >= m_position.y && point.y <= m_position.y + m_height;

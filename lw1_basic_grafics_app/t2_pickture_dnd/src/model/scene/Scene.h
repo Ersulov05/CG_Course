@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../picture/Picture.h"
-#include "../Observable.h"
 #include "../shape/Rectangle.h"
 #include <optional>
+#include <ranges>
 
 class Scene
 {
@@ -29,19 +29,6 @@ public:
         auto picture = GetPictureById(pictureId);
         picture->AddShape(shape);
     }
-
-    // void AddRectangleToPicture(unsigned pictureId, Point position, float width, float height, Color fillColor = 0xFFFFFFFF, Color outlineColor = 0xFFFFFFFF)
-    // {
-    //     auto picture = GetPictureById(pictureId);
-    //     auto shape = std::make_shared<Rectangle>(position, width, height, fillColor, outlineColor);
-    //     picture->AddShape(shape);
-    // }
-
-    // void AddTriangleToPicture(unsigned pictureId, Point firstPoint, Point secondPoint, Point thirdPoint, Color fillColor = 0xFFFFFFFF, Color outlineColor = 0x0)
-    // {
-    //     auto shape = std::make_shared<Triangle>(position, width, height, fillColor, outlineColor);
-    //     m_scene.AddRectangleToPicture(pictureId, firstPoint, secondPoint, thirdPoint, fillColor, outlineColor);
-    // }
 
     void MovePicture(unsigned pictureId, float dx, float dy)
     {
@@ -89,7 +76,7 @@ public:
 
     std::optional<unsigned> GetPictureIdByPoint(const Point &point) const
     {
-        for (const auto &picture : m_pictures)
+        for (const auto &picture : m_pictures | std::views::reverse)
         {
             if (picture->IsPointInsidePicture(point))
             {
