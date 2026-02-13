@@ -2,7 +2,7 @@
 #include "./src/Common/Color.h"
 #include <iostream>
 
-const Color RED_COLOR = 0xFF0000FF;
+const Color RED_COLOR = 0xFF0000AA;
 const unsigned WIDTH = 800;
 const unsigned HEIGHT = 600;
 

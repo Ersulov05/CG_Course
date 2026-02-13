@@ -13,6 +13,9 @@
 class CCanvas : public ICanvas
 {
 public:
+	const float SIN_45 = 0.7071;
+	const float ROUND_COEF = 0.5;
+	const float SMOOTHING_ALPHA_COEF = 1;
 	using UpdateCallback = std::function<void(ICanvas &, float)>;
 
 	CCanvas(unsigned width, unsigned height)
@@ -36,15 +39,15 @@ public:
 				: 0;
 		unsigned outerRadius = radius;
 
-		for (int y = 0; y <= radius * 0.7071; ++y)
+		for (int y = 0; y <= radius; ++y)
 		{
 			float exactInnerX = y < innerRadius
 									? sqrtf(innerRadius * innerRadius - y * y)
 									: 0.0f;
 			float exactOuterX = sqrtf(outerRadius * outerRadius - y * y);
 
-			int innerX = static_cast<int>(exactInnerX + 0.5f);
-			int outerX = static_cast<int>(exactOuterX + 0.5f);
+			int innerX = static_cast<int>(exactInnerX + ROUND_COEF);
+			int outerX = static_cast<int>(exactOuterX + ROUND_COEF);
 
 			for (int x = innerX; x <= outerX; ++x)
 			{
@@ -143,14 +146,19 @@ private:
 	void DrawCirclePoints(Point center, int x, int y, Color color)
 	{
 		DrawPixel({center.x + x, center.y + y}, color);
-		DrawPixel({center.x + x, center.y - y}, color);
-		DrawPixel({center.x - x, center.y + y}, color);
-		DrawPixel({center.x - x, center.y - y}, color);
 
-		DrawPixel({center.x + y, center.y + x}, color);
-		DrawPixel({center.x + y, center.y - x}, color);
-		DrawPixel({center.x - y, center.y + x}, color);
-		DrawPixel({center.x - y, center.y - x}, color);
+		if (x != 0)
+		{
+			DrawPixel({center.x - x, center.y + y}, color);
+		}
+		if (y != 0)
+		{
+			DrawPixel({center.x + x, center.y - y}, color);
+		}
+		if (x != 0 && y != 0)
+		{
+			DrawPixel({center.x - x, center.y - y}, color);
+		}
 	}
 
 	void SmoothInnerCircleArea(Point center, int radius, float exactInnerX, int innerX, int y)
@@ -165,7 +173,7 @@ private:
 
 		if (coverage > 0.0f && coverage < 1.0f)
 		{
-			uint8_t aa_a = static_cast<uint8_t>(a * coverage * 0.5);
+			uint8_t aa_a = static_cast<uint8_t>(a * coverage * SMOOTHING_ALPHA_COEF);
 			Color aaColor = (r << 24) | (g << 16) | (b << 8) | aa_a;
 
 			int x = innerX - 1;
@@ -185,7 +193,7 @@ private:
 
 		if (coverage > 0.0f && coverage < 1.0f)
 		{
-			uint8_t aa_a = static_cast<uint8_t>(a * coverage * 0.5);
+			uint8_t aa_a = static_cast<uint8_t>(a * coverage * SMOOTHING_ALPHA_COEF);
 			Color aaColor = (r << 24) | (g << 16) | (b << 8) | aa_a;
 
 			int x = outerX + 1;
