@@ -1,9 +1,12 @@
 #include "./src/view/GallowsView.h"
 #include "./src/model/Gallows.h"
 #include <iostream>
+#include <cwctype>
 
 int main()
 {
+    std::setlocale(LC_ALL, "ru_RU.UTF-8");
+    std::wcout.imbue(std::locale("ru_RU.UTF-8"));
     try
     {
         Gallows gallowsModel;

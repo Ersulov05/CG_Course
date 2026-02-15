@@ -30,11 +30,17 @@ public:
         }
     }
 
-    void OnClickSubscribe(OnClickCallback onClickCallback)
+    unsigned OnClickSubscribe(OnClickCallback onClickCallback)
     {
-        std::cout << m_callbacks.size() << std::endl;
-        m_callbacks.push_back(onClickCallback);
-        std::cout << m_callbacks.size() << std::endl;
+        static unsigned nextId = 1;
+        unsigned id = nextId++;
+        m_callbacks[id] = onClickCallback;
+        return id;
+    }
+
+    void OnClickUnsubscribe(unsigned subscriptionId)
+    {
+        m_callbacks.erase(subscriptionId);
     }
 
     void ClearCallbacks()
@@ -67,18 +73,16 @@ private:
 
     void NotifyCallbacks(const Point &mousePosition)
     {
-        std::cout << m_callbacks.size() << std::endl;
-        int i = 1;
-        for (const auto &callback : m_callbacks)
+        auto callbacksCopy = m_callbacks;
+        for (const auto &[id, callback] : callbacksCopy)
         {
             if (callback)
             {
-                std::cout << "click" + i++ << std::endl;
                 callback(mousePosition);
             }
         }
     }
 
     bool m_isPressed = false;
-    std::vector<OnClickCallback> m_callbacks;
+    std::unordered_map<unsigned, OnClickCallback> m_callbacks;
 };
