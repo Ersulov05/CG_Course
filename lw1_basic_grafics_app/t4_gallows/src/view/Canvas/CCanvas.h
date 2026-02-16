@@ -162,11 +162,9 @@ public:
 		sf::FloatRect bounds = sfText.getLocalBounds();
 		sfText.setFillColor(sf::Color(m_color));
 
-		float lineHeight = m_font.getLineSpacing(characterSize);
 		float baselineOffset = m_font.getUnderlinePosition(characterSize);
-		float offset = lineHeight - baselineOffset;
 
-		sfText.setPosition(sf::Vector2f(position.x, position.y + offset - lineHeight));
+		sfText.setPosition(sf::Vector2f(position.x, position.y - baselineOffset));
 
 		m_renderTexture->draw(sfText);
 	}

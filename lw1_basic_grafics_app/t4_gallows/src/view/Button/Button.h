@@ -41,7 +41,7 @@ public:
         m_canvas.SetColor(m_textColor);
         const unsigned size = 14;
         auto boundSize = m_canvas.GetTextSize(text, size);
-        m_canvas.DrawString(text, {m_position.x + m_size.width / 2 - boundSize.width / 2, m_position.y + 2}, size);
+        m_canvas.DrawString(text, {m_position.x + m_size.width / 2 - boundSize.width / 2, m_position.y + m_size.height / 2 - boundSize.height / 2}, size);
     }
 
 private:

@@ -40,14 +40,6 @@ public:
 
     void Draw(ICanvas &canvas)
     {
-        // canvas.SetColor(0xFFFFFFFF);
-        // unsigned padding = 2;
-        // canvas.FillPolygon({
-        //     {m_position.x - padding, m_position.y - padding},
-        //     {m_position.x + m_boundSize.width + padding, m_position.y - padding},
-        //     {m_position.x + m_boundSize.width + padding, m_position.y + m_boundSize.height + padding},
-        //     {m_position.x - padding, m_position.y + m_boundSize.height + padding},
-        // });
         switch (m_state)
         {
         case LetterState::Correct:
@@ -61,7 +53,7 @@ public:
             break;
         }
 
-        canvas.DrawChar(m_letter, m_position, m_size);
+        canvas.DrawChar(m_letter, {m_position.x, m_position.y - 2}, m_size);
     }
 
     void SetState(LetterState state)
