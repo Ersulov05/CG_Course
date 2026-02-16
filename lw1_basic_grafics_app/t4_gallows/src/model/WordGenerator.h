@@ -4,8 +4,9 @@
 #include <ctime>
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <codecvt>
 
-const std::string WORDS_FILENAME = "Word.json";
+const std::string WORDS_FILENAME = "words.json";
 
 class WordGenerator
 {
@@ -44,8 +45,8 @@ private:
                 std::string wordStr = item["word"];
                 std::string hintStr = item["hint"];
 
-                std::wstring word(wordStr.begin(), wordStr.end());
-                std::wstring hint(hintStr.begin(), hintStr.end());
+                std::wstring word = Utf8ToWstring(wordStr);
+                std::wstring hint = Utf8ToWstring(hintStr);
 
                 words.emplace_back(word, hint);
             }
@@ -58,8 +59,15 @@ private:
         return words;
     }
 
+    static std::wstring Utf8ToWstring(const std::string &str)
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.from_bytes(str);
+    }
+
     static std::vector<std::pair<std::wstring, std::wstring>> GetDefaultWords()
     {
+        std::cout << "default\n";
         return {
             {L"ПРОГРАММА", L"Набор инструкций для компьютера"},
             {L"КОМПЬЮТЕР", L"Электронное устройство для обработки данных"},

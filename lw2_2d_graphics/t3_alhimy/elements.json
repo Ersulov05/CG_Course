@@ -1,0 +1,94 @@
+{
+    "defaultElements": [
+        {
+            "name": "Огонь",
+            "filename": "fire.png"
+        },
+        {
+            "name": "Вода",
+            "filename": "water.png"
+        },
+        {
+            "name": "Воздух",
+            "filename": "air.png"
+        },
+        {
+            "name": "Земля",
+            "filename": "earth.png"
+        }
+    ],
+    "createdElements": [
+        {
+            "name": "Пар",
+            "firstElementName": "Огонь",
+            "secondElementName": "Вода",
+            "filename": "vapor.png"
+        },
+        {
+            "name": "Лава",
+            "firstElementName": "Огонь",
+            "secondElementName": "Земля",
+            "filename": "lava.png"
+        },
+        {
+            "name": "Пыль",
+            "firstElementName": "Воздух",
+            "secondElementName": "Земля",
+            "filename": "dust.png"
+        },
+        {
+            "name": "Порох",
+            "firstElementName": "Огонь",
+            "secondElementName": "Пыль",
+            "filename": "gunpowder.png"
+        },
+        {
+            "name": "Взрыв",
+            "firstElementName": "Порох",
+            "secondElementName": "Огонь",
+            "filename": "explosion.png"
+        },
+        {
+            "name": "Дым",
+            "firstElementName": "Порох",
+            "secondElementName": "Огонь",
+            "filename": "smoke.png"
+        },
+        {
+            "name": "Энергия",
+            "firstElementName": "Воздух",
+            "secondElementName": "Огонь",
+            "filename": "energy.png"
+        },
+        {
+            "name": "Пар",
+            "firstElementName": "Лава",
+            "secondElementName": "Вода",
+            "filename": "vapor.png"
+        },
+        {
+            "name": "Камень",
+            "firstElementName": "Лава",
+            "secondElementName": "Вода",
+            "filename": "stone.png"
+        },
+        {
+            "name": "Буря",
+            "firstElementName": "Воздух",
+            "secondElementName": "Энергия",
+            "filename": "storm.png"
+        },
+        {
+            "name": "Металл",
+            "firstElementName": "Огонь",
+            "secondElementName": "Камень",
+            "filename": "metal.png"
+        },
+        {
+            "name": "Электричество",
+            "firstElementName": "Металл",
+            "secondElementName": "Энергия",
+            "filename": "electricity.png"
+        }
+    ]
+}

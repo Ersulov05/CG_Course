@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Легкое облачко/ветер -->
+  <path d="M25 45 Q35 35 45 40 Q55 30 65 35 Q75 25 85 35 Q90 45 80 50 Q85 60 75 60 Q70 70 60 65 Q50 75 40 65 Q30 70 25 60 Q15 55 25 45" 
+        fill="#E0F2FE" 
+        stroke="#7CB9E8" 
+        stroke-width="2"/>
+  
+  <!-- Линии ветра -->
+  <path d="M30 50 L40 50 M45 55 L60 55 M65 45 L80 45" 
+        stroke="#7CB9E8" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+</svg>

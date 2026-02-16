@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон (опционально, можно убрать если нужна прозрачность) -->
+  <!-- <rect width="100" height="100" fill="none"/> -->
+  
+  <!-- Капля воды -->
+  <path d="M50 10 
+           C60 25 75 40 75 55 
+           C75 70 63 85 50 85 
+           C37 85 25 70 25 55 
+           C25 40 40 25 50 10" 
+        fill="#4A90E2" 
+        stroke="#2C6B9E" 
+        stroke-width="2"/>
+  
+  <!-- Блик на капле -->
+  <ellipse cx="42" cy="30" rx="8" ry="4" fill="white" opacity="0.4"/>
+  
+  <!-- Волны (символизирующие воду) -->
+  <path d="M20 70 Q30 65 40 70 Q50 75 60 70 Q70 65 80 70" 
+        fill="none" 
+        stroke="#2C6B9E" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+</svg>
