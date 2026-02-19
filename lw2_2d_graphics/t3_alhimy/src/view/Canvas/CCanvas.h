@@ -94,8 +94,8 @@ public:
 		sprite.setTexture(it->second);
 
 		sf::Vector2u textureSize = it->second.getSize();
-		float scaleX = size.width / static_cast<float>(textureSize.x);
-		float scaleY = size.height / static_cast<float>(textureSize.y);
+		float scaleX = size.width / textureSize.x;
+		float scaleY = size.height / textureSize.y;
 
 		sprite.setScale(scaleX, scaleY);
 		sprite.setPosition(position.x, position.y);

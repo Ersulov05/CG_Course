@@ -59,7 +59,7 @@ public:
         m_canvas.DrawImage(m_element.GetImagePath(), m_position, Constants::ELEMENT_SIZE);
         m_canvas.SetColor(0xFFFFFFFF);
         auto textSize = m_canvas.GetTextSize(m_element.GetName(), 12);
-        m_canvas.DrawString(m_element.GetName(), {m_position.x + Constants::ELEMENT_SIZE.width / 2 - textSize.width / 2, m_position.y + Constants::ELEMENT_SIZE.height}, 12);
+        m_canvas.DrawString(m_element.GetName(), {m_position.x + Constants::ELEMENT_SIZE.width / 2 - textSize.width / 2, m_position.y + Constants::ELEMENT_SIZE.height + 3}, 12);
     }
 
     void SetPosition(const Point &position)

@@ -16,8 +16,6 @@
 class AlhimyView
 {
 public:
-    const unsigned LETTER_SIZE = 24;
-
     AlhimyView(AlhimyModel &alhimyModel)
         : m_alhimyModel(alhimyModel),
           m_canvas(Constants::WIDTH, Constants::HEIGHT),
@@ -78,13 +76,12 @@ private:
     GridPositionManager m_gridPositionManager;
     std::vector<std::unique_ptr<DragElementView>> m_dragElements;
     std::vector<std::unique_ptr<ElementView>> m_elements;
-    Popup m_endGamePopup;
     std::unique_ptr<Button> m_sortButton;
     std::unique_ptr<Button> m_clearButton;
     std::vector<Notification> m_notifications;
+    Popup m_endGamePopup;
 
-    bool
-    IsIncludeExperimentArea(const Point &position, const Size &size)
+    bool IsIncludeExperimentArea(const Point &position, const Size &size)
     {
         return position.x >= Constants::EXPERIMENT_AREA_POSITION.x &&
                position.x + size.width <= Constants::EXPERIMENT_AREA_POSITION.x + Constants::EXPERIMENT_AREA_SIZE.width &&
@@ -115,26 +112,12 @@ private:
                 auto secondElementName = intersectElementPtr->GetElement().GetName();
                 auto createdElementsData = m_alhimyModel.MixElements(firstElementName, secondElementName);
 
-                if (!createdElementsData.createdElements.empty())
-                {
-                    std::wstring notificationText = firstElementName + L" + " + secondElementName + L" = ";
-
-                    for (size_t i = 0; i < createdElementsData.createdElements.size(); ++i)
-                    {
-                        if (i > 0)
-                            notificationText += L", ";
-                        notificationText += createdElementsData.createdElements[i].GetName();
-                    }
-
-                    ShowNotification(notificationText);
-                }
-
+                ShowNewCreateElementNotification(firstElementName, secondElementName, createdElementsData);
                 for (auto &newElement : createdElementsData.newlyCreatedElements)
                 {
                     auto position = m_gridPositionManager.GetNext();
                     CreateElementView(newElement, position, true);
                 }
-                // ShowNotification(firstElementName + L" + " + secondElementName + L" = " +);
                 if (createdElementsData.createdElements.size() != 0)
                 {
                     for (auto &element : createdElementsData.createdElements)
@@ -277,14 +260,33 @@ private:
         m_notifications.emplace_back(Notification(text, {Constants::WIDTH / 2, 500}));
     }
 
+    void ShowNewCreateElementNotification(
+        const std::wstring &firstElementName, const std::wstring &secondElementName, CreatedElementsData createdElementsData)
+    {
+        if (createdElementsData.newlyCreatedElements.empty())
+        {
+            return;
+        }
+        std::wstring notificationText = firstElementName + L" + " + secondElementName + L" = ";
+
+        for (size_t i = 0; i < createdElementsData.newlyCreatedElements.size(); ++i)
+        {
+            if (i > 0)
+                notificationText += L", ";
+            notificationText += createdElementsData.newlyCreatedElements[i].GetName();
+        }
+        ShowNotification(notificationText);
+    }
+
     void UpdateNotifications()
     {
         m_notifications.erase(
-            std::remove_if(m_notifications.begin(), m_notifications.end(),
-                           [](const auto &notification)
-                           {
-                               return notification.IsExpired();
-                           }),
+            std::remove_if(
+                m_notifications.begin(), m_notifications.end(),
+                [](const auto &notification)
+                {
+                    return notification.IsExpired();
+                }),
             m_notifications.end());
     }
 
