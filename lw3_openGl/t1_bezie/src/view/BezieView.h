@@ -3,6 +3,8 @@
 #include "./Canvas/ICanvas.h"
 #include "./Common/Point.h"
 
+const float STRIP_SIZE = 10;
+
 class BezieView
 {
 public:
@@ -22,6 +24,9 @@ public:
             m_firstPoint.GetCenterPosition(),
             m_secondPoint.GetCenterPosition(),
             m_endPoint.GetCenterPosition());
+        m_canvas.DrawStripLine(m_startPoint.GetCenterPosition(), m_firstPoint.GetCenterPosition(), STRIP_SIZE);
+        m_canvas.DrawStripLine(m_firstPoint.GetCenterPosition(), m_secondPoint.GetCenterPosition(), STRIP_SIZE);
+        m_canvas.DrawStripLine(m_secondPoint.GetCenterPosition(), m_endPoint.GetCenterPosition(), STRIP_SIZE);
         m_startPoint.Draw();
         m_firstPoint.Draw();
         m_secondPoint.Draw();

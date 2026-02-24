@@ -26,6 +26,11 @@ struct Point
         return Point(x + value, y + value);
     }
 
+    Point operator*(float value) const
+    {
+        return Point(x * value, y * value);
+    }
+
     Point &operator+=(const Point &other)
     {
         x += other.x;

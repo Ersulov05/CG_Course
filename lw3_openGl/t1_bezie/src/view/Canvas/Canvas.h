@@ -106,6 +106,35 @@ public:
         DrawPolygon({p0, p1}, thickness);
     }
 
+    void DrawStripLine(const Point &p0, const Point &p1, float stripSize = 1.0f, float thickness = 1.0f)
+    {
+        Point dir = p1 - p0;
+        float length = sqrt(dir.x * dir.x + dir.y * dir.y);
+
+        if (length < 0.01f)
+            return;
+
+        dir.x /= length;
+        dir.y /= length;
+
+        int numSegments = std::max(1, (int)(length / stripSize));
+        float segmentLength = length / numSegments;
+
+        for (int i = 0; i < numSegments; i++)
+        {
+            float startT = (float)i / numSegments;
+            float endT = (float)(i + 1) / numSegments;
+
+            Point segmentStart = p0 + dir * (startT * length);
+            Point segmentEnd = p0 + dir * (endT * length);
+
+            if (i % 2 == 0)
+            {
+                DrawLine(segmentStart, segmentEnd, thickness);
+            }
+        }
+    }
+
     void DrawPolygon(const std::vector<Point> &points, float thickness = 1.0f, bool closed = false) override
     {
         if (points.size() < 2)
@@ -202,6 +231,28 @@ private:
     MouseController m_mouseController;
     GLFWwindow *m_window;
 
+    Point GetBeziePoint(const Point &p0, const Point &p1, const Point &p2, const Point &p3, float t)
+    {
+        float oneMinusT = 1 - t;
+        float squareOneMinusT = oneMinusT * oneMinusT;
+        float cibeOneMinusT = squareOneMinusT * oneMinusT;
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        float x =
+            cibeOneMinusT * p0.x +
+            3 * squareOneMinusT * t * p1.x +
+            3 * oneMinusT * t2 * p2.x +
+            t3 * p3.x;
+        float y =
+            cibeOneMinusT * p0.y +
+            3 * squareOneMinusT * t * p1.y +
+            3 * oneMinusT * t2 * p2.y +
+            t3 * p3.y;
+
+        return Point(x, y);
+    }
+
     void initShaders()
     {
         const char *vertexShaderSource = R"(
@@ -265,28 +316,6 @@ private:
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
-    }
-
-    Point GetBeziePoint(const Point &p0, const Point &p1, const Point &p2, const Point &p3, float t)
-    {
-        float oneMinusT = 1 - t;
-        float squareOneMinusT = oneMinusT * oneMinusT;
-        float cibeOneMinusT = squareOneMinusT * oneMinusT;
-        float t2 = t * t;
-        float t3 = t2 * t;
-
-        float x =
-            cibeOneMinusT * p0.x +
-            3 * squareOneMinusT * t * p1.x +
-            3 * oneMinusT * t2 * p2.x +
-            t3 * p3.x;
-        float y =
-            cibeOneMinusT * p0.y +
-            3 * squareOneMinusT * t * p1.y +
-            3 * oneMinusT * t2 * p2.y +
-            t3 * p3.y;
-
-        return Point(x, y);
     }
 
     void SetupVAOAndVBO(GLuint &VAO, GLuint &VBO, const std::vector<float> &vertices)
