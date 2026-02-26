@@ -45,9 +45,6 @@ public:
         canvas.SetColor(Color(0xFFFFFFFF));
         canvas.FillCircle(circleCenter, 8 * m_scale);
         canvas.SetColor(Color(0xFFFFFFFF));
-        // canvas.DrawPolygon(valve, 2);
-
-        // canvas.DrawRect({x, y}, {1, 1});
     }
 
     void SetOpen(float openSize)

@@ -108,25 +108,21 @@ public:
 
     void DrawStripLine(const Point &p0, const Point &p1, float stripSize = 1.0f, float thickness = 1.0f)
     {
-        Point dir = p1 - p0;
-        float length = sqrt(dir.x * dir.x + dir.y * dir.y);
+        Point distance = p1 - p0;
+        float length = sqrt(distance.x * distance.x + distance.y * distance.y);
 
-        if (length < 0.01f)
+        if (length < 1.0f)
             return;
 
-        dir.x /= length;
-        dir.y /= length;
+        distance.x /= length;
+        distance.y /= length;
 
         int numSegments = std::max(1, (int)(length / stripSize));
-        float segmentLength = length / numSegments;
 
         for (int i = 0; i < numSegments; i++)
         {
-            float startT = (float)i / numSegments;
-            float endT = (float)(i + 1) / numSegments;
-
-            Point segmentStart = p0 + dir * (startT * length);
-            Point segmentEnd = p0 + dir * (endT * length);
+            Point segmentStart = p0 + distance * ((float)i / numSegments * length);
+            Point segmentEnd = p0 + distance * ((float)(i + 1) / numSegments * length);
 
             if (i % 2 == 0)
             {

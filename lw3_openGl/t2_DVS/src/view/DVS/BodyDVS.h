@@ -26,8 +26,6 @@ public:
         DrawValveContainer(canvas, {m_position.x + 29 * m_scale, m_position.y - 160.5 * m_scale}, 27);
         DrawCilinder(canvas);
         DrawCarter(canvas);
-        // DrawOuterDVSCorpus(canvas, {m_position.x - 60 * m_scale, m_position.y}, true);
-        // DrawOuterDVSCorpus(canvas, {m_position.x + 60 * m_scale, m_position.y});
     }
 
 private:

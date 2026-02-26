@@ -18,10 +18,6 @@ int main()
         {
             dvs.Update();
             dvs.Draw(canvas);
-            // canvas.SetColor(0xFFFFFFFF);
-            // canvas.FillPolygon({{80, 100}, {200, 100}, {200, 200}, {300, 200}, {300, 320}, {200, 320}});
-            // canvas.SetColor(0x0000FFFF);
-            // canvas.DrawPolygon({{80, 100}, {200, 100}, {200, 200}, {300, 200}, {300, 320}, {200, 320}});
         });
 
     return 0;

@@ -10,7 +10,7 @@ class DVS
 public:
     DVS(const Point &position, float scale = 1)
         : m_body(position, scale),
-          m_sparkPlug({position.x, position.y - 184 * scale}, scale),
+          m_sparkPlug({position.x, position.y - 184 * scale}, scale), // сделать через матрицу, вращение также через матрицу
           m_intakeValve({position.x - 29 * scale, position.y - 160.5 * scale}, -27, scale),
           m_exhaustValve({position.x + 29 * scale, position.y - 160.5 * scale}, 27, scale),
           m_pistonRodCrank(position, scale)

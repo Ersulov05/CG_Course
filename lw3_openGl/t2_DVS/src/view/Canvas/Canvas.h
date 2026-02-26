@@ -9,6 +9,8 @@
 #include "./MouseController.h"
 #include "./ICanvas.h"
 #include "./Triangulate.h"
+#include "./ShaderLoader.h"
+// #include "./TransformMatrix.h"
 
 const int VERTEX_COMPONENTS_COUNT = 6;
 
@@ -223,75 +225,28 @@ private:
             return false;
         }
 
-        InitShaders();
+        if (!InitShaders())
+        {
+            return false;
+        }
 
         glViewport(0, 0, m_width, m_height);
         return true;
     }
 
-    void InitShaders()
+    bool InitShaders()
     {
-        const char *vertexShaderSource = R"(
-            #version 460 core
-            layout (location = 0) in vec2 aPos;
-            layout (location = 1) in vec4 aColor;
-            
-            out vec4 vertexColor;
-            
-            void main() {
-                gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
-                vertexColor = aColor;
-            }
-        )";
+        m_shaderProgram = ShaderLoader::LoadShader(
+            "./shaders/basic.vert",
+            "./shaders/basic.frag");
 
-        const char *fragmentShaderSource = R"(
-            #version 460 core
-            in vec4 vertexColor;
-            out vec4 FragColor;
-            
-            void main() {
-                FragColor = vertexColor;
-            }
-        )";
-
-        GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-        glCompileShader(vertexShader);
-
-        int success;
-        char infoLog[512];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
+        if (m_shaderProgram == 0)
         {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            std::cerr << "Vertex shader compilation failed: " << infoLog << std::endl;
+            std::cerr << "Failed to load shader program" << std::endl;
+            return false;
         }
 
-        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-        glCompileShader(fragmentShader);
-
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            std::cerr << "Fragment shader compilation failed: " << infoLog << std::endl;
-        }
-
-        m_shaderProgram = glCreateProgram();
-        glAttachShader(m_shaderProgram, vertexShader);
-        glAttachShader(m_shaderProgram, fragmentShader);
-        glLinkProgram(m_shaderProgram);
-
-        glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            glGetProgramInfoLog(m_shaderProgram, 512, NULL, infoLog);
-            std::cerr << "Shader program linking failed: " << infoLog << std::endl;
-        }
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        return true;
     }
 
     void SetupVAOAndVBO(GLuint &VAO, GLuint &VBO, const std::vector<float> &vertices)
