@@ -12,17 +12,11 @@ const int CONNECTING_ROD_SIZE = 105;
 class PistonRodCrank
 {
 public:
-    PistonRodCrank(const Point &position, float scale)
-        : m_position(position),
-          m_scale(scale),
-          m_piston(Piston({position.x, position.y - CONNECTING_ROD_SIZE * scale}, scale)),
-          m_connectingRod(ConnectingRod({position.x + RADIUS * scale, position.y}, CONNECTING_ROD_SIZE, scale)),
-          m_crankshaft(Crankshaft({position.x, position.y}, RADIUS, 90, scale))
+    PistonRodCrank()
+        : m_piston(),
+          m_connectingRod(CONNECTING_ROD_SIZE),
+          m_crankshaft(RADIUS)
     {
-        m_piston.SetPosition({m_position.x, m_position.y + GetPistonOffset() - CONNECTING_ROD_SIZE * m_scale});
-        m_connectingRod.SetPosition(m_position + GetConnectingRodPositionOffset());
-        m_connectingRod.SetRotation(GetConnectingRodRotation());
-        m_crankshaft.SetRotation(m_rotate + 90);
     }
 
     void Update()
@@ -32,18 +26,25 @@ public:
         {
             m_rotate -= 720;
         }
-
-        m_piston.SetPosition({m_position.x, m_position.y + GetPistonOffset() - CONNECTING_ROD_SIZE * m_scale});
-        m_connectingRod.SetPosition(m_position + GetConnectingRodPositionOffset());
-        m_connectingRod.SetRotation(GetConnectingRodRotation());
-        m_crankshaft.SetRotation(m_rotate + 90);
     }
 
     void Draw(ICanvas &canvas)
     {
+        canvas.PushMatrix();
+        canvas.Rotate(m_rotate + 90);
         m_crankshaft.Draw(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(GetConnectingRodPositionOffset());
+        canvas.Rotate(GetConnectingRodRotation());
         m_connectingRod.Draw(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(0, GetPistonOffset() - CONNECTING_ROD_SIZE);
         m_piston.Draw(canvas);
+        canvas.PopMatrix();
     }
 
     float GetRotate()
@@ -63,16 +64,16 @@ private:
     {
         auto angle = GetConnectingRodRotation();
 
-        return (RADIUS * sin(m_rotate * M_PI / 180) + CONNECTING_ROD_SIZE * (1 - fabs(cos(angle * M_PI / 180)))) * m_scale;
+        return (RADIUS * sin(m_rotate * M_PI / 180) + CONNECTING_ROD_SIZE * (1 - fabs(cos(angle * M_PI / 180))));
     }
 
     Point GetConnectingRodPositionOffset()
     {
-        return Point(RADIUS * cos(m_rotate * M_PI / 180) * m_scale, RADIUS * sin(m_rotate * M_PI / 180) * m_scale);
+        return Point(RADIUS * cos(m_rotate * M_PI / 180), RADIUS * sin(m_rotate * M_PI / 180));
     }
 
     float GetConnectingRodRotation()
     {
-        return -atan(RADIUS * cos(m_rotate * M_PI / 180) / CONNECTING_ROD_SIZE) * 180 / 3.1415926f;
+        return -atan(RADIUS * cos(m_rotate * M_PI / 180) / CONNECTING_ROD_SIZE) * 180 / M_PI;
     }
 };

@@ -100,11 +100,14 @@ $(GLAD_OBJ): $(GLAD_SRC) | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Компиляция файлов из src/ (папка уже создана через | $(BUILD_DIR))
+# Создаем необходимые поддиректории в build
 $(BUILD_DIR)/src/%.o: src/%.cpp | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Компиляция тестовых файлов (папка уже создана через | $(BUILD_DIR))
 $(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # ============================================================================

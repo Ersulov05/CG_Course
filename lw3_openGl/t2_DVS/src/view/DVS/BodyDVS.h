@@ -6,25 +6,43 @@
 class BodyDVS
 {
 public:
-    BodyDVS(const Point &position, float scale)
-        : m_position(position),
-          m_scale(scale)
+    BodyDVS()
     {
     }
 
     void Draw(ICanvas &canvas)
     {
+        canvas.SetColor(Color(0xAFAFAFFF));
+        canvas.FillRect({-22, -190}, {44, 20});
 
-        canvas.SetColor(Color(0xFFAFAFAF));
-        canvas.FillRect({m_position.x - 22 * m_scale, m_position.y - 190 * m_scale}, {44 * m_scale, 20 * m_scale});
+        canvas.SetColor(Color(0x000000FF));
+        canvas.DrawRect({-22, -190}, {44, 20}, 3);
 
-        canvas.SetColor(Color(0xFF000000));
-        canvas.DrawRect({m_position.x - 22 * m_scale, m_position.y - 190 * m_scale}, {44 * m_scale, 20 * m_scale}, 3);
-        DrawOuterDVSCorpus(canvas, {m_position.x - 60 * m_scale, m_position.y}, true);
-        DrawOuterDVSCorpus(canvas, {m_position.x + 60 * m_scale, m_position.y});
-        DrawValveContainer(canvas, {m_position.x - 29 * m_scale, m_position.y - 160.5 * m_scale}, -27);
-        DrawValveContainer(canvas, {m_position.x + 29 * m_scale, m_position.y - 160.5 * m_scale}, 27);
+        canvas.PushMatrix();
+        canvas.Translate(-60, 0);
+        canvas.Scale(-1, 1);
+        DrawOuterDVSCorpus(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(60, 0);
+        DrawOuterDVSCorpus(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(-29, -160.5);
+        canvas.Rotate(-27);
+        DrawValveContainer(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(29, -160.5);
+        canvas.Rotate(27);
+        DrawValveContainer(canvas);
+        canvas.PopMatrix();
+
         DrawCilinder(canvas);
+
         DrawCarter(canvas);
     }
 
@@ -34,117 +52,103 @@ private:
 
     void DrawCilinder(ICanvas &canvas)
     {
-        auto x = m_position.x;
-        auto y = m_position.y;
-
         std::vector<Point> cilinder = {
-            {x - 6 * m_scale, y - 172 * m_scale},
-            {x - 18 * m_scale, y - 166 * m_scale},
-            {x - 42 * m_scale, y - 190 * m_scale},
-            {x - 105 * m_scale, y - 190 * m_scale},
-            {x - 105 * m_scale, y - 175 * m_scale},
-            {x - 60 * m_scale, y - 175 * m_scale},
-            {x - 40 * m_scale, y - 155 * m_scale},
+            {-6, -172},
+            {-18, -166},
+            {-42, -190},
+            {-105, -190},
+            {-105, -175},
+            {-60, -175},
+            {-40, -155},
 
-            {x - 50 * m_scale, y - 150 * m_scale},
-            {x - 50 * m_scale, y},
-            {x + 50 * m_scale, y},
-            {x + 50 * m_scale, y - 150 * m_scale},
+            {-50, -150},
+            {-50, 0},
+            {50, 0},
+            {50, -150},
 
-            {x + 40 * m_scale, y - 155 * m_scale},
-            {x + 60 * m_scale, y - 175 * m_scale},
-            {x + 105 * m_scale, y - 175 * m_scale},
-            {x + 105 * m_scale, y - 190 * m_scale},
-            {x + 42 * m_scale, y - 190 * m_scale},
-            {x + 18 * m_scale, y - 166 * m_scale},
-            {x + 6 * m_scale, y - 172 * m_scale}};
+            {40, -155},
+            {60, -175},
+            {105, -175},
+            {105, -190},
+            {42, -190},
+            {18, -166},
+            {6, -172}};
 
-        canvas.SetColor(Color(0xFF00779F));
+        canvas.SetColor(Color(0x00779FFF));
         canvas.FillPolygon(cilinder);
-        canvas.SetColor(Color(0xFF000000));
+        canvas.SetColor(Color(0x000000FF));
         canvas.DrawPolygon(cilinder, 3);
     }
 
     void DrawCarter(ICanvas &canvas)
     {
-        auto x = m_position.x;
-        auto y = m_position.y;
+        std::vector<Point> carter = {
+            {-50, -60},
+            {-65, -35},
+            {-80, 0},
+            {-80, 50},
+            {-60, 60},
+            {60, 60},
+            {80, 50},
+            {80, 0},
+            {65, -35},
+            {50, -60}};
 
-        std::vector<Point> baseCarter = {
-            {x - 50, y - 60},
-            {x - 65, y - 35},
-            {x - 80, y},
-            {x - 80, y + 50},
-            {x - 60, y + 60},
-            {x + 60, y + 60},
-            {x + 80, y + 50},
-            {x + 80, y},
-            {x + 65, y - 35},
-            {x + 50, y - 60}};
-
-        auto carter = TransformPoints(baseCarter, m_position, 0, m_scale);
-
-        canvas.SetColor(Color(0xFF4D4D4D));
+        canvas.SetColor(Color(0x4D4D4DFF));
         canvas.FillPolygon(carter);
-        canvas.SetColor(Color(0xFF000000));
+        canvas.SetColor(Color(0x000000FF));
         canvas.DrawPolygon(carter, 3, false);
     }
 
-    void DrawValveContainer(ICanvas &canvas, const Point &position, float rotation)
+    void DrawValveContainer(ICanvas &canvas)
     {
-        auto x = position.x;
-        auto y = position.y;
+        std::vector<Point> valveContainer = {
+            {-25, 0},
+            {-25, -75},
+            {-20, -80},
+            {20, -80},
+            {25, -75},
+            {25, 0}};
 
-        std::vector<Point> baseValveContainer = {
-            {x - 25, y},
-            {x - 25, y - 75},
-            {x - 20, y - 80},
-            {x + 20, y - 80},
-            {x + 25, y - 75},
-            {x + 25, y}};
+        std::vector<Point> valveOuterContainer = {
+            {-25, 0},
+            {-25, -55},
+            {-10, -55},
+            {-10, -45},
+            {10, -45},
+            {10, -55},
+            {25, -55},
+            {25, 0}};
 
-        std::vector<Point> baseValveOuterContainer = {
-            {x - 25, y},
-            {x - 25, y - 55},
-            {x - 10, y - 55},
-            {x - 10, y - 45},
-            {x + 10, y - 45},
-            {x + 10, y - 55},
-            {x + 25, y - 55},
-            {x + 25, y}};
-
-        auto valveContainer = TransformPoints(baseValveContainer, position, rotation, m_scale);
-        auto valveOuterContainer = TransformPoints(baseValveOuterContainer, position, rotation, m_scale);
-
-        canvas.SetColor(Color(0xFF00779F));
+        canvas.SetColor(Color(0x00779FFF));
         canvas.FillPolygon(valveContainer);
-        canvas.SetColor(Color(0xFF000000));
+        canvas.SetColor(Color(0x000000FF));
         canvas.DrawPolygon(valveContainer, 4);
 
-        canvas.SetColor(Color(0xFFAFAFAF));
+        canvas.SetColor(Color(0xAFAFAFFF));
         canvas.FillPolygon(valveOuterContainer);
-        canvas.SetColor(Color(0xFF000000));
+        canvas.SetColor(Color(0x000000FF));
         canvas.DrawPolygon(valveOuterContainer, 3);
     }
 
-    void DrawOuterDVSCorpus(ICanvas &canvas, const Point &position, bool isMirror = false)
+    void DrawOuterDVSCorpus(ICanvas &canvas)
     {
-        canvas.SetColor(Color(0xFFAFAFAF));
-        canvas.FillRect({position.x - 10 * m_scale, position.y - 150 * m_scale}, {20 * m_scale, 150 * m_scale});
-        canvas.FillRect({position.x - (10 + (isMirror ? 0 : 10)) * m_scale, position.y - 180 * m_scale}, {30 * m_scale, 30 * m_scale});
+        canvas.SetColor(Color(0xAFAFAFFF));
+        canvas.FillRect({-10, -150}, {20, 150});
+        canvas.FillRect({-20, -180}, {30, 30});
 
-        canvas.SetColor(Color(0xFF000000));
-        canvas.DrawRect({position.x - 10 * m_scale, position.y - 150 * m_scale}, {20 * m_scale, 150 * m_scale}, 3);
-        canvas.DrawRect({position.x - (10 + (isMirror ? 0 : 10)) * m_scale, position.y - 180 * m_scale}, {30 * m_scale, 30 * m_scale}, 3);
+        canvas.SetColor(Color(0x000000FF));
+        canvas.DrawRect({-10, -150}, {20, 150}, 3);
+        canvas.DrawRect({-20, -180}, {30, 30}, 3);
 
-        canvas.SetColor(Color(0xFFAFAFAF));
-        canvas.FillRect({position.x - (10 + (isMirror ? 35 : 10)) * m_scale, position.y - 195 * m_scale}, {65 * m_scale, 24 * m_scale});
-        canvas.SetColor(Color(0xFF000000));
-        canvas.DrawRect({position.x - (10 + (isMirror ? 35 : 10)) * m_scale, position.y - 195 * m_scale}, {65 * m_scale, 24 * m_scale}, 3);
+        canvas.SetColor(Color(0xAFAFAFFF));
+        canvas.FillRect({-20, -195}, {65, 24});
+        canvas.SetColor(Color(0x000000FF));
+        canvas.DrawRect({-20, -195}, {65, 24}, 3);
 
-        canvas.SetColor(Color(0xFF00FF00));
-        canvas.FillCircle({position.x, position.y - 140 * m_scale}, 4 * m_scale);
-        canvas.FillCircle({position.x, position.y - 70 * m_scale}, 4 * m_scale);
-        canvas.FillRect({position.x - 8, position.y - 140 * m_scale}, {8 * m_scale, 70 * m_scale});
+        canvas.SetColor(Color(0x00FF00FF));
+        canvas.FillCircle({0, -140}, 4);
+        canvas.FillCircle({0, -70}, 4);
+        canvas.FillRect({-4, -140}, {8, 70});
     }
 };

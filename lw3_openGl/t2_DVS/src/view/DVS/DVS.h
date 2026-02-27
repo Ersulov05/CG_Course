@@ -8,12 +8,12 @@
 class DVS
 {
 public:
-    DVS(const Point &position, float scale = 1)
-        : m_body(position, scale),
-          m_sparkPlug({position.x, position.y - 184 * scale}, scale), // сделать через матрицу, вращение также через матрицу
-          m_intakeValve({position.x - 29 * scale, position.y - 160.5 * scale}, -27, scale),
-          m_exhaustValve({position.x + 29 * scale, position.y - 160.5 * scale}, 27, scale),
-          m_pistonRodCrank(position, scale)
+    DVS()
+        : m_body(),
+          m_sparkPlug(), // сделать через матрицу, вращение также через матрицу
+          m_intakeValve(),
+          m_exhaustValve(),
+          m_pistonRodCrank()
     {
     }
 
@@ -36,11 +36,25 @@ public:
     void Draw(ICanvas &canvas)
     {
         m_body.Draw(canvas);
+
+        canvas.PushMatrix();
+        canvas.Translate(Point(-29, -160.5));
+        canvas.Rotate(-27);
         m_intakeValve.Draw(canvas);
+        canvas.PopMatrix();
+
+        canvas.PushMatrix();
+        canvas.Translate(Point(29, -160.5));
+        canvas.Rotate(27);
         m_exhaustValve.Draw(canvas);
+        canvas.PopMatrix();
 
         m_pistonRodCrank.Draw(canvas);
+
+        canvas.PushMatrix();
+        canvas.Translate(Point(0, -184));
         m_sparkPlug.Draw(canvas);
+        canvas.PopMatrix();
     }
 
 private:

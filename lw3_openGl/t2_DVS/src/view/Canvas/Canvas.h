@@ -1,28 +1,52 @@
+// #pragma once
+// #include "../Common/Color.h"
+// #include "../Common/Point.h"
+// #include <glad/glad.h>
+// #include <GLFW/glfw3.h>
+// #include <iostream>
+// #include <functional>
+// #include <cmath>
+// #include "./MouseController.h"
+// #include "./ICanvas.h"
+// #include "./Triangulate.h"
+// #include "./ShaderLoader.h"
+// // #include "./TransformMatrix.h"
+
 #pragma once
-#include "../Common/Color.h"
-#include "../Common/Point.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include "../Common/Color.h"
+#include "../Common/Point.h"
+#include "./ICanvas.h"
+#include "./MouseController.h"
+#include "./Triangulate.h"
+#include "./Transformable.h"
+#include "./Window.h"
+#include "./ShaderProgram.h"
+#include "./Renderer.h"
 #include <functional>
 #include <cmath>
-#include "./MouseController.h"
-#include "./ICanvas.h"
-#include "./Triangulate.h"
-#include "./ShaderLoader.h"
-// #include "./TransformMatrix.h"
 
-const int VERTEX_COMPONENTS_COUNT = 6;
-
-class Canvas : public ICanvas
+class Canvas : public ICanvas, public Transformable, protected Window
 {
 public:
     using UpdateCallback = std::function<void(ICanvas &)>;
 
     Canvas(unsigned width = 800, unsigned height = 600)
-        : m_width(width), m_height(height), m_color(0x0)
+        : Window(width, height, "OpenGL Canvas"), m_color(0x0)
     {
+        UpdateProjectionMatrix();
     }
+
+    void PushMatrix() override { Transformable::PushMatrix(); }
+    void PopMatrix() override { Transformable::PopMatrix(); }
+    void Translate(float x, float y) override { Transformable::Translate(x, y); }
+    void Translate(const Point &p) override { Transformable::Translate(p); }
+    void Rotate(float angleDegrees) override { Transformable::Rotate(angleDegrees); }
+    void Scale(float scaleX, float scaleY) override { Transformable::Scale(scaleX, scaleY); }
+    void Scale(float scale) override { Transformable::Scale(scale); }
+    void Scale(const Point &scale) override { Transformable::Scale(scale); }
+    void ResetTransform() override { Transformable::ResetTransform(); }
 
     unsigned GetWidth() const override
     {
@@ -39,88 +63,81 @@ public:
         m_color = color;
     }
 
+    void Resize(unsigned width, unsigned height)
+    {
+        m_width = width;
+        m_height = height;
+        glViewport(0, 0, width, height);
+        UpdateProjectionMatrix();
+    }
+
     void RunWindow(UpdateCallback updateCallback)
     {
-        if (!GladInit())
+        if (!Initialize())
+            return;
+
+        if (!m_shaderProgram.Load("./shaders/basic.vert", "./shaders/basic.frag"))
         {
+            std::cerr << "Failed to load shader program" << std::endl;
             return;
         }
 
-        while (!glfwWindowShouldClose(m_window))
+        m_transformUniform = m_shaderProgram.GetUniformLocation("uTransform");
+        m_projectionUniform = m_shaderProgram.GetUniformLocation("uProjection");
+
+        while (!ShouldClose())
         {
             m_mouseController.ProcessEvents(m_window);
 
-            glClearColor(0.2, 0.2, 0.2, 1);
+            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            glUseProgram(m_shaderProgram);
+
+            m_shaderProgram.Use();
+
+            if (m_transformUniform != -1)
+            {
+                glUniformMatrix4fv(m_transformUniform, 1, GL_FALSE, GetTransform().GetMatrix());
+            }
+
+            if (m_projectionUniform != -1)
+            {
+                glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+            }
 
             if (updateCallback)
             {
                 updateCallback(*this);
             }
 
-            glfwSwapBuffers(m_window);
-            glfwPollEvents();
+            SwapBuffers();
+            PollEvents();
         }
-
-        glDeleteProgram(m_shaderProgram);
-        glfwTerminate();
     }
 
-    void DrawLine(const Point &p0, const Point &p1, float thickness = 1.0f)
+    void DrawLine(const Point &p0, const Point &p1, float thickness = 1.0f) override
     {
         DrawPolygon({p0, p1}, thickness);
     }
 
     void DrawPolygon(const std::vector<Point> &points, float thickness = 1.0f, bool closed = false) override
     {
-        if (points.size() < 2)
-            return;
+        auto vertices = m_renderer.CreateLineVertices(points, m_color, closed);
+        // m_renderer.DrawPrimitive(GL_LINES, vertices, thickness);
 
-        float r, g, b, a;
-        GetColorFloats(r, g, b, a);
-        std::vector<float> vertices;
-
-        for (size_t i = 0; i < points.size() - 1; i++)
-        {
-            Point np0 = NormalizePoint(points[i]);
-            Point np1 = NormalizePoint(points[i + 1]);
-
-            vertices.insert(vertices.end(), {np0.x, np0.y, r, g, b, a, np1.x, np1.y, r, g, b, a});
-        }
-
-        if (closed && points.size() > 2)
-        {
-            Point npLast = NormalizePoint(points.back());
-            Point npFirst = NormalizePoint(points.front());
-
-            vertices.insert(vertices.end(), {npLast.x, npLast.y, r, g, b, a, npFirst.x, npFirst.y, r, g, b, a});
-        }
-
-        DrawPrimitive(GL_LINES, vertices, thickness);
+        m_renderer.DrawPrimitive(GL_LINES, vertices, GetTransform().GetMatrix(), m_transformUniform, thickness);
     }
 
-    void FillPolygon(const std::vector<Point> &points)
+    void FillPolygon(const std::vector<Point> &points) override
     {
         if (points.size() < 3)
             return;
 
-        float r, g, b, a;
-        GetColorFloats(r, g, b, a);
-
-        std::vector<unsigned int> indices = Triangulate::Process(points);
-        std::vector<float> vertices;
-
-        for (unsigned int idx : indices)
-        {
-            Point np = NormalizePoint(points[idx]);
-            vertices.insert(vertices.end(), {np.x, np.y, r, g, b, a});
-        }
-
-        DrawPrimitive(GL_TRIANGLES, vertices);
+        auto indices = Triangulate::Process(points);
+        auto vertices = m_renderer.CreateTriangleVertices(points, indices, m_color);
+        m_renderer.DrawPrimitive(GL_TRIANGLES, vertices, GetTransform().GetMatrix(), m_transformUniform);
     }
 
-    void DrawCircle(const Point &center, float radius, float thickness = 1.0f, int segments = 32)
+    void DrawCircle(const Point &center, float radius, float thickness = 1.0f, int segments = 32) override
     {
         if (radius <= 0 || segments < 3)
             return;
@@ -129,41 +146,35 @@ public:
         points.reserve(segments + 1);
 
         float step = 2 * M_PI / segments;
-
         for (int i = 0; i <= segments; i++)
         {
             float angle = i * step;
-            float x = center.x + radius * cos(angle);
-            float y = center.y + radius * sin(angle);
-            points.push_back(Point(x, y));
+            points.emplace_back(center.x + radius * cos(angle),
+                                center.y + radius * sin(angle));
         }
 
         DrawPolygon(points, thickness, true);
     }
 
-    void FillCircle(const Point &center, float radius, int segments = 32)
+    void FillCircle(const Point &center, float radius, int segments = 32) override
     {
         if (radius <= 0 || segments < 3)
             return;
 
-        float r, g, b, a;
-        GetColorFloats(r, g, b, a);
-
-        std::vector<Point> circlePoints;
+        std::vector<Point> points;
         float step = 2 * M_PI / segments;
 
         for (int i = 0; i < segments; i++)
         {
             float angle = i * step;
-            float x = center.x + radius * cos(angle);
-            float y = center.y + radius * sin(angle);
-            circlePoints.push_back(Point(x, y));
+            points.emplace_back(center.x + radius * cos(angle),
+                                center.y + radius * sin(angle));
         }
 
-        FillPolygon(circlePoints);
+        FillPolygon(points);
     }
 
-    void DrawRect(const Point &position, const Size &size, float thickness = 1.0f)
+    void DrawRect(const Point &position, const Size &size, float thickness = 1.0f) override
     {
         DrawPolygon({{position.x, position.y},
                      {position.x + size.width, position.y},
@@ -172,7 +183,7 @@ public:
                     thickness, true);
     }
 
-    void FillRect(const Point &position, const Size &size)
+    void FillRect(const Point &position, const Size &size) override
     {
         FillPolygon({{position.x, position.y},
                      {position.x + size.width, position.y},
@@ -186,133 +197,40 @@ public:
     }
 
 private:
-    unsigned m_width;
-    unsigned m_height;
     Color m_color;
-    GLuint m_shaderProgram;
     MouseController m_mouseController;
-    GLFWwindow *m_window;
+    ShaderProgram m_shaderProgram;
+    Renderer m_renderer;
+    glm::mat4 m_projectionMatrix;
+    GLint m_transformUniform;
+    GLint m_projectionUniform;
 
-    bool GladInit()
+    void UpdateProjectionMatrix()
     {
-        if (!glfwInit())
-        {
-            std::cerr << "Failed to initialize GLFW" << std::endl;
-            return false;
-        }
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        m_window = glfwCreateWindow(m_width, m_height, "OpenGL Project", NULL, NULL);
-        if (!m_window)
-        {
-            std::cerr << "Failed to create GLFW window" << std::endl;
-            glfwTerminate();
-            return false;
-        }
-
-        glfwMakeContextCurrent(m_window);
-        glfwSetFramebufferSizeCallback(
-            m_window, [](GLFWwindow *win, int width, int height)
-            { glViewport(0, 0, width, height); });
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
-            glfwTerminate();
-            return false;
-        }
-
-        if (!InitShaders())
-        {
-            return false;
-        }
-
-        glViewport(0, 0, m_width, m_height);
-        return true;
+        // Создаем ортографическую проекцию:
+        // left = 0, right = width (пиксельные координаты по X)
+        // bottom = height, top = 0 (верхний левый угол - начало координат)
+        m_projectionMatrix = glm::ortho(
+            0.0f, static_cast<float>(m_width),  // left, right
+            static_cast<float>(m_height), 0.0f, // bottom, top (перевернуто для верхнего левого угла)
+            -1.0f, 1.0f                         // near, far
+        );
     }
 
-    bool InitShaders()
+    bool Initialize()
     {
-        m_shaderProgram = ShaderLoader::LoadShader(
-            "./shaders/basic.vert",
-            "./shaders/basic.frag");
-
-        if (m_shaderProgram == 0)
-        {
-            std::cerr << "Failed to load shader program" << std::endl;
+        if (!Window::Initialize())
             return false;
-        }
+
+        // Подписываемся на изменение размера окна
+        glfwSetWindowUserPointer(m_window, this);
+        glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow *window, int width, int height)
+                                       {
+            Canvas* canvas = static_cast<Canvas*>(glfwGetWindowUserPointer(window));
+            if (canvas) {
+                canvas->Resize(width, height);
+            } });
 
         return true;
-    }
-
-    void SetupVAOAndVBO(GLuint &VAO, GLuint &VBO, const std::vector<float> &vertices)
-    {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STREAM_DRAW);
-
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-    }
-
-    void CleanupVAOAndVBO(GLuint VAO, GLuint VBO)
-    {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-    }
-
-    void DrawPrimitive(GLenum mode, const std::vector<float> &vertices, float thickness = 1.0f)
-    {
-        if (vertices.empty())
-            return;
-
-        GLuint VAO, VBO;
-        SetupVAOAndVBO(VAO, VBO, vertices);
-
-        if (mode == GL_LINES)
-        {
-            glLineWidth(thickness);
-        }
-
-        glDrawArrays(mode, 0, vertices.size() / VERTEX_COMPONENTS_COUNT);
-        CleanupVAOAndVBO(VAO, VBO);
-    }
-
-    void GetColorFloats(float &r, float &g, float &b, float &a) const
-    {
-        r = HexToFloat(m_color.r);
-        g = HexToFloat(m_color.g);
-        b = HexToFloat(m_color.b);
-        a = HexToFloat(m_color.a);
-    }
-
-    float HexToFloat(u_int8_t hex) const
-    {
-        return hex / 255.0f;
-    }
-
-    float NormalizeX(float x) const
-    {
-        return (x / m_width) * 2.0f - 1.0f;
-    }
-
-    float NormalizeY(float y) const
-    {
-        return 1.0f - (y / m_height) * 2.0f;
-    }
-
-    Point NormalizePoint(const Point &p) const
-    {
-        return Point(NormalizeX(p.x), NormalizeY(p.y));
     }
 };

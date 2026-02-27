@@ -22,4 +22,14 @@ public:
 	virtual void FillRect(const Point &position, const Size &size) = 0;
 	virtual void SetColor(Color color) = 0;
 	virtual MouseController &GetMouseController() = 0;
+
+	virtual void PushMatrix() = 0;
+	virtual void PopMatrix() = 0;
+	virtual void Translate(float x, float y) = 0;
+	virtual void Translate(const Point &p) = 0;
+	virtual void Rotate(float angleDegrees) = 0;
+	virtual void Scale(float scaleX, float scaleY) = 0;
+	virtual void Scale(float scale) = 0;
+	virtual void Scale(const Point &scale) = 0;
+	virtual void ResetTransform() = 0;
 };
