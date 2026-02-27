@@ -53,6 +53,9 @@ clean:
 run: $(BIN_DIR)/main
 	./$(BIN_DIR)/main
 
+nvrun: $(BIN_DIR)/main
+	__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./$(BIN_DIR)/main
+
 # Запуск тестов
 test: $(TEST_TARGETS)
 	@for test in $^; do \
