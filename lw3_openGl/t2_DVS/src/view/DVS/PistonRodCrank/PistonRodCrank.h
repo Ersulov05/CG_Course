@@ -19,9 +19,9 @@ public:
     {
     }
 
-    void Update()
+    void Update(float deltatime)
     {
-        m_rotate += 0.5;
+        m_rotate += 60 * deltatime;
         if (m_rotate > 720)
         {
             m_rotate -= 720;

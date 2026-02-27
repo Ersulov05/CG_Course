@@ -17,9 +17,9 @@ public:
     {
     }
 
-    void Update()
+    void Update(float deltatime)
     {
-        m_pistonRodCrank.Update();
+        m_pistonRodCrank.Update(deltatime);
         auto rotate = m_pistonRodCrank.GetRotate();
 
         if (rotate >= 650 && rotate <= 670)

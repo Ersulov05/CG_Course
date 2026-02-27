@@ -1,17 +1,3 @@
-// #pragma once
-// #include "../Common/Color.h"
-// #include "../Common/Point.h"
-// #include <glad/glad.h>
-// #include <GLFW/glfw3.h>
-// #include <iostream>
-// #include <functional>
-// #include <cmath>
-// #include "./MouseController.h"
-// #include "./ICanvas.h"
-// #include "./Triangulate.h"
-// #include "./ShaderLoader.h"
-// // #include "./TransformMatrix.h"
-
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -30,7 +16,7 @@
 class Canvas : public ICanvas, public Transformable, protected Window
 {
 public:
-    using UpdateCallback = std::function<void(ICanvas &)>;
+    using UpdateCallback = std::function<void(ICanvas &, float deltaTime)>;
 
     Canvas(unsigned width = 800, unsigned height = 600)
         : Window(width, height, "OpenGL Canvas"), m_color(0x0)
@@ -84,20 +70,20 @@ public:
 
         m_transformUniform = m_shaderProgram.GetUniformLocation("uTransform");
         m_projectionUniform = m_shaderProgram.GetUniformLocation("uProjection");
+        m_lastFrameTime = glfwGetTime();
 
         while (!ShouldClose())
         {
+            double currentTime = glfwGetTime();
+            float deltaTime = static_cast<float>(currentTime - m_lastFrameTime);
+            m_lastFrameTime = currentTime;
+
             m_mouseController.ProcessEvents(m_window);
 
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             m_shaderProgram.Use();
-
-            if (m_transformUniform != -1)
-            {
-                glUniformMatrix4fv(m_transformUniform, 1, GL_FALSE, GetTransform().GetMatrix());
-            }
 
             if (m_projectionUniform != -1)
             {
@@ -106,7 +92,7 @@ public:
 
             if (updateCallback)
             {
-                updateCallback(*this);
+                updateCallback(*this, deltaTime);
             }
 
             SwapBuffers();
@@ -122,7 +108,6 @@ public:
     void DrawPolygon(const std::vector<Point> &points, float thickness = 1.0f, bool closed = false) override
     {
         auto vertices = m_renderer.CreateLineVertices(points, m_color, closed);
-        // m_renderer.DrawPrimitive(GL_LINES, vertices, thickness);
 
         m_renderer.DrawPrimitive(GL_LINES, vertices, GetTransform().GetMatrix(), m_transformUniform, thickness);
     }
@@ -204,12 +189,10 @@ private:
     glm::mat4 m_projectionMatrix;
     GLint m_transformUniform;
     GLint m_projectionUniform;
+    double m_lastFrameTime;
 
     void UpdateProjectionMatrix()
     {
-        // Создаем ортографическую проекцию:
-        // left = 0, right = width (пиксельные координаты по X)
-        // bottom = height, top = 0 (верхний левый угол - начало координат)
         m_projectionMatrix = glm::ortho(
             0.0f, static_cast<float>(m_width),  // left, right
             static_cast<float>(m_height), 0.0f, // bottom, top (перевернуто для верхнего левого угла)
@@ -222,7 +205,6 @@ private:
         if (!Window::Initialize())
             return false;
 
-        // Подписываемся на изменение размера окна
         glfwSetWindowUserPointer(m_window, this);
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow *window, int width, int height)
                                        {
