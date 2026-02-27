@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Common/Color.h"
 #include "../Common/Point.h"
+#include "./DynamicBufferManager.h"
 
 const int VERTEX_COMPONENTS_COUNT = 6;
 
@@ -15,33 +16,29 @@ struct Vertex
 class Renderer
 {
 public:
-    Renderer() = default;
+    Renderer(GLint transformUniformLocation = -1)
+        : m_bufferManager(transformUniformLocation, VERTEX_COMPONENTS_COUNT){};
+
+    void BeginDraw()
+    {
+        m_bufferManager.BeginDraw();
+    }
+
+    void EndDraw()
+    {
+        m_bufferManager.EndDraw();
+    }
 
     void DrawPrimitive(
         GLenum mode,
         const std::vector<float> &vertices,
-        const float *transformMatrix,
-        GLint transformUniformLocation,
+        const TransformMatrix &transform,
         float thickness = 1.0f)
     {
         if (vertices.empty())
             return;
 
-        if (transformUniformLocation != -1 && transformMatrix != nullptr)
-        {
-            glUniformMatrix4fv(transformUniformLocation, 1, GL_FALSE, transformMatrix);
-        }
-
-        GLuint VAO, VBO;
-        SetupBuffers(VAO, VBO, vertices);
-
-        if (mode == GL_LINES)
-        {
-            glLineWidth(thickness);
-        }
-
-        glDrawArrays(mode, 0, vertices.size() / VERTEX_COMPONENTS_COUNT);
-        CleanupBuffers(VAO, VBO);
+        m_bufferManager.Draw(mode, vertices, transform, thickness);
     }
 
     std::vector<float> CreateLineVertices(
@@ -83,29 +80,7 @@ public:
     }
 
 private:
-    void SetupBuffers(GLuint &VAO, GLuint &VBO, const std::vector<float> &vertices)
-    {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STREAM_DRAW);
-
-        // Position attribute
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-        glEnableVertexAttribArray(0);
-
-        // Color attribute
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-    }
-
-    void CleanupBuffers(GLuint VAO, GLuint VBO)
-    {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-    }
+    DynamicBufferManager m_bufferManager;
 
     void AddLineSegment(std::vector<float> &vertices, const Point &p0, const Point &p1, const Color &color)
     {

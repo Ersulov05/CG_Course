@@ -14,36 +14,17 @@ int main()
     Canvas canvas(WIDTH, HEIGHT);
     DVS dvs;
 
-    int frameCount = 0;
-    auto lastTime = std::chrono::high_resolution_clock::now();
-
     canvas.RunWindow(
-        [&dvs, &frameCount, &lastTime](ICanvas &canvas)
+        [&dvs](ICanvas &canvas, float deltatime)
         {
             canvas.PushMatrix();
             canvas.Translate(400, 700);
             canvas.Scale(2);
 
-            dvs.Update();
-            // dvs.Draw(canvas);
-
-            for (int i = 0; i < 100; i++)
-            { // Искусственная нагрузка
-                // dvs.Update();
-                dvs.Draw(canvas);
-            }
+            dvs.Update(deltatime);
+            dvs.Draw(canvas);
 
             canvas.PopMatrix();
-
-            frameCount++;
-            auto now = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - lastTime);
-            if (duration.count() >= 1)
-            {
-                std::cout << "FPS: " << frameCount << std::endl;
-                frameCount = 0;
-                lastTime = now;
-            }
         });
 
     return 0;

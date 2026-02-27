@@ -70,6 +70,7 @@ public:
 
         m_transformUniform = m_shaderProgram.GetUniformLocation("uTransform");
         m_projectionUniform = m_shaderProgram.GetUniformLocation("uProjection");
+        m_renderer = Renderer(m_transformUniform);
         m_lastFrameTime = glfwGetTime();
 
         while (!ShouldClose())
@@ -109,7 +110,7 @@ public:
     {
         auto vertices = m_renderer.CreateLineVertices(points, m_color, closed);
 
-        m_renderer.DrawPrimitive(GL_LINES, vertices, GetTransform().GetMatrix(), m_transformUniform, thickness);
+        m_renderer.DrawPrimitive(GL_LINES, vertices, GetTransform(), thickness);
     }
 
     void FillPolygon(const std::vector<Point> &points) override
@@ -119,7 +120,7 @@ public:
 
         auto indices = Triangulate::Process(points);
         auto vertices = m_renderer.CreateTriangleVertices(points, indices, m_color);
-        m_renderer.DrawPrimitive(GL_TRIANGLES, vertices, GetTransform().GetMatrix(), m_transformUniform);
+        m_renderer.DrawPrimitive(GL_TRIANGLES, vertices, GetTransform());
     }
 
     void DrawCircle(const Point &center, float radius, float thickness = 1.0f, int segments = 32) override
