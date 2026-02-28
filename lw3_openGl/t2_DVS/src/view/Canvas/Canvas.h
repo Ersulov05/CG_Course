@@ -118,8 +118,16 @@ public:
         if (points.size() < 3)
             return;
 
-        auto indices = Triangulate::Process(points);
-        auto vertices = m_renderer.CreateTriangleVertices(points, indices, m_color);
+        size_t hash = HashPoints(points);
+
+        auto it = m_triangulationCache.find(hash);
+        if (it == m_triangulationCache.end())
+        {
+            auto indices = Triangulate::Process(points);
+            it = m_triangulationCache.insert({hash, std::move(indices)}).first;
+        }
+
+        auto vertices = m_renderer.CreateTriangleVertices(points, it->second, m_color);
         m_renderer.DrawPrimitive(GL_TRIANGLES, vertices, GetTransform());
     }
 
@@ -192,6 +200,9 @@ private:
     GLint m_projectionUniform;
     double m_lastFrameTime;
 
+    using TriangulationCache = std::vector<unsigned int>;
+    std::unordered_map<size_t, TriangulationCache> m_triangulationCache;
+
     void UpdateProjectionMatrix()
     {
         m_projectionMatrix = glm::ortho(
@@ -215,5 +226,16 @@ private:
             } });
 
         return true;
+    }
+
+    size_t HashPoints(const std::vector<Point> &points)
+    {
+        size_t hash = points.size();
+        for (const auto &p : points)
+        {
+            hash = hash * 31 + std::hash<float>{}(p.x);
+            hash = hash * 31 + std::hash<float>{}(p.y);
+        }
+        return hash;
     }
 };
