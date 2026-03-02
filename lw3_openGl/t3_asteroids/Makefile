@@ -3,6 +3,10 @@ CXX := g++
 CXXFLAGS := -std=c++20 -Iinclude -Ilib/include -Wno-unused-parameter -Wno-narrowing
 LDFLAGS := -lglfw -lGL
 
+CXXFLAGS += $(shell pkg-config --cflags freetype2)
+LDFLAGS += $(shell pkg-config --libs freetype2)
+
+
 # Директории
 SRC_DIR := src
 TEST_DIR := Unit

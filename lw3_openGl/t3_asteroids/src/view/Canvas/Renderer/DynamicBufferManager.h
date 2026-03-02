@@ -1,7 +1,7 @@
 #pragma once
 #include <glad/glad.h>
 #include <memory>
-#include "./TransformMatrix.h"
+#include "../TransformMatrix.h"
 
 class DynamicBufferManager
 {

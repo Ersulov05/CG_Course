@@ -15,8 +15,8 @@ public:
     float GetRotation() const override { return 0.0f; }
     float GetRadius() const override { return m_radius; }
 
-    void SetPosition(const Point &pos) { m_position = pos; }
-    void SetRadius(float r) { m_radius = r; }
+    void SetPosition(const Point &position) { m_position = position; }
+    void SetRadius(float radius) { m_radius = radius; }
 
 private:
     Point m_position;

@@ -167,7 +167,7 @@ public:
     }
 
 private:
-    Point m_position;
+    Point m_position = Point(0, 0);
     float m_rotation = 0;
     float m_speed = 0;
     bool m_isEngineOn = false;

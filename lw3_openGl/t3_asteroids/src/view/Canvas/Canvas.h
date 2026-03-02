@@ -4,15 +4,16 @@
 #include "../../common/Color.h"
 #include "../../common/Point.h"
 #include "./ICanvas.h"
-#include "./MouseController.h"
+#include "./Controller/MouseController.h"
+#include "./Controller/KeyboardController.h"
 #include "./Triangulate.h"
 #include "./Transformable.h"
 #include "./Window.h"
 #include "./ShaderProgram.h"
-#include "./Renderer.h"
+#include "./Renderer/Renderer.h"
+#include "./Renderer/TextRenderer.h"
 #include <functional>
 #include <cmath>
-#include "./KeyboardController.h"
 
 class Canvas : public ICanvas, public Transformable, protected Window
 {
@@ -195,6 +196,13 @@ public:
                      {position.x, position.y + size.height}});
     }
 
+    void DrawText(const std::string &text, const Point &pos, float size)
+    {
+        m_shaderProgram.SetUniformMatrix4fv("uTransform", m_currentTransform.GetMatrix());
+
+        m_textRenderer.RenderText(text, pos.x, pos.y, size, m_color, m_shaderProgram.GetId());
+    }
+
     MouseController &GetMouseController()
     {
         return m_mouseController;
@@ -211,6 +219,7 @@ private:
     KeyboardController m_keyboardController;
     ShaderProgram m_shaderProgram;
     Renderer m_renderer;
+    TextRenderer m_textRenderer;
     glm::mat4 m_projectionMatrix;
     GLint m_transformUniform;
     GLint m_projectionUniform;
@@ -240,6 +249,11 @@ private:
             if (canvas) {
                 canvas->Resize(width, height);
             } });
+
+        if (!m_textRenderer.Initialize("./fonts/arial.ttf", 48))
+        {
+            std::cerr << "Warning: Failed to initialize text renderer" << std::endl;
+        }
 
         return true;
     }

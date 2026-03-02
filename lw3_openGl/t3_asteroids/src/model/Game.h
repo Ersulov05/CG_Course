@@ -3,11 +3,11 @@
 #include "./AsteroidManager.h"
 #include "./Collision/CollisionSystem.h"
 
+const int BASE_SCORE = 50;
+
 class Game
 {
 public:
-    const int SCORE = 100;
-
     Game()
     {
         Reset();
@@ -38,9 +38,14 @@ public:
         return m_spaceship;
     }
 
-    void AddScore()
+    void AddScore(int score = BASE_SCORE)
     {
-        m_score += SCORE;
+        m_score += score;
+    }
+
+    int GetScore()
+    {
+        return m_score;
     }
 
 private:
@@ -65,7 +70,7 @@ private:
         for (const auto &asteroidPtr : collidedAsteroids)
         {
             m_spaceship.TakeDamage();
-            AddScore();
+            AddScore(asteroidPtr->GetSize() * BASE_SCORE);
             m_asteroidManager.SplitAsteroid(asteroidPtr);
         }
     }
@@ -88,7 +93,7 @@ private:
 
         for (const auto &asteroidPtr : collidedAsteroids)
         {
-            AddScore();
+            AddScore(asteroidPtr->GetSize() * BASE_SCORE);
             m_asteroidManager.SplitAsteroid(asteroidPtr);
         }
     }

@@ -16,7 +16,7 @@ public:
     float GetWidth() const override { return m_width; }
     float GetHeight() const override { return m_height; }
 
-    void SetPosition(const Point &pos) { m_position = pos; }
+    void SetPosition(const Point &position) { m_position = position; }
     void SetRotation(float rotation) { m_rotation = rotation; }
 
 private:

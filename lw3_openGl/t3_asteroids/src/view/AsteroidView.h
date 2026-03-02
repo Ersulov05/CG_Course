@@ -23,6 +23,9 @@ public:
         canvas.SetColor(Color(100, 85, 70, 200));
         canvas.DrawPolygon(m_points, 2.0f);
 
+        // canvas.SetColor(0xFFFFFFFF);
+        // canvas.DrawCircle({0, 0}, m_asteroidModel->GetCollision().GetRadius());
+
         canvas.PopMatrix();
     }
 
@@ -33,30 +36,13 @@ private:
 
     void GenerateAsteroidForm()
     {
-        // float radius = m_asteroidModel->GetRadius();
-        // m_points.clear();
-        // m_points.reserve(SEGMENTS);
-
-        // static std::random_device rd;
-        // static std::mt19937 gen(rd());
-        // static std::uniform_real_distribution<float> distNoise(0.8f, 1.2f);
-
-        // for (int i = 0; i < SEGMENTS; i++)
-        // {
-        //     float angle = (2.0f * M_PI * i) / SEGMENTS;
-        //     float noise = 0.9f + 0.1f * sin(angle * 4.0f) + 0.1f * sin(angle * 7.0f);
-        //     float r = radius * noise;
-
-        //     m_points.emplace_back(r * cos(angle), r * sin(angle));
-        // }
-
         float radius = m_asteroidModel->GetRadius();
         m_points.clear();
         m_points.reserve(SEGMENTS);
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> distPhase(0.0f, 2.0f * M_PI);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<float> distPhase(0.0f, 2.0f * M_PI);
 
         float phase1 = distPhase(gen);
         float phase2 = distPhase(gen);

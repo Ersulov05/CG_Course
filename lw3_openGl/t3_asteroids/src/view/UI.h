@@ -13,6 +13,8 @@ public:
     {
         canvas.PushMatrix();
         canvas.ResetTransform();
+        canvas.SetColor(0xFFFFFFFF);
+        canvas.DrawText("Score:  " + std::to_string(m_game.GetScore()), {10, 24}, 24);
         DrawSpeed(canvas);
         DrawHealth(canvas);
         canvas.PopMatrix();

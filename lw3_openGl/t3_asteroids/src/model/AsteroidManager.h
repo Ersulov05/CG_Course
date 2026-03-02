@@ -3,6 +3,8 @@
 #include <vector>
 #include <cmath>
 #include <random>
+#include <unordered_map>
+#include <functional>
 
 class AsteroidManager
 {

@@ -3,8 +3,8 @@
 #include "../../common/Point.h"
 #include "../../common/Color.h"
 #include "../../common/Size.h"
-#include "./MouseController.h"
-#include "./KeyboardController.h"
+#include "./Controller/MouseController.h"
+#include "./Controller/KeyboardController.h"
 #include <iomanip>
 #include <vector>
 
@@ -14,6 +14,7 @@ public:
 	virtual ~ICanvas() = default;
 	virtual unsigned GetWidth() const = 0;
 	virtual unsigned GetHeight() const = 0;
+	virtual void DrawText(const std::string &text, const Point &pos, float size) = 0;
 	virtual void DrawLine(const Point &p0, const Point &p1, float thickness = 1.0f) = 0;
 	virtual void DrawPolygon(const std::vector<Point> &points, float thickness = 1.0f, bool closed = true) = 0;
 	virtual void FillPolygon(const std::vector<Point> &points) = 0;

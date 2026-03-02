@@ -1,8 +1,8 @@
 #pragma once
 #include <glad/glad.h>
 #include <vector>
-#include "../../common/Color.h"
-#include "../../common/Point.h"
+#include "../../../common/Color.h"
+#include "../../../common/Point.h"
 #include "./DynamicBufferManager.h"
 
 const int VERTEX_COMPONENTS_COUNT = 6;
