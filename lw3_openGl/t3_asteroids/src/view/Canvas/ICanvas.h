@@ -14,6 +14,7 @@ public:
 	virtual ~ICanvas() = default;
 	virtual unsigned GetWidth() const = 0;
 	virtual unsigned GetHeight() const = 0;
+	virtual Size GetTextBoundSize(const std::string &text, float size) = 0;
 	virtual void DrawText(const std::string &text, const Point &pos, float size) = 0;
 	virtual void DrawLine(const Point &p0, const Point &p1, float thickness = 1.0f) = 0;
 	virtual void DrawPolygon(const std::vector<Point> &points, float thickness = 1.0f, bool closed = true) = 0;

@@ -44,12 +44,8 @@ private:
 
         for (int i = 0; i < STAR_COUNT; ++i)
         {
-            float brightness = distBrightness(gen);
-            Color starColor = Color(
-                static_cast<uint8_t>(255 * brightness),
-                static_cast<uint8_t>(255 * brightness),
-                static_cast<uint8_t>(255 * brightness),
-                255);
+            Color starColor = Color(0xFFFFFFFF);
+            starColor.a = distBrightness(gen);
 
             Star star;
             star.position.x = distPos(gen);

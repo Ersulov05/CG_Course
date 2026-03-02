@@ -21,7 +21,7 @@ public:
     GameView(Game &game)
         : m_canvas(WIDTH, HEIGHT),
           m_gameModel(game),
-          m_ui(game),
+          m_ui(game, m_canvas),
           m_spaceship(m_gameModel.GetSpaceshipModel()),
           m_asteroids(m_gameModel.GetAsteroidManager())
     {
@@ -45,7 +45,6 @@ public:
 private:
     Game &m_gameModel;
     UI m_ui;
-
     Canvas m_canvas;
     SpaceshipView m_spaceship;
     StarsView m_stars;

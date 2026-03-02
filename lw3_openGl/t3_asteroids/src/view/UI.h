@@ -1,12 +1,20 @@
 #pragma once
 #include "./Canvas/ICanvas.h"
 #include "../model/Game.h"
+#include "./EndGamePopup/EndGamePopup.h"
 
 class UI
 {
 public:
-    UI(Game &game) : m_game(game)
+    UI(Game &game, ICanvas &canvas)
+        : m_game(game), m_endGamePopup(canvas, game)
     {
+        game.OnEndGameSubscribe(
+            this,
+            [this]()
+            {
+                m_endGamePopup.Open();
+            });
     }
 
     void Draw(ICanvas &canvas)
@@ -17,11 +25,13 @@ public:
         canvas.DrawText("Score:  " + std::to_string(m_game.GetScore()), {10, 24}, 24);
         DrawSpeed(canvas);
         DrawHealth(canvas);
+        m_endGamePopup.Draw();
         canvas.PopMatrix();
-    }
+        }
 
 private:
     Game &m_game;
+    EndGamePopup m_endGamePopup;
 
     void DrawSpeed(ICanvas &canvas)
     {

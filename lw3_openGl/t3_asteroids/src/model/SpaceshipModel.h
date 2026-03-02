@@ -18,7 +18,7 @@ public:
     const float RECHARGE_TIME = 0.1;
     const float BULLET_SPEED = 400;
     const float BULLET_LIFETIME = 20;
-    const int MAX_HEALTH = 5;
+    const int MAX_HEALTH = 3;
     const float MAX_SPEED = 350;
     const float ROTATE_SPEED = 180;
     const float BOOST = 250;

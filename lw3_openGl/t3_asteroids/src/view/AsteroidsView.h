@@ -36,7 +36,7 @@ private:
     {
         m_asteroidManager.OnResetSubscribe(
             this,
-            [this](AsteroidManager &manager)
+            [this]()
             {
                 InitAsteroids();
             });

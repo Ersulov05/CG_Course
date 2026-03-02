@@ -2,10 +2,11 @@
 #include "./SpaceshipModel.h"
 #include "./AsteroidManager.h"
 #include "./Collision/CollisionSystem.h"
+#include "./GameObservable.h"
 
 const int BASE_SCORE = 50;
 
-class Game
+class Game : public GameObservable
 {
 public:
     Game()
@@ -17,12 +18,22 @@ public:
     {
         m_spaceship.Reset();
         m_asteroidManager.Reset(m_spaceship.GetPosition());
+        m_isEndGame = false;
+        m_score = 0;
     }
 
     void Update(float deltatime)
     {
+        if (m_isEndGame)
+            return;
+
         m_asteroidManager.Update(deltatime, m_spaceship.GetPosition());
         m_spaceship.Update(deltatime);
+        if (m_spaceship.GetHealth() == 0)
+        {
+            m_isEndGame = true;
+            NotifyEndGameCallbacks();
+        }
 
         CheckCollisionBulletsWithAsteroids();
         CheckCollisionSpaceshipWithAsteroids();
@@ -43,7 +54,7 @@ public:
         m_score += score;
     }
 
-    int GetScore()
+    int GetScore() const
     {
         return m_score;
     }
@@ -52,15 +63,14 @@ private:
     SpaceshipModel m_spaceship;
     AsteroidManager m_asteroidManager;
     int m_score = 0;
+    bool m_isEndGame = false;
 
     void CheckCollisionSpaceshipWithAsteroids()
     {
-        // std::cout << m_spaceship.GetCollision().GetPosition().x << std::endl;
         std::vector<std::shared_ptr<AsteroidModel>> collidedAsteroids;
 
         for (const auto &asteroidPtr : m_asteroidManager.GetAsteroids())
         {
-            // std::cout << asteroidPtr->GetCollision().GetPosition().x << std::endl;
             if (CollisionSystem::CheckCollision(asteroidPtr->GetCollision(), m_spaceship.GetCollision()))
             {
                 collidedAsteroids.push_back(asteroidPtr);

@@ -1,6 +1,7 @@
 #pragma once
 #include "./ICollisionObject.h"
 #include "../../common/Point.h"
+#include "../../common/TransformMatrix.h"
 
 class CollisionSystem
 {
@@ -44,35 +45,31 @@ private:
 
     static bool OrientedRectCollision(const ICollisionObject &a, const ICollisionObject &b)
     {
-        std::vector<Point> verticesA = GetRectVertices(a);
-        std::vector<Point> verticesB = GetRectVertices(b);
+        // Получаем вершины прямоугольников
+        std::vector<Point> vertsA = GetRectVertices(a);
+        std::vector<Point> vertsB = GetRectVertices(b);
 
-        std::vector<Point> axes;
+        // Проверяем 4 оси (2 от каждого прямоугольника)
+        std::vector<Point> axes = {
+            GetAxis(vertsA[0], vertsA[1]), // ось перпендикулярная первому ребру A
+            GetAxis(vertsA[1], vertsA[2]), // ось перпендикулярная второму ребру A
+            GetAxis(vertsB[0], vertsB[1]), // ось перпендикулярная первому ребру B
+            GetAxis(vertsB[1], vertsB[2])  // ось перпендикулярная второму ребру B
+        };
 
-        for (size_t i = 0; i < verticesA.size(); i++)
-        {
-            Point edge = verticesA[(i + 1) % verticesA.size()] - verticesA[i];
-            Point axis = {-edge.y, edge.x};
-            axes.push_back(Normalize(axis));
-        }
-
-        for (size_t i = 0; i < verticesB.size(); i++)
-        {
-            Point edge = verticesB[(i + 1) % verticesB.size()] - verticesB[i];
-            Point axis = {-edge.y, edge.x};
-            axes.push_back(Normalize(axis));
-        }
-
+        // Проверяем каждую ось
         for (const auto &axis : axes)
         {
             float minA, maxA, minB, maxB;
-            ProjectPolygon(verticesA, axis, minA, maxA);
-            ProjectPolygon(verticesB, axis, minB, maxB);
+            GetProjection(vertsA, axis, minA, maxA);
+            GetProjection(vertsB, axis, minB, maxB);
 
+            // Если проекции не пересекаются - столкновения нет
             if (maxA < minB || maxB < minA)
                 return false;
         }
 
+        // Если все оси показали пересечение - объекты столкнулись
         return true;
     }
 
@@ -112,23 +109,22 @@ private:
 
     static std::vector<Point> GetRectVertices(const ICollisionObject &rect)
     {
-        std::vector<Point> vertices(4);
         float w = rect.GetWidth() / 2;
         float h = rect.GetHeight() / 2;
-        float angle = rect.GetRotation() * M_PI / 180.0f;
-        Point center = rect.GetPosition();
 
-        Point corners[4] = {
+        std::vector<Point> vertices = {
             {-w, -h},
             {w, -h},
             {w, h},
             {-w, h}};
 
+        TransformMatrix matrix;
+        matrix.Translate(rect.GetPosition());
+        matrix.Rotate(rect.GetRotation());
+
         for (int i = 0; i < 4; i++)
         {
-            float x = corners[i].x * cos(angle) - corners[i].y * sin(angle);
-            float y = corners[i].x * sin(angle) + corners[i].y * cos(angle);
-            vertices[i] = {center.x + x, center.y + y};
+            vertices[i] = matrix.Apply(vertices[i]);
         }
 
         return vertices;
@@ -147,11 +143,18 @@ private:
         return v;
     }
 
-    static void ProjectPolygon(const std::vector<Point> &vertices, const Point &axis,
-                               float &min, float &max)
+    static Point GetAxis(const Point &p1, const Point &p2)
     {
-        min = Dot(vertices[0], axis);
-        max = min;
+        Point edge = p2 - p1;
+        Point axis = {-edge.y, edge.x};
+
+        return Normalize(axis);
+    }
+
+    static void GetProjection(const std::vector<Point> &vertices, const Point &axis,
+                              float &min, float &max)
+    {
+        min = max = Dot(vertices[0], axis);
 
         for (size_t i = 1; i < vertices.size(); i++)
         {

@@ -6,8 +6,6 @@
 class BulletModel
 {
 public:
-    BulletModel() : m_collision(RectCollision(Point{0, 0}, 4, 8)) {}
-
     void Update(float deltatime)
     {
         float radAngle = ToRadians(m_rotation - 90);
@@ -23,6 +21,7 @@ public:
     void SetPosition(const Point &position)
     {
         m_position = position;
+        m_collision.SetPosition(m_position);
     }
 
     void SetRotation(float rotation)
@@ -67,9 +66,9 @@ public:
     }
 
 private:
-    Point m_position;
+    Point m_position = {0, 0};
     float m_rotation;
     float m_speed;
     float m_lifeTime;
-    RectCollision m_collision;
+    RectCollision m_collision = RectCollision(Point{0, 0}, 4, 8);
 };

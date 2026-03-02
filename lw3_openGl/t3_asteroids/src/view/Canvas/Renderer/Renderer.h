@@ -24,6 +24,11 @@ public:
         m_bufferManager.BeginDraw();
     }
 
+    void Flush()
+    {
+        m_bufferManager.FlushBuffers();
+    }
+
     void EndDraw()
     {
         m_bufferManager.EndDraw();

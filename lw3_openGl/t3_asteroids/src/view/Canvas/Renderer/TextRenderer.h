@@ -12,6 +12,7 @@
 #include FT_FREETYPE_H
 #include "../../../common/Point.h"
 #include "../../../common/Color.h"
+#include "../../../common/Size.h"
 
 #include "./FontLoader.h"
 
@@ -54,6 +55,24 @@ public:
 
         DisableTexture(shaderProgram);
         RestoreOpenGLState();
+    }
+
+    Size GetTextBoundSize(const std::string &text, float size)
+    {
+        const float scale = size / m_fontSize;
+        Size boundSize;
+        for (char c : text)
+        {
+            auto it = m_characters.find(c);
+            if (it != m_characters.end())
+            {
+                boundSize.width += (it->second.advance >> 6) * scale;
+                float height = it->second.size.y * scale;
+                if (height > boundSize.height)
+                    boundSize.height = height;
+            }
+        }
+        return boundSize;
     }
 
 private:

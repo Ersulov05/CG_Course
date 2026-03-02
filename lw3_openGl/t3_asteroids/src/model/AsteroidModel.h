@@ -4,24 +4,13 @@
 #include "./Collision/CircleCollision.h"
 #include <memory>
 #include "../common/utils.h"
+#include <algorithm>
 
 const float BASE_RADIUS = 12;
 
 class AsteroidModel
 {
 public:
-    AsteroidModel() : m_collision() {}
-
-    AsteroidModel(const Point &position, float speed, float flightAngle, float rotate, unsigned size = 2)
-        : m_position(position),
-          m_speed(speed),
-          m_flightAngle(flightAngle),
-          m_rotate(rotate),
-          m_size(size),
-          m_collision(CircleCollision(position, BASE_RADIUS * m_size))
-    {
-    }
-
     void SetPosition(const Point &pos) { m_position = pos; }
     Point GetPosition() const { return m_position; }
 
@@ -32,7 +21,10 @@ public:
     }
     int GetSize() const { return m_size; }
 
-    void SetSpeed(float speed) { m_speed = speed; }
+    void SetSpeed(float speed)
+    {
+        m_speed = std::max(speed, MIN_SPEED);
+    }
     float GetSpeed() const { return m_speed; }
 
     void SetFlightAngle(float angle) { m_flightAngle = angle; }
@@ -66,11 +58,12 @@ public:
     }
 
 private:
-    Point m_position;
+    Point m_position = {0, 0};
     float m_rotation = 0;
     float m_speed;
     float m_flightAngle;
     float m_rotate;
     unsigned m_size;
     CircleCollision m_collision;
+    static constexpr float MIN_SPEED = 30;
 };

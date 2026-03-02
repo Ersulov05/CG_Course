@@ -23,9 +23,6 @@ public:
         canvas.SetColor(Color(100, 85, 70, 200));
         canvas.DrawPolygon(m_points, 2.0f);
 
-        // canvas.SetColor(0xFFFFFFFF);
-        // canvas.DrawCircle({0, 0}, m_asteroidModel->GetCollision().GetRadius());
-
         canvas.PopMatrix();
     }
 
@@ -51,7 +48,7 @@ private:
         {
             float angle = (2.0f * M_PI * i) / SEGMENTS;
 
-            float noise = 0.8f +
+            float noise = 0.85f +
                           0.1 * sin(angle * 4.0f + phase1) +
                           0.1 * sin(angle * 7.0f + phase2);
 

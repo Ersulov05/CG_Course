@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "../../common/Color.h"
 #include "../../common/Point.h"
+#include "../../common/Size.h"
 #include "./ICanvas.h"
 #include "./Controller/MouseController.h"
 #include "./Controller/KeyboardController.h"
@@ -198,9 +199,15 @@ public:
 
     void DrawText(const std::string &text, const Point &pos, float size)
     {
+        m_renderer.Flush();
         m_shaderProgram.SetUniformMatrix4fv("uTransform", m_currentTransform.GetMatrix());
 
         m_textRenderer.RenderText(text, pos.x, pos.y, size, m_color, m_shaderProgram.GetId());
+    }
+
+    Size GetTextBoundSize(const std::string &text, float size)
+    {
+        return m_textRenderer.GetTextBoundSize(text, size);
     }
 
     MouseController &GetMouseController()

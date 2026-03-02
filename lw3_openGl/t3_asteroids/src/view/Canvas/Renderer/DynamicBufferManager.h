@@ -1,7 +1,7 @@
 #pragma once
 #include <glad/glad.h>
 #include <memory>
-#include "../TransformMatrix.h"
+#include "../../../common/TransformMatrix.h"
 
 class DynamicBufferManager
 {
@@ -72,6 +72,30 @@ public:
         m_gpuBuffers.vertexCount = 0;
     }
 
+    void FlushBuffers()
+    {
+        if (m_gpuBuffers.vertexCount == 0)
+        {
+            return;
+        }
+
+        glBindVertexArray(m_gpuBuffers.VAO);
+
+        if (m_transformUniformLocation != -1)
+        {
+            glUniformMatrix4fv(m_transformUniformLocation, 1, GL_FALSE, m_gpuBuffers.transform.GetMatrix());
+        }
+
+        if (m_gpuBuffers.mode == GL_LINES)
+        {
+            glLineWidth(m_gpuBuffers.thickness);
+        }
+
+        glDrawArrays(m_gpuBuffers.mode, 0, m_gpuBuffers.vertexCount);
+
+        m_gpuBuffers.vertexCount = 0;
+    }
+
 private:
     DynamicBuffers m_gpuBuffers;
     GLint m_transformUniformLocation;
@@ -96,30 +120,6 @@ private:
                         vertices.data());
 
         m_gpuBuffers.vertexCount += vertexCount;
-    }
-
-    void FlushBuffers()
-    {
-        if (m_gpuBuffers.vertexCount == 0)
-        {
-            return;
-        }
-
-        glBindVertexArray(m_gpuBuffers.VAO);
-
-        if (m_transformUniformLocation != -1)
-        {
-            glUniformMatrix4fv(m_transformUniformLocation, 1, GL_FALSE, m_gpuBuffers.transform.GetMatrix());
-        }
-
-        if (m_gpuBuffers.mode == GL_LINES)
-        {
-            glLineWidth(m_gpuBuffers.thickness);
-        }
-
-        glDrawArrays(m_gpuBuffers.mode, 0, m_gpuBuffers.vertexCount);
-
-        m_gpuBuffers.vertexCount = 0;
     }
 
     void EnsureCapacity(size_t requiredVertices)
