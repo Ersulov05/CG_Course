@@ -4,16 +4,14 @@ in vec2 TexCoord;
 
 out vec4 FragColor;
 
-uniform sampler2D uTexture;  // Текстура для текста
-uniform bool uUseTexture = false;     // Флаг: использовать текстуру или цвет
+uniform sampler2D uTexture;
+uniform bool uUseTexture = false;
 
 void main() {
     if (uUseTexture) {
-        // Для текста: альфа из текстуры, цвет из vertexColor
         float alpha = texture(uTexture, TexCoord).r;
         FragColor = vec4(vertexColor.rgb, vertexColor.a * alpha);
     } else {
-        // Для обычной графики
         FragColor = vertexColor;
     }
 }
