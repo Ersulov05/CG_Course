@@ -90,12 +90,13 @@ public:
             {
                 glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
             }
-
+            m_renderer.BeginDraw();
             if (updateCallback)
             {
                 updateCallback(*this, deltaTime);
             }
 
+            m_renderer.EndDraw();
             SwapBuffers();
             PollEvents();
         }
