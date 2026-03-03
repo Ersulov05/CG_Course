@@ -93,7 +93,7 @@ private:
             if (c == '\n')
             {
                 x = originalX;
-                y += 48.0f * scale;
+                y += size;
                 continue;
             }
 
