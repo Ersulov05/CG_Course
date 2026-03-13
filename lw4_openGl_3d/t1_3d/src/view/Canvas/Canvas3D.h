@@ -16,20 +16,17 @@
 #include "./Shader/BasicShader.h"
 #include "./Transform.h"
 
+#include "./Controller/KeyboardController.h"
+#include "./OrbitCamera3D.h"
+
 class Canvas3D : public ICanvas3D, protected Window
 {
 public:
     Canvas3D(unsigned width = 800, unsigned height = 600)
         : Window(width, height, "OpenGL Canvas")
     {
-        m_view = glm::lookAt(
-            glm::vec3(0, 0, 0), // позиция камеры
-            glm::vec3(0, 0, 1), // точка, куда смотрим
-            glm::vec3(0, 1, 0)  // направление "вверх"
-        );
-
-        m_projection = glm::mat4(1.0f);
-        UpdateProjectionMatrix();
+        float aspect = (float)width / (float)height;
+        m_camera.SetPerspective(70, aspect);
     }
 
     unsigned GetWidth() const override
@@ -47,7 +44,6 @@ public:
         m_width = width;
         m_height = height;
         glViewport(0, 0, width, height);
-        UpdateProjectionMatrix();
     }
 
     void Run(UpdateCallback updateCallback) override
@@ -55,19 +51,37 @@ public:
         if (!Initialize())
             return;
 
+        m_renderer.InitOIT(m_width, m_height);
         m_lastFrameTime = glfwGetTime();
+        m_keyboardController.Initialize(m_window);
+
+        GLuint tempTexture;
+        glGenTextures(1, &tempTexture);
+        glBindTexture(GL_TEXTURE_2D, tempTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        GLuint tempDepthTexture;
+        glGenTextures(1, &tempDepthTexture);
+        glBindTexture(GL_TEXTURE_2D, tempDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_width, m_height, 0,
+                     GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        // FBO с цветом и глубиной
+        GLuint tempFBO;
+        glGenFramebuffers(1, &tempFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, tempTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_2D, tempDepthTexture, 0);
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
-
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-        //                     GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        // glBlendEquation(GL_FUNC_ADD);
-
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBlendEquation(GL_FUNC_ADD);
 
@@ -76,14 +90,23 @@ public:
             double currentTime = glfwGetTime();
             float deltaTime = static_cast<float>(currentTime - m_lastFrameTime);
             m_lastFrameTime = currentTime;
+            m_keyboardController.Update(deltaTime);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
 
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            m_renderer.ClearOITBuffers();
 
             if (updateCallback)
             {
                 updateCallback(*this, deltaTime);
             }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            m_renderer.ResolveOIT(tempTexture, tempDepthTexture);
 
             SwapBuffers();
             PollEvents();
@@ -103,40 +126,12 @@ public:
 
 private:
     ShaderManager m_shaderManager;
+    KeyboardController m_keyboardController;
+    OrbitCamera3D m_camera;
     Renderer m_renderer;
     Transform m_transform;
-    glm::mat4 m_projection;
-    glm::mat4 m_view;
 
     double m_lastFrameTime;
-
-    void UpdateProjectionMatrix()
-    {
-        // m_projection = glm::ortho(
-        //     -2.0f, 2.0f, // left, right
-        //     -2.0f, 2.0f, // bottom, top
-        //     -1.0f, 1.0f  // near, far
-        // );
-
-        // std::cout << -(float)m_width / 2.0f << std::endl;
-
-        m_projection = glm::ortho(
-            -(float)m_width / 2, (float)m_width / 2,
-            -(float)m_height / 2, (float)m_height / 2,
-            -1000.0f, 1000.0f // near, far
-        );
-
-        // float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
-        // m_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-
-        float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
-        m_projection = glm::perspective(
-            glm::radians(45.0f), // угол обзора
-            aspect,              // соотношение сторон
-            0.1f,                // near plane
-            1000.0f              // far plane
-        );
-    }
 
     bool Initialize()
     {
@@ -152,12 +147,46 @@ private:
             } });
 
         LoadShaders();
+        SubscribeUpdateCamera();
         return true;
     }
 
     void LoadShaders()
     {
-        m_shaderManager.AddShader<BasicShader>("basic", m_transform.GetTransform().GetGLMMatrix(), m_projection, m_view);
+        m_shaderManager.AddShader<BasicShader>("basic", m_transform.GetTransform().GetGLMMatrix(), m_camera.GetProjectionMatrix(), m_camera.GetViewMatrix());
         m_shaderManager.SetCurrent("basic");
+    }
+
+    void SubscribeUpdateCamera()
+    {
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_LEFT, [this](float deltatime)
+            { m_camera.Rotate(-50.0f * deltatime, 0); });
+
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_RIGHT, [this](float deltatime)
+            { m_camera.Rotate(50.0f * deltatime, 0); });
+
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_UP, [this](float deltatime)
+            { m_camera.Rotate(0, -50.0f * deltatime); });
+
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_DOWN, [this](float deltatime)
+            { m_camera.Rotate(0, 50.0f * deltatime); });
+
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_W,
+            [this](float deltatime)
+            {
+                m_camera.Zoom(-5.0f * deltatime);
+            });
+
+        m_keyboardController.OnKeyHoldSubscribe(
+            this, GLFW_KEY_S,
+            [this](float deltatime)
+            {
+                m_camera.Zoom(5.0f * deltatime);
+            });
     }
 };
