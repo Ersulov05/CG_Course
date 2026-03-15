@@ -153,7 +153,13 @@ private:
 
     void LoadShaders()
     {
-        m_shaderManager.AddShader<BasicShader>("basic", m_transform.GetTransform().GetGLMMatrix(), m_camera.GetProjectionMatrix(), m_camera.GetViewMatrix());
+        m_shaderManager.AddShader<BasicShader>(
+            "basic", 
+            m_transform.GetTransform().GetGLMMatrix(), 
+            m_camera.GetProjectionMatrix(), 
+            m_camera.GetViewMatrix(),
+            m_camera.GetPosition()
+        );
         m_shaderManager.SetCurrent("basic");
     }
 

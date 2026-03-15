@@ -41,6 +41,7 @@ public:
 
     const glm::mat4 &GetViewMatrix() const { return m_viewMatrix; }
     const glm::mat4 &GetProjectionMatrix() const { return m_projectionMatrix; }
+    const glm::vec3& GetPosition() const { return m_position; }
 
     // Орбитальное вращение (без ограничений)
     void Rotate(float deltaYaw, float deltaPitch)
