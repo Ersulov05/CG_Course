@@ -7,9 +7,13 @@ uniform mat4 uTransform;
 uniform mat4 uProjection;
 uniform mat4 uView;
 
+out vec3 worldPos;
+out vec3 worldNormal;
 out vec4 vertexColor;
 
 void main() {
-    gl_Position = uProjection * uView  * uTransform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    worldPos = vec3(uTransform * vec4(aPos, 1.0));
+    worldNormal = mat3(transpose(inverse(uTransform))) * aNormal;
     vertexColor = aColor;
+    gl_Position = uProjection * uView * vec4(worldPos, 1.0);
 }
