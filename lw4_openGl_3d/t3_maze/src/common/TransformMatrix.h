@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "./Vector3D.h"
 
 class TransformMatrix
 {
@@ -19,6 +20,11 @@ public:
     void Translate(float x, float y, float z)
     {
         m_matrix = glm::translate(m_matrix, glm::vec3(x, y, z));
+    }
+
+    void Translate(Vector3D vec)
+    {
+        m_matrix = glm::translate(m_matrix, glm::vec3(vec.x, vec.y, vec.z));
     }
 
     void RotateX(float angleDegrees)
@@ -61,6 +67,12 @@ public:
         TransformMatrix result;
         result.m_matrix = m_matrix * other.m_matrix;
         return result;
+    }
+
+    Point3D Apply(const Point3D &p) const
+    {
+        glm::vec4 result = m_matrix * glm::vec4(p.x, p.y, p.z, 1.0f);
+        return Point3D(result.x, result.y, result.z);
     }
 
 private:

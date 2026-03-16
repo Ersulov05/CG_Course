@@ -1,61 +1,56 @@
 #pragma once
-#include "./ICollisionObject.h"
-#include "../../common/Point.h"
+#include "./BoxCollision.h"
+#include "../../common/Geometry.h"
 #include "../../common/TransformMatrix.h"
 
 class CollisionSystem
 {
 public:
-    static bool CheckCollision(const ICollisionObject &a, const ICollisionObject &b)
+    static bool CheckCollision(const BoxCollision &a, const BoxCollision &b)
     {
-        CollisionType typeA = a.GetType();
-        CollisionType typeB = b.GetType();
-
-        if (typeA == CollisionType::CIRCLE && typeB == CollisionType::CIRCLE)
-        {
-            return CircleCircleCollision(a, b);
-        }
-
-        if (typeA == CollisionType::RECT && typeB == CollisionType::RECT)
-        {
-            return OrientedRectCollision(a, b);
-        }
-
-        if (typeA == CollisionType::CIRCLE && typeB == CollisionType::RECT)
-        {
-            return CircleOrientedRectCollision(a, b);
-        }
-        if (typeA == CollisionType::RECT && typeB == CollisionType::CIRCLE)
-        {
-            return CircleOrientedRectCollision(b, a);
-        }
-
-        return false;
+        return OrientedBoxCollision(a, b);
     }
 
 private:
-    static bool CircleCircleCollision(const ICollisionObject &a, const ICollisionObject &b)
+    static bool OrientedBoxCollision(const BoxCollision &a, const BoxCollision &b)
     {
-        Point diff = a.GetPosition() - b.GetPosition();
-        float distSq = diff.x * diff.x + diff.y * diff.y;
-        float radiusSum = a.GetRadius() + b.GetRadius();
+        std::vector<Point3D> vertsA = GetBoxVertices(a);
+        std::vector<Point3D> vertsB = GetBoxVertices(b);
 
-        return distSq <= radiusSum * radiusSum;
-    }
+        Vector3D axisAX = (vertsA[0] - vertsA[1]).Normalized();  // Ось X бокса A
+    Vector3D axisAY = (vertsA[0] - vertsA[2]).Normalized();  // Ось Y бокса A
+    Vector3D axisAZ = (vertsA[0] - vertsA[3]).Normalized();  // Ось Z бокса A
+    
+    Vector3D axisBX = (vertsB[0] - vertsB[1]).Normalized();  // Ось X бокса B
+    Vector3D axisBY = (vertsB[0] - vertsB[2]).Normalized();  // Ось Y бокса B
+    Vector3D axisBZ = (vertsB[0] - vertsB[3]).Normalized();  // Ось Z бокса B
 
-    static bool OrientedRectCollision(const ICollisionObject &a, const ICollisionObject &b)
-    {
-        // Получаем вершины прямоугольников
-        std::vector<Point> vertsA = GetRectVertices(a);
-        std::vector<Point> vertsB = GetRectVertices(b);
+    // Все 15 осей
+    std::vector<Vector3D> axes = {
+        // 3 оси бокса A
+        axisAX, axisAY, axisAZ,
+        
+        // 3 оси бокса B
+        axisBX, axisBY, axisBZ,
+        
+        // 9 cross-произведений (каждая ось A × каждая ось B)
+        Cross(axisAX, axisBX).Normalized(),
+        Cross(axisAX, axisBY).Normalized(),
+        Cross(axisAX, axisBZ).Normalized(),
+        Cross(axisAY, axisBX).Normalized(),
+        Cross(axisAY, axisBY).Normalized(),
+        Cross(axisAY, axisBZ).Normalized(),
+        Cross(axisAZ, axisBX).Normalized(),
+        Cross(axisAZ, axisBY).Normalized(),
+        Cross(axisAZ, axisBZ).Normalized()
+    };
 
-        // Проверяем 4 оси (2 от каждого прямоугольника)
-        std::vector<Point> axes = {
-            GetAxis(vertsA[0], vertsA[1]), // ось перпендикулярная первому ребру A
-            GetAxis(vertsA[1], vertsA[2]), // ось перпендикулярная второму ребру A
-            GetAxis(vertsB[0], vertsB[1]), // ось перпендикулярная первому ребру B
-            GetAxis(vertsB[1], vertsB[2])  // ось перпендикулярная второму ребру B
-        };
+    // Убираем нулевые оси (параллельные вектора)
+    axes.erase(std::remove_if(axes.begin(), axes.end(),
+        [](const Vector3D& axis) {
+            return axis.GetLength() < 1e-6;
+        }), axes.end());
+
 
         // Проверяем каждую ось
         for (const auto &axis : axes)
@@ -69,60 +64,36 @@ private:
                 return false;
         }
 
-        // Если все оси показали пересечение - объекты столкнулись
         return true;
     }
 
-    static bool CircleOrientedRectCollision(const ICollisionObject &circle, const ICollisionObject &rect)
+    static std::vector<Point3D> GetBoxVertices(const BoxCollision &box)
     {
-        std::vector<Point> vertices = GetRectVertices(rect);
-        Point circlePos = circle.GetPosition();
-        float radius = circle.GetRadius();
+        auto halfSize = box.GetSize() / 2;
+        auto halfWidth = halfSize.width;
+        auto halfHeight = halfSize.height;
+        auto halfDepth = halfSize.depth;
 
-        for (const auto &vertex : vertices)
-        {
-            Point diff = circlePos - vertex;
-            if (diff.x * diff.x + diff.y * diff.y <= radius * radius)
-                return true;
-        }
+        std::vector<Point3D> vertices = {
+            {-halfWidth, -halfHeight, -halfDepth},
+            {halfWidth, -halfHeight, -halfDepth},
+            {-halfWidth, halfHeight, -halfDepth},
+            {-halfWidth, -halfHeight, halfDepth},
+            
+            {-halfWidth, halfHeight, halfDepth},
+            {halfWidth, halfHeight, -halfDepth},
+            {halfWidth, halfHeight, halfDepth},
+            {halfWidth, -halfHeight, halfDepth}
+            };
 
-        for (size_t i = 0; i < vertices.size(); i++)
-        {
-            Point a = vertices[i];
-            Point b = vertices[(i + 1) % vertices.size()];
-
-            Point ab = b - a;
-            Point ac = circlePos - a;
-
-            float t = Dot(ac, ab) / Dot(ab, ab);
-            t = std::max(0.0f, std::min(1.0f, t));
-
-            Point closest = a + ab * t;
-            Point diff = circlePos - closest;
-
-            if (diff.x * diff.x + diff.y * diff.y <= radius * radius)
-                return true;
-        }
-
-        return false;
-    }
-
-    static std::vector<Point> GetRectVertices(const ICollisionObject &rect)
-    {
-        float w = rect.GetWidth() / 2;
-        float h = rect.GetHeight() / 2;
-
-        std::vector<Point> vertices = {
-            {-w, -h},
-            {w, -h},
-            {w, h},
-            {-w, h}};
-
+        auto boxRotation = box.GetRotation();
         TransformMatrix matrix;
-        matrix.Translate(rect.GetPosition());
-        matrix.Rotate(rect.GetRotation());
+        matrix.Translate(ToVector(box.GetPosition()));
+        matrix.RotateX(boxRotation.x);
+        matrix.RotateY(boxRotation.y);
+        matrix.RotateZ(boxRotation.z);
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
             vertices[i] = matrix.Apply(vertices[i]);
         }
@@ -130,35 +101,29 @@ private:
         return vertices;
     }
 
-    static float Dot(const Point &a, const Point &b)
+    static float Dot(const Vector3D &a, const Vector3D &b)
     {
-        return a.x * b.x + a.y * b.y;
+        return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    static Point Normalize(const Point &v)
+    static Vector3D Cross(const Vector3D &a, const Vector3D &b)
     {
-        float len = sqrt(v.x * v.x + v.y * v.y);
-        if (len > 0)
-            return {v.x / len, v.y / len};
-        return v;
+        return {
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        };
     }
 
-    static Point GetAxis(const Point &p1, const Point &p2)
-    {
-        Point edge = p2 - p1;
-        Point axis = {-edge.y, edge.x};
 
-        return Normalize(axis);
-    }
-
-    static void GetProjection(const std::vector<Point> &vertices, const Point &axis,
+    static void GetProjection(const std::vector<Point3D> &vertices, const Vector3D &axis,
                               float &min, float &max)
     {
-        min = max = Dot(vertices[0], axis);
+        min = max = Dot(ToVector(vertices[0]), axis);
 
         for (size_t i = 1; i < vertices.size(); i++)
         {
-            float proj = Dot(vertices[i], axis);
+            float proj = Dot(ToVector(vertices[i]), axis);
             min = std::min(min, proj);
             max = std::max(max, proj);
         }

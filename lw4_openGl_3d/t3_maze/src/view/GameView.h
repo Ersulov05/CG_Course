@@ -67,10 +67,7 @@ public:
 
                 frameCount = 0;
                 fpsTimer = 0.0f;
-
-                std::cout << "pos: " << playerPos.x << " " << playerPos.y << " " << playerPos.z << std::endl;
             }
-            
 
             camera.SetPosition(playerPos.x, playerPos.y, playerPos.z);
             camera.SetRotation(playerRotation.y, playerRotation.x, playerRotation.z);

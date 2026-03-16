@@ -25,18 +25,20 @@ layout(std430, binding = 0) coherent buffer FragmentBuffer {
 
 const uint MAX_FRAGMENTS = 4 * 1024 * 1024;
 
-vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo) {
+vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo, bool isAlpha) {
     vec3 N = normalize(normal);
     vec3 lightDir = uLightPos - pos;
     float distance = length(lightDir);
     lightDir = normalize(lightDir);
     
     float ambient = 0.2;
-    float diffuse = max(dot(N, lightDir), 0.0);
+    float diffuse = isAlpha
+        ? abs(dot(N, lightDir))
+        : max(dot(N, lightDir), 0.0); 
     
-    float attenuation = 1.0 / (distance * distance);
+    float attenuation = 1.0 / (distance);
     
-    float brightness = ambient + diffuse * attenuation * 2;
+    float brightness = ambient + diffuse * attenuation;
     
     brightness = min(brightness, 1.0);
     
@@ -44,12 +46,11 @@ vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo) {
 }
 
 void main() {
-    vec4 litColor = calculateLighting(worldPos, worldNormal, vertexColor);
-
     if (vertexColor.a >= 0.999) {
-        FragColor = litColor;
+        FragColor = calculateLighting(worldPos, worldNormal, vertexColor, false);
         return;
     }
+    vec4 litColor = calculateLighting(worldPos, worldNormal, vertexColor, true);
     
     ivec2 screenPos = ivec2(gl_FragCoord.xy);
     

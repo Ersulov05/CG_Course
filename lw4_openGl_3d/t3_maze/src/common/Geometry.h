@@ -1,6 +1,7 @@
 #pragma once
 #include "./Point3D.h"
 #include "./Vector3D.h"
+#include "./Size3D.h"
 
 inline Vector3D ToVector(const Point3D &p)
 {
