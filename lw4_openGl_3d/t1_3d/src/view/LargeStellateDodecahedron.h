@@ -17,26 +17,26 @@ public:
 private:
     MeshData m_mesh;
     Color m_colors[20] = {
-        Color(0xFF00004F), // Красный
-        Color(0x00FF004F), // Зеленый
-        Color(0x0000FF4F), // Синий
-        Color(0xFFFF004F), // Желтый
-        Color(0xFF00FF4F), // Пурпурный
-        Color(0x00FFFF4F), // Голубой
-        Color(0xFF8000FF), // Оранжевый
-        Color(0xFF0080FF), // Розовый
-        Color(0x80FF00FF), // Салатовый
-        Color(0x00FF80FF), // Мятный
-        Color(0x0080FFFF), // Небесно-голубой
-        Color(0x8000FFFF), // Фиолетовый
-        Color(0x800000FF), // Темно-красный
-        Color(0x008000FF), // Темно-зеленый
-        Color(0x000080FF), // Темно-синий
-        Color(0x808000FF), // Оливковый
-        Color(0x800080FF), // Пурпурный
-        Color(0x008080FF), // Бирюзовый
-        Color(0xFF8080FF), // Светло-розовый
-        Color(0x80FF80FF), // Светло-зеленый
+        Color(0xFF00004F),
+        Color(0x00FF004F),
+        Color(0x0000FF4F), 
+        Color(0xFFFF004F), 
+        Color(0xFF00FF4F), 
+        Color(0x00FFFF4F), 
+        Color(0xFF8000FF), 
+        Color(0xFF0080FF), 
+        Color(0x80FF00FF), 
+        Color(0x00FF80FF), 
+        Color(0x0080FFFF), 
+        Color(0x8000FFFF), 
+        Color(0x800000FF), 
+        Color(0x008000FF), 
+        Color(0x000080FF), 
+        Color(0x808000FF), 
+        Color(0x800080FF), 
+        Color(0x008080FF), 
+        Color(0xFF8080FF), 
+        Color(0x80FF80FF), 
     };
 
     struct DodecahedronPiramides

@@ -48,4 +48,9 @@ struct Vector3D
             x * other.y - y * other.x
         );
     }
+
+    float Dot(const Vector3D &other) const
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
 };

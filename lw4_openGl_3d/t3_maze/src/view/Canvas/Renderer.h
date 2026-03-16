@@ -237,31 +237,22 @@ private:
 
         glGenBuffers(1, &buffer.VBO);
         glBindBuffer(GL_ARRAY_BUFFER, buffer.VBO);
-        glBufferData(GL_ARRAY_BUFFER,
-                     glVertices.size() * sizeof(GLVertex),
-                     glVertices.data(),
-                     GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, glVertices.size() * sizeof(GLVertex), glVertices.data(), GL_STATIC_DRAW);
 
         glGenBuffers(1, &buffer.EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     indices.size() * sizeof(unsigned int),
-                     indices.data(),
-                     GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
         // Позиция (location = 0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(GLVertex), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void *)0);
         glEnableVertexAttribArray(0);
 
         // Нормаль (location = 1)
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(GLVertex), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
         // Цвет (location = 2)
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,
-                              sizeof(GLVertex), (void *)(6 * sizeof(float)));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void *)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
