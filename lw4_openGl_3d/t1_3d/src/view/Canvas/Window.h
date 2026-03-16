@@ -55,18 +55,6 @@ public:
         return true;
     }
 
-    void SetFramebufferSizeCallback(FramebufferSizeCallback callback)
-    {
-        m_framebufferCallback = callback;
-        glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow *win, int width, int height)
-                                       {
-            Window* window = static_cast<Window*>(glfwGetWindowUserPointer(win));
-            if (window && window->m_framebufferCallback) {
-                window->m_framebufferCallback(width, height);
-            } });
-        glfwSetWindowUserPointer(m_window, this);
-    }
-
     bool ShouldClose() const
     {
         return glfwWindowShouldClose(m_window);

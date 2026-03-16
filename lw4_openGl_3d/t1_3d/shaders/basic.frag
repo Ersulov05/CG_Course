@@ -5,17 +5,15 @@
 in vec4 vertexColor;
 out vec4 FragColor;
 
-layout(binding = 0, r32ui) coherent uniform uimage2D uHeadPointers;
-layout(binding = 0, offset = 0) uniform atomic_uint uFragmentCounter;
-
 struct OITFragment {
     vec4 color;
     float depth;
     uint next;
-    uint padding[3];
 };
 
-layout(std430, binding = 0) coherent buffer FragmentBuffer {
+layout(binding = 0, r32ui) coherent uniform uimage2D uHeadPointers;
+layout(binding = 1, offset = 0) uniform atomic_uint uFragmentCounter;
+layout(std430, binding = 2) coherent buffer FragmentBuffer {
     OITFragment fragments[];
 } fragBuffer;
 

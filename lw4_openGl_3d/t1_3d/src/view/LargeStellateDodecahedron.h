@@ -17,12 +17,12 @@ public:
 private:
     MeshData m_mesh;
     Color m_colors[20] = {
-        Color(0xFF0000FF), // Красный
-        Color(0x00FF00FF), // Зеленый
-        Color(0x0000FFFF), // Синий
-        Color(0xFFFF00FF), // Желтый
-        Color(0xFF00FFFF), // Пурпурный
-        Color(0x00FFFFFF), // Голубой
+        Color(0xFF00004F), // Красный
+        Color(0x00FF004F), // Зеленый
+        Color(0x0000FF4F), // Синий
+        Color(0xFFFF004F), // Желтый
+        Color(0xFF00FF4F), // Пурпурный
+        Color(0x00FFFF4F), // Голубой
         Color(0xFF8000FF), // Оранжевый
         Color(0xFF0080FF), // Розовый
         Color(0x80FF00FF), // Салатовый
@@ -39,6 +39,18 @@ private:
         Color(0x80FF80FF), // Светло-зеленый
     };
 
+    struct DodecahedronPiramides
+    {
+        Point3D vertices[32];
+        int indices[20][4];
+    };
+
+    struct IkosaedrData
+    {
+        Point3D vertices[12];
+        int faces[20][3];
+    };
+
     void GenerateDodecahedron()
     {
         DodecahedronPiramides dPiramidesData = GetDodecahedronPiramides();
@@ -52,102 +64,56 @@ private:
             Point3D v0 = dPiramidesData.vertices[dPiramidesData.indices[i][1]];
             Point3D v1 = dPiramidesData.vertices[dPiramidesData.indices[i][2]];
             Point3D v2 = dPiramidesData.vertices[dPiramidesData.indices[i][3]];
-
-            int offset = m_mesh.vertices.size();
             Color faceColor = m_colors[i % 20];
 
-            Vector3D normal1 = (v0 - apex).Normalized() + (v1 - apex).Normalized();
-            normal1 = normal1.Normalized();
-            m_mesh.vertices.push_back({apex, normal1, faceColor});
-            m_mesh.vertices.push_back({v0, normal1, faceColor});
-            m_mesh.vertices.push_back({v1, normal1, faceColor});
-
-            Vector3D normal2 = (v1 - apex).Normalized() + (v2 - apex).Normalized();
-            normal2 = normal2.Normalized();
-            m_mesh.vertices.push_back({apex, normal2, faceColor});
-            m_mesh.vertices.push_back({v1, normal2, faceColor});
-            m_mesh.vertices.push_back({v2, normal2, faceColor});
-
-            Vector3D normal3 = (v2 - apex).Normalized() + (v0 - apex).Normalized();
-            normal3 = normal3.Normalized();
-            m_mesh.vertices.push_back({apex, normal3, faceColor});
-            m_mesh.vertices.push_back({v2, normal3, faceColor});
-            m_mesh.vertices.push_back({v0, normal3, faceColor});
-
-            for (int j = 0; j < 3; j++)
-            {
-                m_mesh.indices.push_back(offset + j * 3 + 0);
-                m_mesh.indices.push_back(offset + j * 3 + 1);
-                m_mesh.indices.push_back(offset + j * 3 + 2);
-            }
-
-            int edgeOffset = m_mesh.edgeVertices.size();
-
-            m_mesh.edgeVertices.push_back({v0, {0, 0, 0}, Color(0x000000FF)});
-            m_mesh.edgeVertices.push_back({v1, {0, 0, 0}, Color(0x000000FF)});
-            m_mesh.edgeVertices.push_back({v2, {0, 0, 0}, Color(0x000000FF)});
-            m_mesh.edgeVertices.push_back({apex, {0, 0, 0}, Color(0x000000FF)});
-
-            for (int j = 0; j < 3; j++)
-            {
-                m_mesh.edgeIndices.push_back(edgeOffset + j);
-                m_mesh.edgeIndices.push_back(edgeOffset + (j + 1) % 3);
-                m_mesh.edgeIndices.push_back(edgeOffset + j);
-                m_mesh.edgeIndices.push_back(edgeOffset + 3);
-            }
+            AddDodecahedronFaces(apex, v0, v1, v2, faceColor);
+            AddAddDodecahedronEdges(apex, v0, v1, v2, Color(0x000000FF));
         }
     }
 
-    void GenerateIko()
-    {
-        IkosaedrData ikoData = GetIkosaedr();
+    void AddDodecahedronFaces(Point3D apex, Point3D v0, Point3D v1, Point3D v2, Color color) {
+        
+        const Vector3D normal;
+        int offset = m_mesh.vertices.size();
+        
+        m_mesh.vertices.push_back({apex, normal, color});
+        m_mesh.vertices.push_back({v0, normal, color});
+        m_mesh.vertices.push_back({v1, normal, color});
 
-        m_mesh.vertices.clear();
-        m_mesh.indices.clear();
+        m_mesh.vertices.push_back({apex, normal, color});
+        m_mesh.vertices.push_back({v1, normal, color});
+        m_mesh.vertices.push_back({v2, normal, color});
 
-        for (int i = 0; i < 20; i++)
+        m_mesh.vertices.push_back({apex, normal, color});
+        m_mesh.vertices.push_back({v2, normal, color});
+        m_mesh.vertices.push_back({v0, normal, color});
+
+        for (int j = 0; j < 3; j++)
         {
-            Point3D v0 = ikoData.vertices[ikoData.faces[i][0]];
-            Point3D v1 = ikoData.vertices[ikoData.faces[i][1]];
-            Point3D v2 = ikoData.vertices[ikoData.faces[i][2]];
-
-            int offset = m_mesh.vertices.size();
-            Color faceColor = m_colors[i % 20];
-
-            m_mesh.vertices.push_back({v0, {0, 0, 0}, faceColor});
-            m_mesh.vertices.push_back({v1, {0, 0, 0}, faceColor});
-            m_mesh.vertices.push_back({v2, {0, 0, 0}, faceColor});
-
-            for (int j = 0; j < 3; j++)
-            {
-                m_mesh.indices.push_back(offset + j);
-            }
-
-            int edgeOffset = m_mesh.edgeVertices.size();
-
-            m_mesh.edgeVertices.push_back({v0, {0, 0, 0}, Color(0x000000FF)});
-            m_mesh.edgeVertices.push_back({v1, {0, 0, 0}, Color(0x000000FF)});
-            m_mesh.edgeVertices.push_back({v2, {0, 0, 0}, Color(0x000000FF)});
-
-            for (int j = 0; j < 3; j++)
-            {
-                m_mesh.edgeIndices.push_back(edgeOffset + j);
-                m_mesh.edgeIndices.push_back(edgeOffset + (j + 1) % 3);
-            }
+            m_mesh.indices.push_back(offset + j * 3 + 0);
+            m_mesh.indices.push_back(offset + j * 3 + 1);
+            m_mesh.indices.push_back(offset + j * 3 + 2);
         }
     }
 
-    struct DodecahedronPiramides
-    {
-        Point3D vertices[32];
-        int indices[20][4];
-    };
+    void AddAddDodecahedronEdges(Point3D apex, Point3D v0, Point3D v1, Point3D v2, Color color) {
+        
+        const Vector3D normal;
+        int edgeOffset = m_mesh.edgeVertices.size();
 
-    struct IkosaedrData
-    {
-        Point3D vertices[12];
-        int faces[20][3];
-    };
+        m_mesh.edgeVertices.push_back({v0, normal, color});
+        m_mesh.edgeVertices.push_back({v1, normal, color});
+        m_mesh.edgeVertices.push_back({v2, normal, color});
+        m_mesh.edgeVertices.push_back({apex, normal, color});
+
+        for (int j = 0; j < 3; j++)
+        {
+            m_mesh.edgeIndices.push_back(edgeOffset + j);
+            m_mesh.edgeIndices.push_back(edgeOffset + (j + 1) % 3);
+            m_mesh.edgeIndices.push_back(edgeOffset + j);
+            m_mesh.edgeIndices.push_back(edgeOffset + 3);
+        }
+    }
 
     IkosaedrData GetIkosaedr()
     {
@@ -214,8 +180,9 @@ private:
     {
         DodecahedronPiramides result;
         IkosaedrData iko = GetIkosaedr();
+        const int ikoVertexCount = 12;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < ikoVertexCount; i++)
         {
             result.vertices[i] = iko.vertices[i];
         }
@@ -232,7 +199,7 @@ private:
             Vector3D normal = ToVector(center).Normalized();
             Point3D apex = ToPoint(normal * pyramidHeight);
 
-            int iApex = 12 + face;
+            int iApex = ikoVertexCount + face;
             result.vertices[iApex] = apex;
 
             result.indices[face][0] = iApex;
