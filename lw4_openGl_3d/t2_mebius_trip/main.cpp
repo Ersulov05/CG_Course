@@ -11,22 +11,6 @@ int main()
     canvas.Run(
         [&ms](ICanvas3D &canvas, float deltatime)
         {
-            static float fpsTimer = 0.0f;
-            static int frameCount = 0;
-            static int currentFPS = 0;
-
-            frameCount++;
-            fpsTimer += deltatime;
-
-            if (fpsTimer >= 1.0f)
-            {
-                currentFPS = (frameCount / fpsTimer);
-                std::cout << "FPS: " << currentFPS << " | Frame time: " << deltatime * 1000.0f << " ms" << std::endl;
-
-                frameCount = 0;
-                fpsTimer = 0.0f;
-            }
-
             ms.Draw(canvas);
         });
 

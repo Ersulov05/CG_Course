@@ -70,7 +70,7 @@ public:
     {
         static unsigned nextId = 1;
         unsigned id = nextId++;
-        m_pressCallbacks[id] = PrioritizedCallback{onPressCallback, getZOrder, id};
+        m_pressCallbacks[id] = PrioritizedCallback<OnPressCallback>{onPressCallback, getZOrder, id};
         return id;
     }
 
@@ -83,7 +83,7 @@ public:
     {
         static unsigned nextId = 1;
         unsigned id = nextId++;
-        m_moveCallbacks[id] = PrioritizedCallback{onMoveCallback, getZOrder, id};
+        m_moveCallbacks[id] = PrioritizedCallback<OnMoveCallback>{onMoveCallback, getZOrder, id};
         return id;
     }
 
@@ -96,7 +96,7 @@ public:
     {
         static unsigned nextId = 1;
         unsigned id = nextId++;
-        m_releaseCallbacks[id] = PrioritizedCallback{onReleaseCallback, getZOrder, id};
+        m_releaseCallbacks[id] = PrioritizedCallback<OnReleaseCallback>{onReleaseCallback, getZOrder, id};
         return id;
     }
 
@@ -110,10 +110,15 @@ public:
         m_propagate = false;
     }
 
+    Point GetPrevMousePos() {
+        return m_prevMousePosition;
+    }
+
 private:
     bool m_isPressed = false;
     bool m_propagate = true;
     Point m_mousePosition;
+    Point m_prevMousePosition;
 
     std::unordered_map<unsigned, PrioritizedCallback<OnClickCallback>> m_clickCallbacks;
     std::unordered_map<unsigned, PrioritizedCallback<OnPressCallback>> m_pressCallbacks;
@@ -189,6 +194,7 @@ private:
 
     void HandleMouseMove(const Mouse &mouse)
     {
+        m_prevMousePosition = m_mousePosition;
         m_mousePosition = mouse.mousePos;
         NotifyCallbacks(m_moveCallbacks, mouse.mousePos);
     }

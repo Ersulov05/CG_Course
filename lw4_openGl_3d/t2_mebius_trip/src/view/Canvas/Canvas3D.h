@@ -17,6 +17,7 @@
 #include "./Transform.h"
 
 #include "./Controller/KeyboardController.h"
+#include "./Controller/MouseController.h"
 #include "./OrbitCamera3D.h"
 
 class Canvas3D : public ICanvas3D, protected Window
@@ -61,6 +62,7 @@ public:
             float deltaTime = static_cast<float>(currentTime - m_lastFrameTime);
             m_lastFrameTime = currentTime;
             m_keyboardController.Update(deltaTime);
+            m_mouseController.ProcessEvents(m_window);
 
             glBindFramebuffer(GL_FRAMEBUFFER, m_tempFBO);
 
@@ -97,6 +99,9 @@ public:
 private:
     ShaderManager m_shaderManager;
     KeyboardController m_keyboardController;
+    MouseController m_mouseController;
+    bool m_isRotation = false;
+
     OrbitCamera3D m_camera;
     Renderer m_renderer;
     Transform m_transform;
@@ -200,5 +205,20 @@ private:
             {
                 m_camera.Zoom(5.0f * deltatime);
             });
+
+        m_mouseController.OnMoveSubscribe([this](const Point &mousePos){
+            if (m_isRotation) {
+                auto deltaPos = (m_mouseController.GetPrevMousePos() - mousePos) * 0.5;
+                m_camera.Rotate(deltaPos.x, deltaPos.y);
+            }
+        });
+
+        m_mouseController.OnPressSubscribe([this](const Point &mousePos){
+            m_isRotation = true;
+        });
+
+        m_mouseController.OnReleaseSubscribe([this](const Point &mousePos){
+            m_isRotation = false;
+        });
     }
 };
