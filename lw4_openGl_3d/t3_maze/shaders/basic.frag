@@ -25,7 +25,7 @@ layout(std430, binding = 0) coherent buffer FragmentBuffer {
 
 const uint MAX_FRAGMENTS = 4 * 1024 * 1024;
 
-vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo, bool isAlpha) {
+vec4 calculateLighting(vec3 pos, vec3 normal, vec4 vertexColor, bool isAlpha) {
     vec3 N = normalize(normal);
     vec3 lightDir = uLightPos - pos;
     float distance = length(lightDir);
@@ -38,11 +38,11 @@ vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo, bool isAlpha) {
     
     float attenuation = 1.0 / (distance);
     
-    float brightness = ambient + diffuse * attenuation;
+    float brightness = ambient + diffuse * attenuation * 4;
     
     brightness = min(brightness, 1.0);
     
-    return vec4(albedo.rgb * brightness, albedo.a);
+    return vec4(vertexColor.rgb * brightness, vertexColor.a);
 }
 
 void main() {
@@ -52,15 +52,14 @@ void main() {
     }
     vec4 litColor = calculateLighting(worldPos, worldNormal, vertexColor, true);
     
-    ivec2 screenPos = ivec2(gl_FragCoord.xy);
-    
     uint newIndex = atomicCounterIncrement(uFragmentCounter);
     
     if (newIndex >= MAX_FRAGMENTS) {
         discard;
         return;
     }
-    
+
+    ivec2 screenPos = ivec2(gl_FragCoord.xy);
     uint oldHead = imageAtomicExchange(uHeadPointers, screenPos, newIndex);
     
     fragBuffer.fragments[newIndex].color = litColor;

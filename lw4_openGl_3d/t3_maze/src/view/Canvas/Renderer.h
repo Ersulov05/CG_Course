@@ -115,8 +115,6 @@ public:
         glBindTexture(GL_TEXTURE_2D, backgroundDepthTexture);
         glUniform1i(glGetUniformLocation(m_resolveProgram, "uBackgroundDepth"), 1);
 
-        // OIT ресурсы уже привязаны
-
         glBindVertexArray(m_fullScreenQuad.VAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
@@ -254,26 +252,13 @@ private:
         glVertices.reserve(vertices.size());
 
         for (const auto &v : vertices)
-        {
-            GLVertex glv;
-            glv.px = v.position.x;
-            glv.py = v.position.y;
-            glv.pz = v.position.z;
-            glv.nx = v.normal.x;
-            glv.ny = v.normal.y;
-            glv.nz = v.normal.z;
-            glv.r = v.color.r;
-            glv.g = v.color.g;
-            glv.b = v.color.b;
-            glv.a = v.color.a;
-            glVertices.push_back(glv);
+        {   
+            glVertices.push_back(ToGLVertex(v));
         }
 
-        // Создаём VAO
         glGenVertexArrays(1, &buffer.VAO);
         glBindVertexArray(buffer.VAO);
 
-        // Создаём VBO
         glGenBuffers(1, &buffer.VBO);
         glBindBuffer(GL_ARRAY_BUFFER, buffer.VBO);
         glBufferData(GL_ARRAY_BUFFER,
@@ -281,7 +266,6 @@ private:
                      glVertices.data(),
                      GL_STATIC_DRAW);
 
-        // Создаём EBO
         glGenBuffers(1, &buffer.EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -289,7 +273,6 @@ private:
                      indices.data(),
                      GL_STATIC_DRAW);
 
-        // Настройка атрибутов
         // Позиция (location = 0)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
                               sizeof(GLVertex), (void *)0);
@@ -365,7 +348,6 @@ private:
         glBindImageTexture(0, m_oit.headPointerTexture, 0, GL_FALSE, 0,
                            GL_READ_WRITE, GL_R32UI);
 
-        // Проверка ошибок
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
@@ -387,5 +369,21 @@ private:
         m_oit.atomicCounter = 0;
         m_oit.width = 0;
         m_oit.height = 0;
+    }
+
+    GLVertex ToGLVertex(Vertex v) {
+        GLVertex glv;
+        glv.px = v.position.x;
+        glv.py = v.position.y;
+        glv.pz = v.position.z;
+        glv.nx = v.normal.x;
+        glv.ny = v.normal.y;
+        glv.nz = v.normal.z;
+        glv.r = v.color.r;
+        glv.g = v.color.g;
+        glv.b = v.color.b;
+        glv.a = v.color.a;
+
+        return glv;
     }
 };
