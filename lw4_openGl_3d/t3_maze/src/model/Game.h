@@ -28,12 +28,10 @@ private:
         auto playerCollisions = m_player.GetCollisions();
 
         for (auto & wall : walls) {
-            auto wallCollisions = wall.GetCollisions();
-            for (auto wallCollision : wallCollisions) {
-                for (auto playerCollision : playerCollisions) {
-                    if (CollisionSystem::CheckCollision(playerCollision, wallCollision)) {
-                        return true;
-                    }
+            auto wallCollision = wall.GetCollision();
+            for (auto playerCollision : playerCollisions) {
+                if (CollisionSystem::CheckCollision(playerCollision, wallCollision)) {
+                    return true;
                 }
             }
         }

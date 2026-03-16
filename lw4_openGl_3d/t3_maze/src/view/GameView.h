@@ -50,26 +50,9 @@ public:
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            auto playerPos = m_game.GetPlayer().GetPosition();
             auto playerRotation = m_game.GetPlayer().GetRotation();
 
-            static float fpsTimer = 0.0f;
-            static int frameCount = 0;
-            static int currentFPS = 0;
-
-            frameCount++;
-            fpsTimer += deltatime;
-
-            if (fpsTimer >= 1.0f)
-            {
-                currentFPS = (frameCount / fpsTimer);
-                std::cout << "FPS: " << currentFPS << " | Frame time: " << deltatime * 1000.0f << " ms" << std::endl;
-
-                frameCount = 0;
-                fpsTimer = 0.0f;
-            }
-
-            camera.SetPosition(playerPos.x, playerPos.y, playerPos.z);
+            camera.SetPosition(m_game.GetPlayer().GetPosition());
             camera.SetRotation(playerRotation.y, playerRotation.x, playerRotation.z);
 
             DrawWalls();

@@ -32,16 +32,16 @@ public:
 
     GLint GetUniform(const std::string &name)
     {
-        auto it = uniforms.find(name);
-        if (it != uniforms.end())
+        auto it = m_uniforms.find(name);
+        if (it != m_uniforms.end())
             return it->second;
 
         GLint loc = glGetUniformLocation(m_programId, name.c_str());
-        uniforms[name] = loc;
+        m_uniforms[name] = loc;
         return loc;
     }
 
 protected:
     GLuint m_programId;
-    std::unordered_map<std::string, GLint> uniforms;
+    std::unordered_map<std::string, GLint> m_uniforms;
 };

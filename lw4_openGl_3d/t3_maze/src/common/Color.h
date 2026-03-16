@@ -31,7 +31,6 @@ struct Color
 
     static Color FromHSV(float hue, float saturation, float value)
     {
-        // Нормализуем hue в диапазон 0-360
         hue = fmod(hue, 360.0f);
         if (hue < 0) hue += 360.0f;
         
@@ -53,7 +52,7 @@ struct Color
                 case 2: r = p; g = value; b = t; break;
                 case 3: r = p; g = q; b = value; break;
                 case 4: r = t; g = p; b = value; break;
-                default: // case 5 и все остальные (включая 6)
+                default:
                     r = value; g = p; b = q; break;
             }
         }

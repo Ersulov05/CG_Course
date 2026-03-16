@@ -1,6 +1,7 @@
 #pragma once
 #include <iomanip>
 #include <iostream>
+#include <cmath>
 
 struct Color
 {
@@ -31,6 +32,9 @@ struct Color
 
     static Color FromHSV(float hue, float saturation, float value)
     {        
+        hue = fmod(hue, 360.0f);
+        if (hue < 0) hue += 360.0f;
+
         float r, g, b;
         
         if (saturation <= 0.0f) {

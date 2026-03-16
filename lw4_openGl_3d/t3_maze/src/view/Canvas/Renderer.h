@@ -23,15 +23,6 @@ public:
 
         CreateFullScreenQuad();
         m_resolveProgram = ShaderLoader::LoadShader("./shaders/resolve.vert", "./shaders/resolve.frag");
-
-        if (m_resolveProgram == 0)
-        {
-            std::cout << "RESOLVE SHADER FAILED TO COMPILE!" << std::endl;
-        }
-        else
-        {
-            std::cout << "Resolve program ID: " << m_resolveProgram << std::endl;
-        }
     }
 
     void ResizeOIT(int width, int height)
@@ -79,19 +70,6 @@ public:
 
     void ClearOITBuffers()
     {
-        // GLuint fragmentCount = 0;
-        // glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_oit.atomicCounter);
-
-        // // Читаем данные из буфера в CPU
-        // glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &fragmentCount);
-
-        // // Выводим количество фрагментов
-        // std::cout
-        //     << "OIT fragments this frame: " << fragmentCount
-        //     << " / " << m_oit.maxFragments
-        //     << " (" << (fragmentCount * 100.0f / m_oit.maxFragments) << "%)"
-        //     << std::endl;
-
         GLuint zero = 0;
         glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_oit.atomicCounter);
         glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &zero);
@@ -105,12 +83,10 @@ public:
     {
         glUseProgram(m_resolveProgram);
 
-        // Цвет фона
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, backgroundTexture);
         glUniform1i(glGetUniformLocation(m_resolveProgram, "uBackground"), 0);
 
-        // Глубина фона
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, backgroundDepthTexture);
         glUniform1i(glGetUniformLocation(m_resolveProgram, "uBackgroundDepth"), 1);
@@ -131,9 +107,9 @@ private:
 
     struct GLVertex
     {
-        float px, py, pz; // позиция
-        float nx, ny, nz; // нормаль
-        float r, g, b, a; // цвет
+        float px, py, pz; 
+        float nx, ny, nz; 
+        float r, g, b, a; 
     };
 
     std::unordered_map<size_t, GPUBuffer> m_triangleBuffers;
@@ -310,14 +286,14 @@ private:
         oit.width = width;
         oit.height = height;
 
-        // 1. Head Pointer Texture
+        // Head Pointer Texture
         glGenTextures(1, &oit.headPointerTexture);
         glBindTexture(GL_TEXTURE_2D, oit.headPointerTexture);
         glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32UI, width, height);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        // 2. Fragment Buffer (SSBO)
+        // Fragment Buffer (SSBO)
         glGenBuffers(1, &oit.fragmentBuffer);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, oit.fragmentBuffer);
         glBufferData(GL_SHADER_STORAGE_BUFFER,
@@ -326,7 +302,7 @@ private:
                      GL_DYNAMIC_DRAW);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-        // 3. Atomic Counter
+        // Atomic Counter
         glGenBuffers(1, &oit.atomicCounter);
         glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, oit.atomicCounter);
         glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
@@ -337,16 +313,10 @@ private:
     {
         if (!m_oitEnabled)
             return;
-            
-        // Привязываем atomic counter к binding 0
-        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, m_oit.atomicCounter);
 
-        // Привязываем SSBO к binding 0
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_oit.fragmentBuffer);
-
-        // Привязываем head pointer texture к image unit 0
-        glBindImageTexture(0, m_oit.headPointerTexture, 0, GL_FALSE, 0,
-                           GL_READ_WRITE, GL_R32UI);
+        glBindImageTexture(0, m_oit.headPointerTexture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, m_oit.atomicCounter);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_oit.fragmentBuffer);
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)

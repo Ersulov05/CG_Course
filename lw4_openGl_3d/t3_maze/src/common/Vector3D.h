@@ -25,19 +25,16 @@ struct Vector3D
         return Vector3D(x + other.x, y + other.y, z + other.z);
     }
 
-    // Вектор - вектор = вектор
     Vector3D operator-(const Vector3D &other) const
     {
         return Vector3D(x - other.x, y - other.y, z - other.z);
     }
 
-    // Вектор * скаляр = вектор
     Vector3D operator*(float scalar) const
     {
         return Vector3D(x * scalar, y * scalar, z * scalar);
     }
 
-    // Вектор / скаляр = вектор
     Vector3D operator/(float scalar) const
     {
         return Vector3D(x / scalar, y / scalar, z / scalar);

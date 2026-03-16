@@ -20,18 +20,6 @@ public:
         UpdateProjectionMatrix();
     }
 
-    FpvCamera3D(float fov, float aspect, float near = 0.1f, float far = 1000.0f)
-        : m_position(0.0f, 0.0f, 5.0f),
-          m_rotation(glm::quat(1, 0, 0, 0)),
-          m_fov(fov),
-          m_aspect(aspect),
-          m_near(near),
-          m_far(far)
-    {
-        UpdateViewMatrix();
-        UpdateProjectionMatrix();
-    }
-
     const glm::mat4& GetViewMatrix() const { return m_viewMatrix; }
     const glm::mat4& GetProjectionMatrix() const { return m_projectionMatrix; }
 
@@ -47,10 +35,14 @@ public:
         UpdateViewMatrix();
     }
 
-    void SetRotation(const glm::quat& rotation)
+    void SetPosition(Point3D position)
     {
-        m_rotation = rotation;
-        UpdateViewMatrix();
+        SetPosition(position.x, position.y, position.z);
+    }
+
+    void SetRotation(Vector3D rotation)
+    {
+        SetRotation(rotation.x, rotation.y, rotation.z);
     }
 
     void SetRotation(float yawDegrees, float pitchDegrees, float rollDegrees = 0.0f)
@@ -64,7 +56,6 @@ public:
     }
 
     const glm::vec3& GetPosition() const { return m_position; }
-    const glm::quat& GetRotation() const { return m_rotation; }
 
     glm::vec3 GetForward() const
     {

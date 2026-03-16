@@ -52,11 +52,11 @@ public:
         }
     }
 
-    Point3D GetPosition() {
+    Point3D GetPosition() const {
         return m_position;
     }
 
-    Vector3D GetRotation() {
+    Vector3D GetRotation() const {
         return m_rotation;
     }
 
@@ -71,40 +71,14 @@ public:
         }
     }
 
-    std::vector<BoxCollision> GetCollisions() {
+    std::vector<BoxCollision> GetCollisions() const {
         return m_collisions;
-    }
-
-    Vector3D GetBodyRotation(float yAngle = 0) {
-        return {0, m_rotation.y + yAngle, 0};
-    }
-
-    Point3D GetBodyPosition() {
-        return {m_position.x, m_position.y / 2, m_position.z};
-    }
-
-    void UpdateCollisions() {
-        auto count = m_collisions.size();
-
-        for (int i = 0; i < count; ++i) {
-            m_collisions[i].SetPosition(GetBodyPosition());
-            m_collisions[i].SetRotation(GetBodyRotation(i * 90.0f / count));
-        }
     }
 
     void OnChangeCollisionSubscribe(void *subscriber, OnChangeCollisionCallback callback)
     {
         m_changeCollisionCallbacks[subscriber] = callback;
     }
-
-    // void OnChangeCollisionUnsubscribe(void *subscriber)
-    // {
-    //     std::erase_if(m_changeCollisionCallbacks, 
-    //     [subscriber](const auto& item) {
-    //         return item.first == subscriber;
-    //     });
-
-    // }
 
 private:
     Point3D m_position = {0, 1.8, 2};
@@ -134,6 +108,23 @@ private:
     void InitCollisions(int count) {
         for (int i =0; i < count; ++i) {
             m_collisions.push_back(BoxCollision(GetBodyPosition(), {0.2, 1, 0.2}, GetBodyRotation(i * 90.0f / count)));
+        }
+    }
+
+    Vector3D GetBodyRotation(float yAngle = 0) const {
+        return {0, m_rotation.y + yAngle, 0};
+    }
+
+    Point3D GetBodyPosition() const {
+        return {m_position.x, m_position.y / 2, m_position.z};
+    }
+
+    void UpdateCollisions() {
+        auto count = m_collisions.size();
+
+        for (int i = 0; i < count; ++i) {
+            m_collisions[i].SetPosition(GetBodyPosition());
+            m_collisions[i].SetRotation(GetBodyRotation(i * 90.0f / count));
         }
     }
 };

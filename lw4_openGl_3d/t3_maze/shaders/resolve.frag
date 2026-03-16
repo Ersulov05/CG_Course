@@ -4,23 +4,21 @@
 in vec2 vTexCoord;
 out vec4 FragColor;
 
-layout(binding = 0, r32ui) uniform uimage2D uHeadPointers;
-
 struct OITFragment
 {
     vec4 color;
     float depth;
     uint next;
-    uint padding[3];
 };
 
-layout(std430, binding = 0) buffer FragmentBuffer
+layout(binding = 0, r32ui) uniform uimage2D uHeadPointers;
+layout(std430, binding = 2) buffer FragmentBuffer
 {
     OITFragment fragments[];
 } fragBuffer;
 
-uniform sampler2D uBackground;      // цвет фона (непрозрачные объекты)
-uniform sampler2D uBackgroundDepth;  // глубина фона (Z-буфер непрозрачных)
+uniform sampler2D uBackground; 
+uniform sampler2D uBackgroundDepth;
 
 const int MAX_LAYERS = 16;
 
