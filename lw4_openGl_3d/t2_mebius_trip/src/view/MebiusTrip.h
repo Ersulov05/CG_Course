@@ -19,69 +19,91 @@ private:
     MeshData m_mesh;
 
     void GenerateMebiusStrip(
-        float radius = 1.0f, 
-        float width = 0.5f, 
-        int segmentsU = 64, 
-        int segmentsV = 16) 
+        float radius = 0.5f, 
+        float width = 1.0f, 
+        int segmentsU = 32, 
+        int segmentsV = 8) 
     {
         m_mesh.vertices.clear();
         m_mesh.indices.clear();
         
         for (int i = 0; i <= segmentsU; i++) {
             float u = (float(i) / segmentsU) * 2.0f * M_PI;
-            float cos_u = cos(u);
-            float sin_u = sin(u);
-            float cos_u_half = cos(u * 0.5f);
-            float sin_u_half = sin(u * 0.5f);
+            float cosU = cos(u);
+            float sinU = sin(u);
+            float cosHalfU = cos(u * 0.5f);
+            float sinHalfU = sin(u * 0.5f);
 
             float hue = u * 180 / M_PI;            
             Color color = Color::FromHSV(hue, 1, 1);            
             
             for (int j = 0; j <= segmentsV; j++) {
-                float v = (float(j) / segmentsV) * 2.0f * width - width;
+                float v = (float(j) / segmentsV) * width - width / 2;
                 
-                float r = radius + v * cos_u_half;
-                float x = r * cos_u;
-                float y = r * sin_u;
-                float z = v * sin_u_half;
+                float r = radius + v/2 * cosHalfU;
+                float x = r * cosU;
+                float y = r * sinU;
+                float z = v/2 * sinHalfU;
                 
-                Vector3D normal = GetMebiusPointNormal(r, v, sin_u, cos_u, sin_u_half, cos_u_half);
+                Vector3D normal = GetMebiusPointNormal(r, v, sinU, cosU, sinHalfU, cosHalfU);
                 
                 m_mesh.vertices.push_back({Point3D(x, y, z), normal, color});
+                m_mesh.edgeVertices.push_back({Point3D(x, y, z), normal, Color(0x000000FF)});
             }
         }
 
+        auto vCount = segmentsV + 1;
         for (int i = 0; i < segmentsU; i++) {
             for (int j = 0; j < segmentsV; j++) {
-                // Индексы четырех вершин ячейки (i, j)
-                // Вершины расположены в порядке:
-                // (i, j) -> (i, j+1) -> (i+1, j+1) -> (i+1, j)
-                int idx0 = i * (segmentsV + 1) + j;           // (i, j)
-                int idx1 = i * (segmentsV + 1) + j + 1;       // (i, j+1)
-                int idx2 = (i + 1) * (segmentsV + 1) + j + 1; // (i+1, j+1)
-                int idx3 = (i + 1) * (segmentsV + 1) + j;     // (i+1, j)
+                int idx0 = j + i * vCount;
+                int idx1 = idx0 + 1;      
+                int idx2 = (i + 1) * vCount + j;
+                int idx3 = idx2 + 1; 
                 
-                m_mesh.indices.push_back(idx0);
-                m_mesh.indices.push_back(idx1);
-                m_mesh.indices.push_back(idx2);
-                
-                m_mesh.indices.push_back(idx0);
-                m_mesh.indices.push_back(idx2);
-                m_mesh.indices.push_back(idx3);
+                AddFaceIndices(idx0, idx1, idx2, idx3);
+                AddEdgeIndices(idx0, idx1, idx2, idx3);
             }
         }
     }
 
-    Vector3D GetMebiusPointNormal(float r, float v, float sin_u, float cos_u, float sin_u_half, float cos_u_half){
-        // dP/du
-        float dx_du = -r * sin_u - 0.5f * v * cos_u * sin_u_half;
-        float dy_du =  r * cos_u - 0.5f * v * sin_u * sin_u_half;
-        float dz_du =  0.5f * v * cos_u_half;
+    void AddFaceIndices(int idx0, int idx1, int idx2, int idx3) {
+        m_mesh.indices.push_back(idx0);
+        m_mesh.indices.push_back(idx1);
+        m_mesh.indices.push_back(idx2);
         
-        // dP/dv
-        float dx_dv = cos_u_half * cos_u;
-        float dy_dv = cos_u_half * sin_u;
-        float dz_dv = sin_u_half;
+        m_mesh.indices.push_back(idx1);
+        m_mesh.indices.push_back(idx2);
+        m_mesh.indices.push_back(idx3);
+    }
+
+    void AddEdgeIndices(int idx0, int idx1, int idx2, int idx3) {
+        m_mesh.edgeIndices.push_back(idx2);
+        m_mesh.edgeIndices.push_back(idx0);
+
+        m_mesh.edgeIndices.push_back(idx0);
+        m_mesh.edgeIndices.push_back(idx1);
+
+        m_mesh.edgeIndices.push_back(idx1);
+        m_mesh.edgeIndices.push_back(idx2);
+        
+        m_mesh.edgeIndices.push_back(idx2);
+        m_mesh.edgeIndices.push_back(idx3);
+
+        m_mesh.edgeIndices.push_back(idx3);
+        m_mesh.edgeIndices.push_back(idx1);        
+    }
+
+    // x = (r + v/2 * cos(u/2)) * cos(u) | r * cos(u) + v/2 * cos(u/2) * cos(u)
+    // y = (r + v/2 * cos(u/2)) * sin(u) | r * sin(u) + v/2 * cos(u/2) * sin(u)
+    // z = v/2 * sin(u/2)
+    Vector3D GetMebiusPointNormal(float r, float v, float sinU, float cosU, float sinHalfU, float cosHalfU){
+        float dx_du = -r * sinU + (-0.5f * sinHalfU * cosU - sinU * cosHalfU) * 0.5f * v;
+        float dy_du =  r * cosU + (-0.5f * sinHalfU * sinU + cosU * cosHalfU) * 0.5f * v;
+        float dz_du =  0.5f * v * 0.5f * cosHalfU;
+        
+        float dx_dv = 0.5f * cosHalfU * cosU;
+        float dy_dv = 0.5f * cosHalfU * sinU;
+        float dz_dv = 0.5f * sinHalfU;
         
         Vector3D du(dx_du, dy_du, dz_du);
         Vector3D dv(dx_dv, dy_dv, dz_dv);

@@ -55,36 +55,6 @@ public:
         m_lastFrameTime = glfwGetTime();
         m_keyboardController.Initialize(m_window);
 
-        GLuint tempTexture;
-        glGenTextures(1, &tempTexture);
-        glBindTexture(GL_TEXTURE_2D, tempTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        GLuint tempDepthTexture;
-        glGenTextures(1, &tempDepthTexture);
-        glBindTexture(GL_TEXTURE_2D, tempDepthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_width, m_height, 0,
-                     GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        // FBO с цветом и глубиной
-        GLuint tempFBO;
-        glGenFramebuffers(1, &tempFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                               GL_TEXTURE_2D, tempTexture, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                               GL_TEXTURE_2D, tempDepthTexture, 0);
-
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glBlendEquation(GL_FUNC_ADD);
-
         while (!ShouldClose())
         {
             double currentTime = glfwGetTime();
@@ -92,7 +62,7 @@ public:
             m_lastFrameTime = currentTime;
             m_keyboardController.Update(deltaTime);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+            glBindFramebuffer(GL_FRAMEBUFFER, m_tempFBO);
 
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,7 +76,7 @@ public:
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            m_renderer.ResolveOIT(tempTexture, tempDepthTexture);
+            m_renderer.ResolveOIT(m_tempTexture, m_tempDepthTexture);
 
             SwapBuffers();
             PollEvents();
@@ -133,6 +103,10 @@ private:
 
     double m_lastFrameTime;
 
+    GLuint m_tempDepthTexture;
+    GLuint m_tempTexture;
+    GLuint m_tempFBO;
+
     bool Initialize()
     {
         if (!Window::Initialize())
@@ -148,6 +122,12 @@ private:
 
         LoadShaders();
         SubscribeUpdateCamera();
+        CreateFBO();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendEquation(GL_FUNC_ADD);
         return true;
     }
 
@@ -161,6 +141,32 @@ private:
             m_camera.GetPosition()
         );
         m_shaderManager.SetCurrent("basic");
+    }
+
+    void CreateFBO()
+    {
+        glGenTextures(1, &m_tempTexture);
+        glBindTexture(GL_TEXTURE_2D, m_tempTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenTextures(1, &m_tempDepthTexture);
+        glBindTexture(GL_TEXTURE_2D, m_tempDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_width, m_height, 0,
+                     GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glGenFramebuffers(1, &m_tempFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_tempFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, m_tempTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_2D, m_tempDepthTexture, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void SubscribeUpdateCamera()

@@ -7,8 +7,6 @@
 class Window
 {
 public:
-    using FramebufferSizeCallback = std::function<void(int, int)>;
-
     Window(unsigned width = 800, unsigned height = 600, const char *title = "OpenGL Window")
         : m_width(width), m_height(height), m_title(title), m_window(nullptr)
     {
@@ -93,5 +91,4 @@ protected:
     unsigned m_height;
     const char *m_title;
     GLFWwindow *m_window;
-    FramebufferSizeCallback m_framebufferCallback;
 };
