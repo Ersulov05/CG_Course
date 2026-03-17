@@ -4,6 +4,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>
+#include "../../common/Geometry.h"
 
 class FpvCamera3D
 {
