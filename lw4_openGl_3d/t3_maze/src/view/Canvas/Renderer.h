@@ -287,10 +287,7 @@ private:
         // Fragment Buffer (SSBO)
         glGenBuffers(1, &oit.fragmentBuffer);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, oit.fragmentBuffer);
-        glBufferData(GL_SHADER_STORAGE_BUFFER,
-                     oit.maxFragments * sizeof(OITFragment),
-                     nullptr,
-                     GL_DYNAMIC_DRAW);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, oit.maxFragments * sizeof(OITFragment), nullptr, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
         // Atomic Counter
