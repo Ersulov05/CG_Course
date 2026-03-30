@@ -1,5 +1,4 @@
 #version 460 core
-#extension GL_ARB_shader_image_load_store : require
 
 in vec2 vTexCoord;
 out vec4 FragColor;

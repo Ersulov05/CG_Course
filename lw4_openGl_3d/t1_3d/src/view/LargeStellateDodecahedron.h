@@ -187,7 +187,7 @@ private:
             result.vertices[i] = iko.vertices[i];
         }
 
-        const float pyramidHeight = 3.0f;
+        const float pyramidHeight = 2.0f;
 
         for (int face = 0; face < 20; face++)
         {
@@ -195,8 +195,9 @@ private:
             int i1 = iko.faces[face][1];
             int i2 = iko.faces[face][2];
 
-            Point3D center = (iko.vertices[i0] + iko.vertices[i1] + iko.vertices[i2]) / 3.0f;
-            Vector3D normal = ToVector(center).Normalized();
+            Point3D localCenter = Point3D(0, 0, 0);
+            Vector3D center = ((iko.vertices[i0] - localCenter) + (iko.vertices[i1] - localCenter) + (iko.vertices[i2] - localCenter)) / 3.0f; //TODO: сделать сложение через вектора
+            Vector3D normal = center.Normalized();
             Point3D apex = ToPoint(normal * pyramidHeight);
 
             int iApex = ikoVertexCount + face;

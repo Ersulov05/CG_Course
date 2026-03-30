@@ -1,6 +1,4 @@
 #version 460 core
-#extension GL_ARB_shader_image_load_store : require
-#extension GL_ARB_shader_atomic_counters : require
 
 uniform vec3 uLightPos;
 
