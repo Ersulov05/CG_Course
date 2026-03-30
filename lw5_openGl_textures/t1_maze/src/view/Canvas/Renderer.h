@@ -110,7 +110,8 @@ private:
         float px, py, pz; 
         float nx, ny, nz; 
         float r, g, b, a; 
-        float u, v;
+        float uDiffuse, vDiffuse;
+        float uShadow, vShadow;
     };
 
     std::unordered_map<size_t, GPUBuffer> m_triangleBuffers;
@@ -260,6 +261,10 @@ private:
         glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void *)(10 * sizeof(float)));
         glEnableVertexAttribArray(3);
 
+        // Координаты текстуры теней (location = 4)
+        glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void *)(12 * sizeof(float)));
+        glEnableVertexAttribArray(4);
+
         glBindVertexArray(0);
 
         buffer.indexCount = indices.size();
@@ -346,8 +351,10 @@ private:
         glv.g = v.color.g;
         glv.b = v.color.b;
         glv.a = v.color.a;
-        glv.u = v.textureCoord.u;
-        glv.v = v.textureCoord.v;
+        glv.uDiffuse = v.uvDiffuse.u;
+        glv.vDiffuse = v.uvDiffuse.v;
+        glv.uShadow = v.uvShadow.u;
+        glv.vShadow = v.uvShadow.v;
 
         return glv;
     }

@@ -20,7 +20,8 @@ struct Vertex
     Point3D position;
     Vector3D normal;
     Color color;
-    TextureCoord textureCoord;
+    TextureCoord uvDiffuse;
+    TextureCoord uvShadow;
 };
 
 struct MeshData
@@ -49,23 +50,25 @@ namespace std
             size_t h8 = hash<float>()(v.color.g);
             size_t h9 = hash<float>()(v.color.b);
             size_t h10 = hash<float>()(v.color.a);
-            size_t h11 = hash<float>()(v.textureCoord.u);
-            size_t h12 = hash<float>()(v.textureCoord.v);
+            size_t h11 = hash<float>()(v.uvDiffuse.u);
+            size_t h12 = hash<float>()(v.uvDiffuse.v);
+            size_t h13 = hash<float>()(v.uvShadow.u);
+            size_t h14 = hash<float>()(v.uvShadow.v);
 
             return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3) ^
                    (h5 << 4) ^ (h6 << 5) ^ (h7 << 6) ^
                    (h8 << 7) ^ (h9 << 8) ^ (h10 << 9) ^ 
-                   (h11 << 10) ^ (h12 << 11);
+                   (h11 << 10) ^ (h12 << 11) ^ (h13 << 12) ^ (h14 << 13);
         }
     };
 }
 
 struct OITBuffers
 {
-    GLuint headPointerTexture = 0;      // текстура с указателями (1 указатель на пиксель)
-    GLuint fragmentBuffer = 0;          // SSBO для хранения фрагментов
-    GLuint atomicCounter = 0;           // атомарный счётчик
-    int maxFragments = 4 * 1024 * 1024; // максимум фрагментов (4 млн)
+    GLuint headPointerTexture = 0;
+    GLuint fragmentBuffer = 0;          
+    GLuint atomicCounter = 0;           
+    int maxFragments = 4 * 1024 * 1024;
     int width = 0, height = 0;
 };
 

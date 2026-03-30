@@ -192,18 +192,18 @@ private:
 
     void LoadTextures()
     {
-        m_textureLoader.LoadTexture("./textures/brick.jpg", true);
-        m_textureLoader.LoadTexture("./textures/wallpaper.jpg", true);
-        m_textureLoader.LoadTexture("./textures/wood.jpg", true);
-        m_textureLoader.LoadTexture("./textures/granit.jpg", true);
-        m_textureLoader.LoadTexture("./textures/stone.jpg", true);
-        m_textureLoader.LoadTexture("./textures/earth.jpg", true);
-        m_textureLoader.LoadTexture("./textures/grass.jpg", true);
-        m_textureLoader.LoadTexture("./textures/sky.jpg", true);
-        m_textureLoader.LoadTexture("./textures/wallpaper2.jpg", true);
-        m_textureLoader.LoadTexture("./textures/wall.jpg", true);
-        m_textureLoader.LoadTexture("./textures/darkness.png", true);
-        m_textureLoader.LoadTexture("./textures/darkness4.png", true);
+        m_textureLoader.LoadTexture("./textures/brick.jpg");
+        m_textureLoader.LoadTexture("./textures/wallpaper.jpg");
+        m_textureLoader.LoadTexture("./textures/wood.jpg");
+        m_textureLoader.LoadTexture("./textures/granit.jpg");
+        m_textureLoader.LoadTexture("./textures/stone.jpg");
+        m_textureLoader.LoadTexture("./textures/earth.jpg");
+        m_textureLoader.LoadTexture("./textures/grass.jpg");
+        m_textureLoader.LoadTexture("./textures/sky.jpg");
+        m_textureLoader.LoadTexture("./textures/wallpaper2.jpg");
+        m_textureLoader.LoadTexture("./textures/wall.jpg");
+        m_textureLoader.LoadTexture("./textures/darkness.png");
+        m_textureLoader.LoadTexture("./textures/darkness4.png");
     }
 
     void CreateFBO()

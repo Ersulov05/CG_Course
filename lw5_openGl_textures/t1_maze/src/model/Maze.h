@@ -22,7 +22,7 @@ private:
 
         m_walls.push_back(Wall({0, 1.5, -8}, {16, 3, 1}, 0xFFFFFFFF, {"./textures/wall.jpg"}));
 
-        m_walls.push_back(Wall({0, 1.5, 8}, {16, 3, 1}, 0xFFFFFFFF, {"./textures/brick.jpg", "./textures/darkness4.png"}));
+        m_walls.push_back(Wall({0, 1.5, 8}, {16, 3, 1}, 0xFFFFFFFF, {"./textures/brick.jpg", "./textures/darkness.png"}));
         m_walls.push_back(Wall({-8, 1.5, 0}, {1, 3, 16}, 0x00FF00FF, {"./textures/wallpaper.jpg", "./textures/wood.jpg"}));
         m_walls.push_back(Wall({8, 1.5, 0}, {1, 3, 16}, 0x00FF00FF, {"./textures/wallpaper2.jpg"}));
 

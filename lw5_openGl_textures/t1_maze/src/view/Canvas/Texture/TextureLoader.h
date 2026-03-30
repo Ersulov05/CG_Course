@@ -1,11 +1,10 @@
-// TextureLoader.h
 #pragma once
+
 #include <glad/glad.h>
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -23,44 +22,31 @@ struct TextureFormat {
 
 class TextureLoader {
 public:
-    Texture LoadTexture(const std::string& filepath, bool generateMipmaps = true) {
+    ~TextureLoader() {
+        cleanup();
+    }
+
+    Texture LoadTexture(const std::string& filepath) {
         auto it = m_textures.find(filepath);
         if (it != m_textures.end()) {
             return it->second;
         }
         
-        Texture texture;
-        texture.path = filepath;
-        
         int width, height, channels;
         stbi_set_flip_vertically_on_load(true);
-        
         unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
         
         if (!data) {
-            std::cerr << "Failed to load texture: " << filepath << std::endl;
             std::cerr << "stbi_error: " << stbi_failure_reason() << std::endl;
             return Texture{0, 0, 0, filepath};
         }
         
-        texture.width = width;
-        texture.height = height;
-        
+        Texture texture = {0, width, height, filepath};
         glGenTextures(1, &texture.id);
         glBindTexture(GL_TEXTURE_2D, texture.id);
         auto textureFormat = GetTextureFormat(channels);
-        
         glTexImage2D(GL_TEXTURE_2D, 0, textureFormat.internalFormat, width, height, 0, textureFormat.format, GL_UNSIGNED_BYTE, data);
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, generateMipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        if (generateMipmaps) {
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        
+        SetTextureParametri(GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);        
         stbi_image_free(data);
 
         GLenum error = glGetError();
@@ -70,23 +56,18 @@ public:
             return Texture{0, 0, 0, filepath};
         }
         
-        std::cout << "Texture loaded successfully: " << filepath 
-                  << " (" << width << "x" << height << ", " << channels << " channels)" << std::endl;
-        
         m_textures[filepath] = texture;
         return texture;
     }
     
-    Texture LoadTexture(const std::string& filepath, 
-                        GLint wrapS, GLint wrapT, 
-                        GLint minFilter, GLint magFilter) {
+    Texture LoadTexture(
+        const std::string& filepath, 
+        GLint wrapS, GLint wrapT, 
+        GLint minFilter, GLint magFilter
+    ) {
         Texture texture = LoadTexture(filepath);
         bindTexture(texture);
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+        SetTextureParametri(wrapS, wrapT, minFilter, magFilter);
         
         return texture;
     }
@@ -96,10 +77,6 @@ public:
         glBindTexture(GL_TEXTURE_2D, texture.id);
     }
     
-    void unbindTexture() {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
     void unbindTextures() {
         for (int i = 0; i < 2; i++) {
             glActiveTexture(GL_TEXTURE0 + i);
@@ -124,6 +101,14 @@ public:
     
 private:        
     std::unordered_map<std::string, Texture> m_textures;
+
+    void SetTextureParametri(GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    }
 
     TextureFormat GetTextureFormat(int channels)
     {

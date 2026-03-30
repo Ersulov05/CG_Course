@@ -7,7 +7,8 @@ uniform vec3 uLightPos;
 in vec3 worldPos;
 in vec3 worldNormal;
 in vec4 vertexColor;
-in vec2 texCoord;
+in vec2 uvDiffuse;
+in vec2 uvShadow;
 
 out vec4 FragColor;
 
@@ -25,7 +26,7 @@ layout(std430, binding = 2) coherent buffer FragmentBuffer {
 
 const uint MAX_FRAGMENTS = 4 * 1024 * 1024;
 
-vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo, bool isAlpha) {
+vec4 calculateLighting(vec3 pos, vec3 normal, vec4 color, bool isAlpha) {
     vec3 N = normalize(normal);
     vec3 lightDir = uLightPos - pos;
     float distance = length(lightDir);
@@ -42,35 +43,31 @@ vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo, bool isAlpha) {
     
     brightness = min(brightness, 1.0);
     
-    return vec4(albedo.rgb * brightness, albedo.a);
+    return vec4(color.rgb * brightness, color.a);
 }
 
 void main() {
-    vec4 albedo;
+    vec4 color;
     if (uTextureCount > 0) {
-        albedo = texture(uTextures[0], texCoord);
+        color = texture(uTextures[0], uvDiffuse);
 
         if (uTextureCount > 1) {
-            vec4 secondTex = texture(uTextures[1], texCoord);
+            vec4 secondTex = texture(uTextures[1], uvShadow);
             
             float shadowMask = secondTex.r;
-            //albedo.rgb *= shadowMask;
-            //albedo = vec4(1.0, 1.0, 1.0, 1.0);
-            albedo.rgb *= shadowMask;
-
-            //albedo = texture(uTextures[1], texCoord);
+            color.rgb *= shadowMask;
         }
     } else {
-        albedo = vertexColor;
+        color = vertexColor;
     }
     
 
-    if (albedo.a >= 0.999) {
-        FragColor = calculateLighting(worldPos, worldNormal, albedo, false);
+    if (color.a >= 0.999) {
+        FragColor = calculateLighting(worldPos, worldNormal, color, false);
 
         return;
     }
-    vec4 litColor = calculateLighting(worldPos, worldNormal, albedo, true);
+    vec4 litColor = calculateLighting(worldPos, worldNormal, color, true);
     
     uint newIndex = atomicCounterIncrement(uFragmentCounter);
     

@@ -78,7 +78,7 @@ private:
                 uv.u *= faceUVSize[face][0];
                 uv.v *= faceUVSize[face][1];
                 int vertexIndex = faceIndices[face][i];
-                m_mesh.vertices.push_back({positions[vertexIndex], normals[face], color, uv});
+                m_mesh.vertices.push_back({positions[vertexIndex], normals[face], color, uv, faceUV[i]});
             }
         }
 
