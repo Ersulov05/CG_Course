@@ -62,12 +62,12 @@ public:
     
     Texture LoadTexture(
         const std::string& filepath, 
-        GLint wrapS, GLint wrapT, 
+        GLint wrapU, GLint wrapV, 
         GLint minFilter, GLint magFilter
     ) {
         Texture texture = LoadTexture(filepath);
         bindTexture(texture);
-        SetTextureParametri(wrapS, wrapT, minFilter, magFilter);
+        SetTextureParametri(wrapU, wrapV, minFilter, magFilter);
         
         return texture;
     }
