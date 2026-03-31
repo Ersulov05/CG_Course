@@ -102,10 +102,10 @@ public:
 private:        
     std::unordered_map<std::string, Texture> m_textures;
 
-    void SetTextureParametri(GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter)
+    void SetTextureParametri(GLint wrapU, GLint wrapV, GLint minFilter, GLint magFilter)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapU);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapV);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     }
