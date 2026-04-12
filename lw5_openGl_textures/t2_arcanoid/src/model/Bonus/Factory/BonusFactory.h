@@ -32,7 +32,7 @@ public:
 private:
     std::vector<Ball>& m_balls;
     Racket& m_racket;
-    std::mt19937 m_randomEngine;
+    std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());;
 
     std::shared_ptr<IBonusAction> GetRandomBonusAction()
     {

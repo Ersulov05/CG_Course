@@ -4,16 +4,29 @@
 
 class Mesh {
 public:
-    static MeshData Cube(Color color) {
+    static MeshData Cube(Color color, std::vector<std::string> textures = {}, Size3D size = {1, 1, 1}) {
         MeshData mesh;
+
+        float faceUVSize[6][2] = {
+            {size.width, size.height},
+            {size.width, size.height},
+            {size.depth, size.height},
+            {size.depth, size.height},
+            {size.width, size.depth},
+            {size.width, size.depth}
+        };
 
         TextureCoord uv = {0, 0};
         for (int face = 0; face < 6; face++)
         {
             for (int i = 0; i < 4; i++)
             {
+                TextureCoord uv = CUBE_FACE_UV[i];
+                uv.u *= faceUVSize[face][0];
+                uv.v *= faceUVSize[face][1];
+
                 int vertexIndex = CUBE_FACE_INDICES[face][i];
-                mesh.vertices.push_back({CUBE_VERTEX_POSITIONS[vertexIndex], CUBE_FACE_NORMALS[face], color, uv, uv});
+                mesh.vertices.push_back({CUBE_VERTEX_POSITIONS[vertexIndex], CUBE_FACE_NORMALS[face], color, uv, CUBE_FACE_UV[i]});
             }
         }
 
@@ -28,10 +41,12 @@ public:
             mesh.indices.push_back(i + 3);
         }
 
+        mesh.textures = textures;
+
         return mesh;
     }
 
-    static MeshData Sphere(Color color, float radius = 0.5f, int rings = 32, int sectors = 32) {
+    static MeshData Sphere(Color color, std::vector<std::string> textures = {}, float radius = 0.5f, int rings = 32, int sectors = 32) {
         MeshData mesh;
 
         float const R = 1.0f / (float)(rings - 1);
@@ -77,6 +92,8 @@ public:
             }
         }
 
+        mesh.textures = textures;
+
         return mesh;
     }
 private:
@@ -107,5 +124,12 @@ private:
         {1, 5, 6, 2}, // правая
         {4, 5, 1, 0}, // нижняя
         {3, 2, 6, 7}  // верхняя
+    };
+
+    inline static TextureCoord CUBE_FACE_UV[4] = {
+        TextureCoord(0, 0),
+        TextureCoord(1, 0),
+        TextureCoord(1, 1),
+        TextureCoord(0, 1)
     };
 };

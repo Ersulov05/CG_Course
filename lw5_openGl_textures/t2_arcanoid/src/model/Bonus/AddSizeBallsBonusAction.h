@@ -40,6 +40,6 @@ public:
 
 private:
     std::vector<Ball>& m_balls;
-    float lifetime = 5;
+    float lifetime = 4;
     const float ADDED_SIZE_COEF = 2;
 };

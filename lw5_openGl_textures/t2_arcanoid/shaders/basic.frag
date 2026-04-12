@@ -49,7 +49,7 @@ vec4 calculateLighting(vec3 pos, vec3 normal, vec4 color, bool isAlpha) {
 void main() {
     vec4 color;
     if (uTextureCount > 0) {
-        color = texture(uTextures[0], uvDiffuse);
+        color = vertexColor * texture(uTextures[0], uvDiffuse);
 
         if (uTextureCount > 1) {
             vec4 secondTex = texture(uTextures[1], uvShadow);
@@ -64,7 +64,6 @@ void main() {
 
     if (color.a >= 0.999) {
         FragColor = calculateLighting(worldPos, worldNormal, color, false);
-
         return;
     }
     vec4 litColor = calculateLighting(worldPos, worldNormal, color, true);

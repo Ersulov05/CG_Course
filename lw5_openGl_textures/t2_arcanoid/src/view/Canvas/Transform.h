@@ -29,6 +29,11 @@ public:
         Translate(position.x, position.y, position.z);
     }
 
+    void Rotate(const glm::quat& quat)
+    {
+        m_currentTransform.Rotate(quat);
+    }
+
     void RotateX(float angleDegrees)
     {
         m_currentTransform.RotateX(angleDegrees);

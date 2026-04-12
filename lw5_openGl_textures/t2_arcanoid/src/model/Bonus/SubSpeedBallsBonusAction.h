@@ -40,6 +40,6 @@ public:
 
 private:
     std::vector<Ball>& m_balls;
-    float lifetime = 5;
+    float lifetime = 3;
     const float SUBBED_SPEED_COEF = 2;
 };

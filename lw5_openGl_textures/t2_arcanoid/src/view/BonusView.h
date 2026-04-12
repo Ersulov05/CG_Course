@@ -9,12 +9,13 @@ public:
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(bonus.GetPosition());
         canvas.GetTransform().Translate(0, bonus.GetRadius(), 0);
-        canvas.GetTransform().Scale(bonus.GetRadius() * 2);
+        auto scale = bonus.GetRadius() * 2;
+        canvas.GetTransform().Scale(scale * 1.5, scale, scale);
         
         canvas.DrawMesh(m_bonusMesh);
         canvas.GetTransform().PopMatrix();
     }
 
 private:
-    inline static const MeshData m_bonusMesh = Mesh::Sphere(0xFFFF00FF);
+    inline static const MeshData m_bonusMesh = Mesh::Sphere(0xFFFFFFFF, {"./textures/bonus.jpg"});
 };

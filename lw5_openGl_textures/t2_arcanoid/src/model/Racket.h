@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <functional>
 #include <vector>
+#include "./Constants.h"
 
 enum class Direction {
     Left,
@@ -13,12 +14,6 @@ enum class Direction {
 class Racket
 {
 public:
-    Racket() {}
-    Racket(Point3D position, Size3D size, float speed)
-        : m_position(m_position), m_size(size), m_speed(speed) 
-    {
-    }
-
     void Move(Direction direction, float deltatime) {
         switch (direction) {                
             case Direction::Left:
@@ -51,8 +46,14 @@ public:
         m_size = size;
     }
 
+    void Reset()
+    {
+        m_size = DEFAULT_RACKET_SIZE;
+        m_position = {0, 0, -DEFAULT_RACKET_SIZE.depth/2};
+    }
+
 private:
-    Point3D m_position = {0, 0, -0.05};
-    Size3D m_size = {0.5, 0.1, 0.1};
-    float m_speed = 2;
+    Point3D m_position = {0, 0, -DEFAULT_RACKET_SIZE.depth/2};
+    Size3D m_size = DEFAULT_RACKET_SIZE;
+    float m_speed = DEFAULT_RACKET_SPEED;
 };

@@ -22,13 +22,12 @@ public:
     }
 
     void Run() {
-        m_canvas.SetLightPos({0, 4, 0});
+        m_canvas.SetLightPos({0, 4, 0.5});
         m_canvas.Run(
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-
-            camera.SetPosition(Point3D{0, 1.15, 0.45});
+            camera.SetPosition(Point3D{0, 1.2, 0.5});
             camera.SetRotation(0, -40, 0);
 
             m_game.Update(deltatime);

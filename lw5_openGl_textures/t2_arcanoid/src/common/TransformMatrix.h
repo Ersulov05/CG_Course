@@ -27,6 +27,11 @@ public:
         m_matrix = glm::translate(m_matrix, glm::vec3(vec.x, vec.y, vec.z));
     }
 
+    void Rotate(const glm::quat& quat)
+    {
+        m_matrix = m_matrix * glm::mat4_cast(quat);
+    }
+
     void RotateX(float angleDegrees)
     {
         m_matrix = glm::rotate(m_matrix, glm::radians(angleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));

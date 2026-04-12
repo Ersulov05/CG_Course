@@ -9,6 +9,7 @@ public:
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(ball.GetPosition());
         canvas.GetTransform().Translate(0, ball.GetRadius(), 0);
+        canvas.GetTransform().Rotate(ball.GetRotate());
         canvas.GetTransform().Scale(ball.GetRadius() * 2);
         
         canvas.DrawMesh(m_ballMesh);
@@ -16,5 +17,5 @@ public:
     }
 
 private:
-    inline static const MeshData m_ballMesh = Mesh::Sphere(0xFF0000FF);
+    inline static const MeshData m_ballMesh = Mesh::Sphere(0xFFFFFFFF, {"./textures/mramor.jpg"});
 };

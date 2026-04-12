@@ -24,7 +24,7 @@
 class Canvas3D : public ICanvas3D, protected Window
 {
 public:
-    Canvas3D(unsigned width = 800, unsigned height = 600)
+    Canvas3D(unsigned width = 1280, unsigned height = 1024)
         : Window(width, height, "OpenGL Canvas")
     {
         float aspect = (float)width / (float)height;
@@ -199,17 +199,18 @@ private:
     void LoadTextures()
     {
         m_textureLoader.LoadTexture("./textures/brick.jpg");
-        m_textureLoader.LoadTexture("./textures/wallpaper.jpg");
-        m_textureLoader.LoadTexture("./textures/wood.jpg");
-        m_textureLoader.LoadTexture("./textures/granit.jpg");
-        m_textureLoader.LoadTexture("./textures/stone.jpg");
-        m_textureLoader.LoadTexture("./textures/earth.jpg");
-        m_textureLoader.LoadTexture("./textures/grass.jpg");
-        m_textureLoader.LoadTexture("./textures/sky.jpg");
-        m_textureLoader.LoadTexture("./textures/wallpaper2.jpg");
-        m_textureLoader.LoadTexture("./textures/wall.jpg");
-        m_textureLoader.LoadTexture("./textures/darkness.png");
-        m_textureLoader.LoadTexture("./textures/darkness4.png");
+        m_textureLoader.LoadTexture("./textures/beton.jpg");
+        m_textureLoader.LoadTexture("./textures/mramor.jpg");
+        m_textureLoader.LoadTexture("./textures/bonus.jpg");
+        m_textureLoader.LoadTexture("./textures/wood2.jpg");
+
+        m_textureLoader.LoadTexture("./textures/green_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/yellow_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/orange_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/light_blue_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/dark_blue_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/violet_glass.jpg");
+        m_textureLoader.LoadTexture("./textures/red_glass.jpg");
     }
 
     void CreateFBO()

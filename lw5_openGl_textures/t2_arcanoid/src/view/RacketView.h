@@ -24,8 +24,8 @@ private:
     MeshData m_racketMesh;
 
     void GenerateRacketMesh() {
-        auto color = Color(0x0000FFFF);
+        auto color = Color(0xFFFFFFFF);
 
-        m_racketMesh = Mesh::Cube(color);
+        m_racketMesh = Mesh::Cube(color, {"./textures/wood2.jpg"});
     }
 };

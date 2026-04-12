@@ -26,6 +26,13 @@ public:
             m_activeBonuses.end()
         );
     }
+
+    void Clear() {
+        for (auto& activeBonus : m_activeBonuses) {
+            activeBonus->ReApply();
+        }
+        m_activeBonuses.clear();
+    }
 private:
     std::vector<std::shared_ptr<IBonusAction>> m_activeBonuses;
 
@@ -58,7 +65,10 @@ private:
     {
         for (auto& conflictPair : CONFLICTED_BONUS_TYPES) {
             if ((firstType == conflictPair.first && secondType == conflictPair.second) ||
-                (firstType == conflictPair.second && secondType == conflictPair.first)) {
+                (firstType == conflictPair.second && secondType == conflictPair.first) ||
+                (firstType == conflictPair.first && secondType == conflictPair.first) ||
+                (firstType == conflictPair.second && secondType == conflictPair.second)
+            ) {
                 return true;
             }
         }

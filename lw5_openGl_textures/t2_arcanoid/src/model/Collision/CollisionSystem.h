@@ -114,7 +114,7 @@ private:
         float dz = ballPos.z - closestZ;
         float distance = sqrt(dx * dx + dz * dz);
         
-        if (distance >= ballRadius) {
+        if (distance >= ballRadius || distance == 0) {
             return std::nullopt;
         }
 

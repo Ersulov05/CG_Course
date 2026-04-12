@@ -29,6 +29,6 @@ public:
 private:
     std::shared_ptr<IBonusAction> m_bonusAction;
     Point3D m_position = {0, 0, 0};
-    inline static const float RADIUS = 0.15;
+    inline static const float RADIUS = 0.05;
     inline static const float SPEED = 1;
 };

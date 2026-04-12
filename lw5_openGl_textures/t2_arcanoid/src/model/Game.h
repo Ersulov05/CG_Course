@@ -11,17 +11,14 @@
 #include "./Bonus/Factory/BonusFactory.h"
 
 #include "./Constants.h"
+#include "./LevelCreator/LevelCreator.h"
 
 class Game
 {
 public:
     Game() : m_bonusFactory(m_balls, m_racket) {
-        m_balls.push_back(Ball({0, 0, -1}, {-1, 0, 1}, 0.05, 0.5));
-        m_balls.push_back(Ball({0, 0, -1}, {1, 0, -1}, 0.05, 0.5));
-
-        m_blocks.push_back(Block({0, 0, -3}, {0.4, 0.2, 0.2}));
-        // m_blocks.push_back(Block({0, 0, -2.5}, {0.4, 0.2, 0.2}));
-        // m_blocks.push_back(Block({0, 0, -2}, {0.4, 0.2, 0.2}));
+        m_balls.push_back(LevelCreator::GetLevelStartBall());
+        m_blocks = LevelCreator::GetLevelBlocks(1);
     }
 
     Racket& GetRacket() {
@@ -52,6 +49,14 @@ public:
 
         CheckAndHandleCollision();
         DeleteOutBalls();
+
+        if (m_blocks.size() == 0) {
+            ++m_level;
+            ChangeLevel();
+        }
+        if (m_balls.size() == 0) {
+            ChangeLevel();
+        }
     }
 private:
     Racket m_racket;
@@ -61,6 +66,23 @@ private:
     BonusActionManager m_bonusManager;
     BonusFactory m_bonusFactory;
     int m_brokenBlocksCount = 0;
+    unsigned m_level = 1;
+    const int BLOCKS_TO_SPAWN_BONUS = 5;
+    const float OUT_POSITION_Z = 0.5;
+
+    void Reset() {
+        m_bonusManager.Clear();
+        m_balls.clear();
+        m_bonuses.clear();
+        m_racket.Reset();
+        m_brokenBlocksCount = 0;
+    }
+
+    void ChangeLevel() {
+        Reset();
+        m_blocks = LevelCreator::GetLevelBlocks(m_level);
+        m_balls.push_back(LevelCreator::GetLevelStartBall());
+    }
 
     void CheckAndHandleCollision() {
         CollisionSystem::CheckAndHandleRacketWithSceneCollision(m_racket);
@@ -97,7 +119,8 @@ private:
 
     void HandleBlockCollision(const Block& block) 
     {
-        if (m_brokenBlocksCount != 0 && m_brokenBlocksCount % 3 == 0) 
+        ++m_brokenBlocksCount;
+        if (m_brokenBlocksCount != 0 && m_brokenBlocksCount % BLOCKS_TO_SPAWN_BONUS == 0) 
         {
             auto newBonus = m_bonusFactory.CreateBonus(block.GetPosition());
             m_bonuses.push_back(newBonus);
@@ -107,11 +130,22 @@ private:
     void DeleteOutBalls() {
         m_balls.erase(
             std::remove_if(m_balls.begin(), m_balls.end(),
-                [](const Ball& ball) {
-                    return ball.GetPosition().z > 0;
+                [this](const Ball& ball) {
+                    return ball.GetPosition().z > OUT_POSITION_Z;
                 }
             ),
             m_balls.end()
+        );  
+    }
+
+    void DeleteOutBonuses() {
+        m_bonuses.erase(
+            std::remove_if(m_bonuses.begin(), m_bonuses.end(),
+                [this](const Bonus& bonus) {
+                    return bonus.GetPosition().z > OUT_POSITION_Z;
+                }
+            ),
+            m_bonuses.end()
         );  
     }
 };
