@@ -4,6 +4,8 @@
 #include "../Ball.h"
 #include "../Block.h"
 #include "../Racket.h" 
+#include "../Bonus/Bonus.h"
+#include "../Constants.h"
 #include <optional>
 
 class CollisionSystem
@@ -31,6 +33,65 @@ public:
 
         ChangeBallMoveDirection(ball, collisionData.value());
         return true;
+    }
+
+    static bool CheckCollision(Bonus &bonus, const Racket &racket)
+    {
+        auto collisionData = CheckCollision(racket.GetPosition(), racket.GetSize(), bonus.GetPosition(), bonus.GetRadius());
+
+        if (!collisionData.has_value()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static void CheckAndHandleBallWithSceneCollision(Ball &ball) {
+        auto ballPos = ball.GetPosition();
+        auto ballRadius = ball.GetRadius();
+
+        auto rightDistance = SCENE_SIZE.width/2 - ballPos.x - ballRadius;
+        auto leftDistance = ballPos.x - (-SCENE_SIZE.width/2) - ballRadius;
+        auto upDistance = ballPos.z - (-SCENE_SIZE.depth) - ballRadius;
+
+        auto newPos = ball.GetPosition();
+        auto newDirection = ball.GetMoveDirection();
+        if (rightDistance < 0) {
+            newDirection.x *= -1;
+            newPos.x += rightDistance;
+        }
+
+        if (leftDistance < 0) {
+            newDirection.x *= -1;
+            newPos.x -= leftDistance;
+        }
+
+        if (upDistance < 0) {
+            newDirection.z *= -1;
+            newPos.z -= upDistance;
+        }
+
+        ball.SetMoveDirection(newDirection);
+        ball.SetPosition(newPos);
+    }
+
+    static void CheckAndHandleRacketWithSceneCollision(Racket& racket) {
+        auto racketPosX = racket.GetPosition().x;
+        auto racketWidth = racket.GetSize().width;
+
+        auto rightDistance = SCENE_SIZE.width/2 - racketPosX - racketWidth / 2;
+        auto leftDistance = racketPosX - (-SCENE_SIZE.width/2) - racketWidth / 2;
+
+        auto newPos = racket.GetPosition();
+        if (rightDistance < 0) {
+            newPos.x += rightDistance;
+        }
+
+        if (leftDistance < 0) {
+            newPos.x -= leftDistance;
+        }
+
+        racket.SetPosition(newPos);
     }
 
 private:

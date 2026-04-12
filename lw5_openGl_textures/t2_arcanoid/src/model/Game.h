@@ -3,19 +3,25 @@
 #include "./Racket.h"
 #include "./Block.h"
 #include "./Collision/CollisionSystem.h"
+#include "./Bonus/BonusActionManager.h"
+#include "./Bonus/Bonus.h"
+#include "./Bonus/SplitBallsBonusAction.h"
+#include "./Bonus/AddSpeedBallsBonusAction.h"
+#include "./Bonus/SubSizeBallsBonusAction.h"
+#include "./Bonus/Factory/BonusFactory.h"
+
+#include "./Constants.h"
 
 class Game
 {
 public:
-    inline static const Size3D SCENE_SIZE = Size3D{2, 1, 3};
-
-    Game() {
+    Game() : m_bonusFactory(m_balls, m_racket) {
         m_balls.push_back(Ball({0, 0, -1}, {-1, 0, 1}, 0.05, 0.5));
         m_balls.push_back(Ball({0, 0, -1}, {1, 0, -1}, 0.05, 0.5));
 
         m_blocks.push_back(Block({0, 0, -3}, {0.4, 0.2, 0.2}));
-        m_blocks.push_back(Block({0, 0, -2.5}, {0.4, 0.2, 0.2}));
-        m_blocks.push_back(Block({0, 0, -2}, {0.4, 0.2, 0.2}));
+        // m_blocks.push_back(Block({0, 0, -2.5}, {0.4, 0.2, 0.2}));
+        // m_blocks.push_back(Block({0, 0, -2}, {0.4, 0.2, 0.2}));
     }
 
     Racket& GetRacket() {
@@ -30,21 +36,46 @@ public:
         return m_balls;
     }
 
+    std::vector<Bonus>& GetBonuses() {
+        return m_bonuses;
+    }
+
     void Update(float deltatime) {
         for (auto &ball : m_balls) {
             ball.Update(deltatime);
         }
 
-        CheckCollision();
-        CheckRacketWithSceneCollision();
+        for (auto &bonus : m_bonuses) {
+            bonus.Update(deltatime);
+        }
+        m_bonusManager.Update(deltatime);
+
+        CheckAndHandleCollision();
         DeleteOutBalls();
     }
 private:
     Racket m_racket;
     std::vector<Ball> m_balls;
     std::vector<Block> m_blocks;
+    std::vector<Bonus> m_bonuses;
+    BonusActionManager m_bonusManager;
+    BonusFactory m_bonusFactory;
+    int m_brokenBlocksCount = 0;
 
-    void CheckCollision() {
+    void CheckAndHandleCollision() {
+        CollisionSystem::CheckAndHandleRacketWithSceneCollision(m_racket);
+        m_bonuses.erase(
+            std::remove_if(m_bonuses.begin(), m_bonuses.end(),
+            [this](Bonus& bonus) {
+                if (CollisionSystem::CheckCollision(bonus, m_racket)) {
+                    m_bonusManager.ApplyBonus(bonus.GetBonusAction());
+                    return true;
+                }
+                return false;
+            }),
+            m_bonuses.end()
+        );
+
         for (auto& ball : m_balls) {
             m_blocks.erase(
                 std::remove_if(m_blocks.begin(), m_blocks.end(),
@@ -60,42 +91,17 @@ private:
             );
 
             CollisionSystem::CheckCollision(ball, m_racket);
-            CheckBallWithSceneCollision(ball);
+            CollisionSystem::CheckAndHandleBallWithSceneCollision(ball);
         }
     }
 
-    void HandleBlockCollision(const Block& block) {
-
-    }
-
-    void CheckBallWithSceneCollision(Ball &ball) {
-        auto ballPos = ball.GetPosition();
-        auto ballRadius = ball.GetRadius();
-
-        auto rightDistance = SCENE_SIZE.width/2 - ballPos.x - ballRadius;
-        auto leftDistance = ballPos.x - (-SCENE_SIZE.width/2) - ballRadius;
-        auto upDistance = ballPos.z - (-SCENE_SIZE.depth) - ballRadius;
-
-        auto newPos = ball.GetPosition();
-        auto newDirection = ball.GetMoveDirection();
-        if (rightDistance < 0) {
-            newDirection.x *= -1;
-            newPos.x += rightDistance;
-        }
-
-        if (leftDistance < 0) {
-            newDirection.x *= -1;
-            newPos.x -= leftDistance;
-        }
-
-        if (upDistance < 0) {
-            newDirection.z *= -1;
-            newPos.z -= upDistance;
-        }
-
-        ball.SetMoveDirection(newDirection);
-        ball.SetPosition(newPos);
-        ballPos = ball.GetPosition();
+    void HandleBlockCollision(const Block& block) 
+    {
+        if (m_brokenBlocksCount != 0 && m_brokenBlocksCount % 3 == 0) 
+        {
+            auto newBonus = m_bonusFactory.CreateBonus(block.GetPosition());
+            m_bonuses.push_back(newBonus);
+        }        
     }
 
     void DeleteOutBalls() {
@@ -107,24 +113,5 @@ private:
             ),
             m_balls.end()
         );  
-    }
-
-    void CheckRacketWithSceneCollision() {
-        auto racketPosX = m_racket.GetPosition().x;
-        auto racketWidth = m_racket.GetSize().width;
-
-        auto rightDistance = SCENE_SIZE.width/2 - racketPosX - racketWidth / 2;
-        auto leftDistance = racketPosX - (-SCENE_SIZE.width/2) - racketWidth / 2;
-
-        auto newPos = m_racket.GetPosition();
-        if (rightDistance < 0) {
-            newPos.x += rightDistance;
-        }
-
-        if (leftDistance < 0) {
-            newPos.x -= leftDistance;
-        }
-
-        m_racket.SetPosition(newPos);
     }
 };

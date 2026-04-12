@@ -12,8 +12,6 @@ public:
         : m_position(position), m_moveDirection(moveDirection), m_radius(radius), m_speed(speed) 
     {
         m_moveDirection.Normalized();
-        std::cout << "pos " << position.x << " " << position.y << " " << position.z << " " << radius << std::endl;
-        std::cout << "pos " << m_position.x << " " << m_position.y << " " << m_position.z << " " << m_radius << std::endl;
     }
 
     void Update(float deltatime) 
@@ -32,16 +30,35 @@ public:
         return m_radius;
     }
 
-    Vector3D GetMoveDirection() {
+    float GetSpeed() 
+    {
+        return m_speed;
+    }
+
+    void SetSpeed(float speed) 
+    {
+        m_speed = speed;
+    }
+
+    Vector3D GetMoveDirection() 
+    {
         return m_moveDirection;
     }
 
-    void SetPosition(Point3D position) {
+    void SetPosition(Point3D position) 
+    {
         m_position = position;
     }
 
-    void SetMoveDirection(Vector3D moveDirection) {
+    void SetMoveDirection(Vector3D moveDirection) 
+    {
         m_moveDirection = moveDirection;
+        m_moveDirection.Normalized();
+    }
+
+    void SetRadius(float radius) 
+    {
+        m_radius = radius;
     }
 private:
     Point3D m_position = {0, 0, 0};

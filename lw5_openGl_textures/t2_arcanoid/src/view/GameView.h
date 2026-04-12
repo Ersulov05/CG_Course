@@ -2,6 +2,7 @@
 #include "../model/Game.h"
 #include "./Canvas/Canvas3D.h"
 #include "./BallView.h"
+#include "./BonusView.h"
 #include "./BlockView.h"
 #include "./RacketView.h"
 #include "./SceneView.h"
@@ -33,6 +34,7 @@ public:
             m_game.Update(deltatime);
             DrawScene();
             DrawBalls();
+            DrawBonuses();
             DrawBlocks();
             DrawRacket();
         });
@@ -43,6 +45,12 @@ private:
     Game &m_game;
     RacketView m_racket;
     SceneView m_scene;
+
+    void DrawBonuses() {
+        for (const auto & bonus : m_game.GetBonuses()) {
+            BonusView::Draw(bonus, m_canvas);
+        }
+    }
 
     void DrawBalls() {
         for (const auto & ball : m_game.GetBalls()) {

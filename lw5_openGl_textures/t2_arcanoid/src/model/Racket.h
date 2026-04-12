@@ -41,8 +41,14 @@ public:
         return m_size;
     }
 
-    void SetPosition(Point3D position) {
+    void SetPosition(const Point3D& position) 
+    {
         m_position = position;
+    }
+
+    void SetSize(const Size3D& size)
+    {
+        m_size = size;
     }
 
 private:

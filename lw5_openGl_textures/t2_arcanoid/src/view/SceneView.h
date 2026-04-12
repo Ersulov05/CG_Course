@@ -1,7 +1,7 @@
 #pragma once
 #include "./Canvas/ICanvas3D.h"
 #include "./Meshes/Mesh.h"
-#include "../model/Game.h"
+#include "../model/Constants.h"
 
 class SceneView {
 public:
@@ -21,7 +21,7 @@ private:
     MeshData m_forwardWall = Mesh::Cube(0x00FFFFFF);
 
     void DrawFloorScene(ICanvas3D& canvas) {
-        auto sceneSize = Game::SCENE_SIZE;
+        auto sceneSize = SCENE_SIZE;
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(0, -0.1, -sceneSize.depth/2);
         canvas.GetTransform().Scale(sceneSize.width, 0.2, sceneSize.depth);
@@ -30,7 +30,7 @@ private:
     }
 
     void DrawDangerArea(ICanvas3D& canvas) {
-        Size3D size = {Game::SCENE_SIZE.width, 0.2, 0.2};
+        Size3D size = {SCENE_SIZE.width, 0.2, 0.2};
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(0, -size.height/2, size.depth/2);
         canvas.GetTransform().Scale(size);
@@ -39,27 +39,27 @@ private:
     }
 
     void DrawForwardWall(ICanvas3D& canvas) {
-        Size3D size = {Game::SCENE_SIZE.width, 1, 0.1};
+        Size3D size = {SCENE_SIZE.width, 1, 0.1};
         canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(0, size.height/2, -Game::SCENE_SIZE.depth - size.depth/2);
+        canvas.GetTransform().Translate(0, size.height/2, -SCENE_SIZE.depth - size.depth/2);
         canvas.GetTransform().Scale(size);
         canvas.DrawMesh(m_forwardWall);
         canvas.GetTransform().PopMatrix();
     }
 
     void DrawLeftWall(ICanvas3D& canvas) {
-        Size3D size = {0.1, 1, Game::SCENE_SIZE.depth};
+        Size3D size = {0.1, 1, SCENE_SIZE.depth};
         canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(-Game::SCENE_SIZE.height - size.width/2, size.height/2, -size.depth/2);
+        canvas.GetTransform().Translate(-SCENE_SIZE.height - size.width/2, size.height/2, -size.depth/2);
         canvas.GetTransform().Scale(size);
         canvas.DrawMesh(m_leftWall);
         canvas.GetTransform().PopMatrix();
     }
 
     void DrawRightWall(ICanvas3D& canvas) {
-        Size3D size = {0.1, 1, Game::SCENE_SIZE.depth};
+        Size3D size = {0.1, 1, SCENE_SIZE.depth};
         canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(Game::SCENE_SIZE.height + size.width/2, size.height/2, -size.depth/2);
+        canvas.GetTransform().Translate(SCENE_SIZE.height + size.width/2, size.height/2, -size.depth/2);
         canvas.GetTransform().Scale(size);
         canvas.DrawMesh(m_rightWall);
         canvas.GetTransform().PopMatrix();
