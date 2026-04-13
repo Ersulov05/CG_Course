@@ -1,12 +1,11 @@
 #pragma once
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "../common/Geometry.h"
 #include <algorithm>
 #include <unordered_map>
 #include <functional>
 #include <vector>
-
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 class Ball
 {
@@ -20,20 +19,7 @@ public:
     void Update(float deltatime) 
     {
         m_position = m_position + m_moveDirection * m_speed * deltatime;
-
-        float distance = m_speed * deltatime;
-        float angleRad = distance / m_radius / 2;
-
-        if (std::abs(m_moveDirection.x) > 0.001f || std::abs(m_moveDirection.z) > 0.001f) {            
-            float axisX = m_moveDirection.z;
-            float axisZ = -m_moveDirection.x;
-            
-            glm::quat deltaRot = glm::angleAxis(angleRad, glm::vec3(axisX, 0.0f, axisZ));
-            m_rotation = deltaRot * m_rotation;  // или m_rotation = m_rotation * deltaRot
-            
-            // Нормализуем кватернион для предотвращения ошибок накопления
-            m_rotation = glm::normalize(m_rotation);
-        }
+        Rotate(deltatime);
     }
 
     Point3D GetPosition() const
@@ -81,10 +67,24 @@ public:
     {
         return m_rotation;
     }
+
 private:
     Point3D m_position = {0, 0, 0};
     Vector3D m_moveDirection = {0, 0, 0};
     float m_radius = 2;
     float m_speed = 1;
     glm::quat m_rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+    void Rotate(float deltatime) {
+        float distance = m_speed * deltatime;
+        float angleRad = distance / m_radius / 2;
+
+        if (std::abs(m_moveDirection.x) > 0.001f || std::abs(m_moveDirection.z) > 0.001f) {            
+            float axisX = m_moveDirection.z;
+            float axisZ = -m_moveDirection.x;
+            
+            glm::quat deltaRot = glm::angleAxis(angleRad, glm::vec3(axisX, 0.0f, axisZ));
+            m_rotation = glm::normalize(deltaRot * m_rotation);
+        }
+    }
 };

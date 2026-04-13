@@ -67,7 +67,7 @@ private:
     BonusFactory m_bonusFactory;
     int m_brokenBlocksCount = 0;
     unsigned m_level = 1;
-    const int BLOCKS_TO_SPAWN_BONUS = 5;
+    const int BLOCKS_TO_SPAWN_BONUS = 4;
     const float OUT_POSITION_Z = 0.5;
 
     void Reset() {
