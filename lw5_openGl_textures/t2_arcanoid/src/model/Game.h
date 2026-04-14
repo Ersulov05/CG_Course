@@ -18,7 +18,7 @@ class Game
 public:
     Game() : m_bonusFactory(m_balls, m_racket) {
         m_balls.push_back(LevelCreator::GetLevelStartBall());
-        m_blocks = LevelCreator::GetLevelBlocks(1);
+        m_blocks = LevelCreator::GetLevelBlocks(m_level);
     }
 
     Racket& GetRacket() {
@@ -52,10 +52,10 @@ public:
 
         if (m_blocks.size() == 0) {
             ++m_level;
-            ChangeLevel();
+            ResetLevel();
         }
         if (m_balls.size() == 0) {
-            ChangeLevel();
+            ResetLevel();
         }
     }
 private:
@@ -78,7 +78,7 @@ private:
         m_brokenBlocksCount = 0;
     }
 
-    void ChangeLevel() {
+    void ResetLevel() {
         Reset();
         m_blocks = LevelCreator::GetLevelBlocks(m_level);
         m_balls.push_back(LevelCreator::GetLevelStartBall());
