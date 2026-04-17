@@ -145,7 +145,6 @@ private:
         float forwardSpeed = forward.Dot(m_speed);
         float rightSpeed = right.Dot(m_speed);
         
-        // Уменьшаем скорость, но не даём ей перейти через ноль
         forwardSpeed = std::max(0.0f, std::abs(forwardSpeed) - friction * deltatime) * sign(forwardSpeed);
         rightSpeed = std::max(0.0f, std::abs(rightSpeed) - sideFriction * deltatime) * sign(rightSpeed);
         

@@ -60,6 +60,6 @@ public:
 private:
     Map m_map = LevelCreator::GetMapByLevel(1);
     ShellManager m_shellManager;
-    Tank m_playerTank = Tank(m_map, {0, 0, 0}, 4);
+    Tank m_playerTank = Tank(m_map, {0, 0, 0}, 1);
     std::vector<Tank> m_enemyTanks;
 };

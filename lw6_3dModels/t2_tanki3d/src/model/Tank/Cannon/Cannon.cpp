@@ -46,6 +46,11 @@ float Cannon::GetReloadTime() const
     return m_reloadTime;
 }
 
+float Cannon::GetTotalReloadTime() const
+{
+    return m_totalReloadTime;
+}
+
 CannonType Cannon::GetCannonType() const 
 {
     return m_cannonType;

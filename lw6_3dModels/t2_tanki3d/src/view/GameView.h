@@ -6,7 +6,7 @@
 #include "./MapView.h"
 #include "./ShellView.h"
 
-#include "./UIView.h"
+#include "./UI/UIView.h"
 
 class GameView {
 public:

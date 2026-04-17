@@ -9,19 +9,19 @@ Cannon CannonFactory::CreateCannonByLevel(unsigned int level) {
     switch (level) {
         case 1:
             damage = 50;
-            reloadTime = 3;
+            reloadTime = 2;
             return Cannon(CannonType::MM85, MountType::SINGLE, reloadTime, damage);
         case 2:
             damage = 50;
-            reloadTime = 4;
+            reloadTime = 3;
             return Cannon(CannonType::MM85, MountType::TWIN, reloadTime, damage);
         case 3:
             damage = 150;
-            reloadTime = 5;
+            reloadTime = 4;
             return Cannon(CannonType::MM152, MountType::SINGLE, reloadTime, damage);
         case 4:
             damage = 150;
-            reloadTime = 6;
+            reloadTime = 5;
             return Cannon(CannonType::MM152, MountType::TWIN, reloadTime, damage);
         default:
             throw std::invalid_argument("Unknown level: " + std::to_string(level));

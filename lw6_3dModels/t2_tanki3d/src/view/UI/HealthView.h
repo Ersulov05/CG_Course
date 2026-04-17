@@ -1,20 +1,21 @@
 #pragma once
-#include "./Canvas/ICanvas3D.h"
-#include "./Meshes/Mesh.h"
-#include "../controller/GameController.h"
+#include "../Canvas/ICanvas3D.h"
+#include "../Meshes/Mesh.h"
+#include "../../controller/GameController.h"
 
-class UIView {
+class HealthView {
 public:
-    static void Draw(ICanvas3D& canvas, const GameController& controller)
+    static void Draw(ICanvas3D& canvas, float health, float totalHealth)
     {
-        auto& shaderManager = canvas.GetShaderManager();
-        shaderManager.Push("ui");
+        auto height = canvas.GetHeight();
+
         canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().ResetTransform();
-        DrawHealthBar(canvas, 75, 100);
+        canvas.GetTransform().Translate(HEALTH_BAR_WIDTH/2 + HEALTH_BAR_PADDING, height - HEALTH_BAR_HEIGHT/2 - HEALTH_BAR_PADDING, 0);
+
+        DrawHealth(canvas, health, totalHealth);
+        DrawHealthBorder(canvas);
 
         canvas.GetTransform().PopMatrix();
-        shaderManager.Pop();
     }
 private:
     inline static const MeshData m_healthRect = Mesh::Rect(0xFF0000FF);
@@ -24,23 +25,7 @@ private:
     inline static const float HEALTH_BORDER_SIZE = 4;
     inline static const float HEALTH_BAR_PADDING = 20;
 
-    static void DrawHealthBar(ICanvas3D& canvas, unsigned int health, unsigned int totalHealth)
-    {
-        auto width = canvas.GetWidth();
-        auto height = canvas.GetHeight();
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(HEALTH_BAR_WIDTH/2 + HEALTH_BAR_PADDING, height - HEALTH_BAR_HEIGHT/2 - HEALTH_BAR_PADDING, 0);
-
-        float healthRate = (float)health / (float)totalHealth;
-
-        DrawHealth(canvas, health, totalHealth);
-        DrawHealthBorder(canvas);
-
-        canvas.GetTransform().PopMatrix();   
-    }
-
-    static void DrawHealth(ICanvas3D& canvas, unsigned int health, unsigned int totalHealth)
+    static void DrawHealth(ICanvas3D& canvas, float health, float totalHealth)
     {
         float healthRate = (float)health / (float)totalHealth;
 

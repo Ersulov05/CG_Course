@@ -8,8 +8,8 @@
 #include "./CannonFactory.h"
 
 enum class MountType {
-    SINGLE,
-    TWIN,
+    SINGLE = 1,
+    TWIN = 2,
 };
 
 enum class CannonType {
@@ -26,6 +26,7 @@ public:
     std::vector<Shell> Fire(const Point3D tankPosition, const Quaternion3D tankRotation);
 
     float GetReloadTime() const;
+    float GetTotalReloadTime() const;
 
     CannonType GetCannonType() const;
 
