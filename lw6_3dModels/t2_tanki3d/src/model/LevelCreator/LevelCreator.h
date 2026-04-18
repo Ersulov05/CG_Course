@@ -17,7 +17,7 @@ public:
         float width = GetLevelWidth(levelMap.terrarianMap);
         float height = GetLevelHeight(levelMap.terrarianMap);
 
-        return Map(terrarians, levelObjects.walls, levelObjects.headquarters, width, height);
+        return Map(terrarians, levelObjects.walls, levelObjects.headquartersWalls, levelObjects.headquarters, width, height);
     } 
 private:  
     using TerrarianMap = std::vector<std::string>;
@@ -31,6 +31,7 @@ private:
     struct LevelObjects {
         Headquarters headquarters;
         std::vector<Wall> walls;
+        std::vector<Wall> headquartersWalls;
     };
     
     inline static const std::vector<LevelMap> m_levelMaps = 
@@ -52,7 +53,7 @@ private:
             },
             ObjectsMap{
                 "bbbbbbbbbbbb",
-                "b00000h0000b",
+                "b0000000000b",
                 "b0000000000b",
                 "b0000000000b",
                 "b0000000000b",
@@ -60,8 +61,8 @@ private:
                 "b00b0000000b",
                 "b0000000000b",
                 "b0000000000b",
-                "b0000000000b",
-                "b0000000000b",
+                "b0000BBB000b",
+                "b0000BHB000b",
                 "bbbbbbbbbbbb",
             },
         },        
@@ -113,23 +114,8 @@ private:
         float z = -(int)objectsMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth;
 
         for (const auto& row : objectsMap) {
-            for (const char& col : row) {
-                if (col == 'h') {
-                    Point3D headquartersPosition = {x, Constants::HEADQUARTERS_SIZE.height/2, z};
-                    levelObjects.headquarters = Headquarters(headquartersPosition);
-                    continue;
-                }
-
-                auto wallType = ConvertCharToWallType(col);
-                if (!wallType.has_value()) 
-                {
-                    x += Constants::DEFAULT_WALL_SIZE.width;
-                    continue;
-                }
-                Point3D wallPosition = {x, Constants::DEFAULT_WALL_SIZE.height/2, z};
-                auto wall = Wall(*wallType, wallPosition);
-                levelObjects.walls.push_back(wall);
-
+            for (const char& obj : row) {
+                HandleObjectItem(levelObjects, obj, x, z);
                 x += Constants::DEFAULT_WALL_SIZE.width;
             }
             z += Constants::DEFAULT_WALL_SIZE.depth;
@@ -137,6 +123,29 @@ private:
         }
 
         return levelObjects;
+    }
+
+    static void HandleObjectItem(LevelObjects& levelObjects, char obj, float x, float z)
+    {
+        if (obj == 'H') {
+            Point3D headquartersPosition = {x, Constants::HEADQUARTERS_SIZE.height/2, z};
+            levelObjects.headquarters = Headquarters(headquartersPosition);
+            return;
+        }
+
+        auto wallType = ConvertCharToWallType(obj);
+        if (!wallType.has_value()) 
+        {
+            return;
+        }
+
+        Point3D wallPosition = {x, Constants::DEFAULT_WALL_SIZE.height/2, z};
+        auto wall = Wall(*wallType, wallPosition);
+        if (obj == 'B') {
+            levelObjects.headquartersWalls.push_back(wall);
+            return;
+        }
+        levelObjects.walls.push_back(wall);
     }
 
     static TerrarianType ConvertCharToTerrarianType(char ch) 
@@ -155,6 +164,7 @@ private:
     {
         switch (ch) {
             case 'b':
+            case 'B':
                 return WallType::Brick;
             case 's':
                 return WallType::Steel;

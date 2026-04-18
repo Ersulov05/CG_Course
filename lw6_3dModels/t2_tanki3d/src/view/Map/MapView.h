@@ -17,6 +17,10 @@ public:
         {
             WallView::Draw(canvas, wall);
         }
+        for (auto& wall : map.GetHeadquartersWalls()) 
+        {
+            WallView::Draw(canvas, wall);
+        }
         HeadquartersView::Draw(canvas, map.GetHeadquarters());
     }
 private:

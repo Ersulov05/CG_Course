@@ -27,12 +27,20 @@ public:
         {
             CheckAndHandleCollision(shell, wall);
         }
+        for (auto& wall : map.GetHeadquartersWalls()) 
+        {
+            CheckAndHandleCollision(shell, wall);
+        }
     }
 
     static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, Map& map)
     {
         CheckAndHandleCollision(tank, map.GetHeadquarters());
         for (auto& wall : map.GetWalls()) {
+            CheckAndHandleCollision(tank, wall);
+        }
+        for (auto& wall : map.GetHeadquartersWalls()) 
+        {
             CheckAndHandleCollision(tank, wall);
         }
     }

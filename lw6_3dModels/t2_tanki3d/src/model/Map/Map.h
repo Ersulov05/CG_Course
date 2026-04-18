@@ -12,12 +12,15 @@ public:
     Map(
         const std::vector<Terrarian>& terrarians, 
         const std::vector<Wall>& walls,
+        const std::vector<Wall>& headquartersWalls,
         const Headquarters& headquarters,
         float width,
         float height
     ) 
         : m_terrarians(terrarians)
         , m_walls(walls)
+        , m_originalHeadquartersWalls(headquartersWalls)
+        , m_headquartersWalls(headquartersWalls)
         , m_headquarters(headquarters)
         , m_width(width)
         , m_height(height) 
@@ -26,13 +29,13 @@ public:
 
     void Update() 
     {
-        m_walls.erase(
-            std::remove_if(
-                m_walls.begin(), m_walls.end(),
-                [](const Wall& wall) { return !wall.GetHealth() > 0; }
-            ),
-            m_walls.end()
-        );
+        std::erase_if(m_walls, [](const Wall& wall) { 
+            return !wall.GetHealth() > 0; 
+        });
+
+        std::erase_if(m_headquartersWalls, [](const Wall& wall) { 
+            return !wall.GetHealth() > 0; 
+        });
     }
 
     const std::vector<Terrarian>& GetTerrarians() const
@@ -48,6 +51,16 @@ public:
     std::vector<Wall>& GetWalls() 
     {
         return m_walls;
+    }
+
+    const std::vector<Wall>& GetHeadquartersWalls() const
+    {
+        return m_headquartersWalls;
+    }
+
+    std::vector<Wall>& GetHeadquartersWalls() 
+    {
+        return m_headquartersWalls;
     }
 
     const Headquarters& GetHeadquarters() const
@@ -93,6 +106,8 @@ private:
     Headquarters m_headquarters;
     std::vector<Terrarian> m_terrarians;
     std::vector<Wall> m_walls;
+    std::vector<Wall> m_headquartersWalls;
+    std::vector<Wall> m_originalHeadquartersWalls;
     float m_width;
     float m_height;
 };
