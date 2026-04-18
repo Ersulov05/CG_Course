@@ -1,6 +1,7 @@
 #pragma once
 #include "./Wall/Wall.h"
 #include "./Terrarian/Terrarian.h"
+#include "./Headquarters/Headquarters.h"
 #include <vector>
 #include <optional>
 #include <iostream>
@@ -11,11 +12,13 @@ public:
     Map(
         const std::vector<Terrarian>& terrarians, 
         const std::vector<Wall>& walls,
+        const Headquarters& headquarters,
         float width,
         float height
     ) 
         : m_terrarians(terrarians)
         , m_walls(walls)
+        , m_headquarters(headquarters)
         , m_width(width)
         , m_height(height) 
     {
@@ -45,6 +48,16 @@ public:
     std::vector<Wall>& GetWalls() 
     {
         return m_walls;
+    }
+
+    const Headquarters& GetHeadquarters() const
+    {
+        return m_headquarters;
+    }
+
+    Headquarters& GetHeadquarters()
+    {
+        return m_headquarters;
     }
 
     std::optional<Terrarian> GetTerrarianByPosition(const Point3D position) const
@@ -77,6 +90,7 @@ public:
     }
 
 private:
+    Headquarters m_headquarters;
     std::vector<Terrarian> m_terrarians;
     std::vector<Wall> m_walls;
     float m_width;

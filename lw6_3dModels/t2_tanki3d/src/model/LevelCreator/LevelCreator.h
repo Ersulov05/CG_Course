@@ -12,20 +12,25 @@ public:
         auto levelMap = GetLevelMap(level);
 
         auto terrarians = GetTerrarians(levelMap.terrarianMap);
-        auto walls = GetWalls(levelMap.wallMap);
+        auto levelObjects = GetLevelObjects(levelMap.objectsMap);
 
         float width = GetLevelWidth(levelMap.terrarianMap);
         float height = GetLevelHeight(levelMap.terrarianMap);
 
-        return Map(terrarians, walls, width, height);
+        return Map(terrarians, levelObjects.walls, levelObjects.headquarters, width, height);
     } 
 private:  
     using TerrarianMap = std::vector<std::string>;
-    using WallMap = std::vector<std::string>;
+    using ObjectsMap = std::vector<std::string>;
 
     struct LevelMap {
         TerrarianMap terrarianMap;
-        WallMap wallMap;
+        ObjectsMap objectsMap;
+    };
+
+    struct LevelObjects {
+        Headquarters headquarters;
+        std::vector<Wall> walls;
     };
     
     inline static const std::vector<LevelMap> m_levelMaps = 
@@ -45,9 +50,9 @@ private:
                 "dddddddddddd",
                 "dddddddddddd",
             },
-            WallMap{
+            ObjectsMap{
                 "bbbbbbbbbbbb",
-                "b0000000000b",
+                "b00000h0000b",
                 "b0000000000b",
                 "b0000000000b",
                 "b0000000000b",
@@ -87,8 +92,8 @@ private:
         for (const auto& row : terrarianMap) {
             for (const char& col : row) {
                 auto terrarianType = ConvertCharToTerrarianType(col);
-                Point3D terrarianPosition = {x, 0, z};
-                auto terrarian = Terrarian(terrarianType, {x, 0, z});
+                Point3D terrarianPosition = {x, -Constants::TERRARIAN_SIZE.height/2, z};
+                auto terrarian = Terrarian(terrarianType, terrarianPosition);
                 terrarians.push_back(terrarian);
 
                 x += Constants::TERRARIAN_SIZE.width;
@@ -100,15 +105,21 @@ private:
         return terrarians;
     }
 
-    static std::vector<Wall> GetWalls(const WallMap& wallMap)
+    static LevelObjects GetLevelObjects(const ObjectsMap& objectsMap)
     {
-        std::vector<Wall> walls;
-        float xStart = -(int)wallMap[0].size() / 2 * Constants::DEFAULT_WALL_SIZE.width;
+        LevelObjects levelObjects;
+        float xStart = -(int)objectsMap[0].size() / 2 * Constants::DEFAULT_WALL_SIZE.width;
         float x = xStart;
-        float z = -(int)wallMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth;
+        float z = -(int)objectsMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth;
 
-        for (const auto& row : wallMap) {
+        for (const auto& row : objectsMap) {
             for (const char& col : row) {
+                if (col == 'h') {
+                    Point3D headquartersPosition = {x, Constants::HEADQUARTERS_SIZE.height/2, z};
+                    levelObjects.headquarters = Headquarters(headquartersPosition);
+                    continue;
+                }
+
                 auto wallType = ConvertCharToWallType(col);
                 if (!wallType.has_value()) 
                 {
@@ -117,7 +128,7 @@ private:
                 }
                 Point3D wallPosition = {x, Constants::DEFAULT_WALL_SIZE.height/2, z};
                 auto wall = Wall(*wallType, wallPosition);
-                walls.push_back(wall);
+                levelObjects.walls.push_back(wall);
 
                 x += Constants::DEFAULT_WALL_SIZE.width;
             }
@@ -125,7 +136,7 @@ private:
             x = xStart;
         }
 
-        return walls;
+        return levelObjects;
     }
 
     static TerrarianType ConvertCharToTerrarianType(char ch) 

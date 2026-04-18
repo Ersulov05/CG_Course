@@ -26,22 +26,43 @@ layout(std430, binding = 2) coherent buffer FragmentBuffer {
 
 const uint MAX_FRAGMENTS = 4 * 1024 * 1024;
 
+
+vec3 calculateSunLighting(vec3 normal) {
+    vec3 N = normalize(normal);
+    vec3 sunDir = normalize(vec3(0, -1, -1));
+    
+    float diffuse = max(dot(N, -sunDir), 0.0);
+    float uSunIntensity = 1.0;
+    float intensity = uSunIntensity * diffuse;
+    
+    float ambient = 0.1;
+    
+    float brightness = ambient + intensity;
+    
+    return vec3(brightness);
+}
+
 vec4 calculateLighting(vec3 pos, vec3 normal, vec4 color, bool isAlpha) {
     vec3 N = normalize(normal);
+    vec3 sunLighting = calculateSunLighting(normal);
+
     vec3 lightDir = uLightPos - pos;
     float distance = length(lightDir);
     lightDir = normalize(lightDir);
     
-    float ambient = 0.2;
+    float ambient = 0.1;
     float diffuse = isAlpha
         ? abs(dot(N, lightDir))
         : max(dot(N, lightDir), 0.0); 
     
     float attenuation = 1.0 / (distance + 0.1);
     
-    float brightness = ambient + diffuse * attenuation * 8;
+    float pointLightIntensity = 5.0;
+    float pointLighting = ambient + diffuse * attenuation * pointLightIntensity;
     
-    brightness = min(brightness, 1.0);
+    float brightness = sunLighting.r + pointLighting;
+    
+    brightness = min(brightness, 1.5);
     
     return vec4(color.rgb * brightness, color.a);
 }

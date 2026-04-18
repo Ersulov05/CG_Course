@@ -1,0 +1,150 @@
+#pragma once
+#include "../../common/Geometry.h"
+#include "../../common/TransformMatrix.h"
+#include "../Constants.h"
+#include <optional>
+
+#include "../Tank/Tank.h"
+#include "../Map/Wall/Wall.h"
+#include "./CollisionDetector.h"
+
+class CollisionHandler
+{
+public:
+    static void CheckAndHandleCollision(Shell& shell, std::shared_ptr<Tank> tank)
+    {
+        if (CollisionDetector::Detect(shell, tank))
+        {
+            tank->TakeDamage(shell.GetDamage());
+            shell.Boom();
+        }
+    }
+
+    static void CheckAndHandleCollision(Shell& shell, Map& map)
+    {
+        CheckAndHandleCollision(shell, map.GetHeadquarters());
+        for (auto& wall : map.GetWalls()) 
+        {
+            CheckAndHandleCollision(shell, wall);
+        }
+    }
+
+    static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, Map& map)
+    {
+        CheckAndHandleCollision(tank, map.GetHeadquarters());
+        for (auto& wall : map.GetWalls()) {
+            CheckAndHandleCollision(tank, wall);
+        }
+    }
+
+private:
+    static void CheckAndHandleCollision(Shell& shell, Wall& wall)
+    {
+        if (CollisionDetector::Detect(shell, wall)) {
+            wall.TakeDamage();
+            shell.Boom();
+        }
+    }
+
+    static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, const Wall &wall)
+    {
+        auto collisionData = CollisionDetector::Detect(tank, wall);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        CorrectTankBySpeedAndNormal(tank, *collisionData);
+
+        collisionData = CollisionDetector::Detect(tank, wall);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        CorrectTankByNormal(tank, *collisionData);
+    }
+
+    static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, const Headquarters &headquarters)
+    {
+        auto collisionData = CollisionDetector::Detect(tank, headquarters);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        CorrectTankBySpeedAndNormal(tank, *collisionData);
+
+        collisionData = CollisionDetector::Detect(tank, headquarters);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        CorrectTankByNormal(tank, *collisionData);
+    }
+
+    static void CheckAndHandleCollision(Shell& shell, Headquarters& headquarters)
+    {
+        if (CollisionDetector::Detect(shell, headquarters))
+        {
+            headquarters.TakeDamage(shell.GetDamage());
+            shell.Boom();
+        }
+    }
+
+    static void CorrectTankBySpeedAndNormal(std::shared_ptr<Tank> tank, const CollisionData& collisionData)
+    {
+        Vector3D speed = tank->GetSpeed();
+        Vector3D normal = collisionData.normal;
+        float overlap = collisionData.overlap + 0.01;
+        
+        Vector3D correction(0, 0, 0);
+        
+        if (normal.x != 0) {
+            if (speed.x * normal.x > 0) 
+            {
+                correction.x = normal.x * overlap;
+            }
+        }
+        
+        if (normal.z != 0) {
+            if (speed.z * normal.z > 0) {
+                correction.z = normal.z * overlap;
+            }
+        }
+        
+        Point3D newPosition = tank->GetPosition();
+        newPosition.x += correction.x;
+        newPosition.z += correction.z;
+        tank->SetPosition(newPosition);
+        
+        Vector3D newSpeed = speed;
+        if (correction.x != 0) {
+            newSpeed.x = 0;
+        }
+        if (correction.z != 0) {
+            newSpeed.z = 0;
+        }
+        tank->SetSpeed(newSpeed);
+    }
+
+    static void CorrectTankByNormal(std::shared_ptr<Tank> tank, const CollisionData& collisionData)
+    {
+        Vector3D speed = tank->GetSpeed();
+        Vector3D normal = collisionData.normal;
+        float overlap = collisionData.overlap + 0.01;
+        
+        Vector3D correction = normal * overlap;
+        
+        Point3D newPosition = tank->GetPosition();
+        newPosition.x += correction.x;
+        newPosition.z += correction.z;
+        tank->SetPosition(newPosition);
+        
+        // Vector3D newSpeed = speed;
+        // if (normal.x != 0 && speed.x * normal.x > 0) {
+        //     newSpeed.x = 0;
+        // }
+        // if (normal.z != 0 && speed.z * normal.z > 0) {
+        //     newSpeed.z = 0;
+        // }
+        // tank.SetSpeed(newSpeed);
+    }
+};

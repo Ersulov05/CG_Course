@@ -3,9 +3,8 @@
 #include "./ModelLoader/ModelLoader.h"
 #include "../controller/GameController.h"
 #include "./TankView.h"
-#include "./MapView.h"
+#include "./Map/MapView.h"
 #include "./ShellView.h"
-
 #include "./UI/UIView.h"
 
 class GameView {
@@ -34,13 +33,16 @@ public:
     }
 
     void Run() {
-        m_canvas.SetLightPos({0, 5, 0});
+        m_canvas.SetLightPos({0, 50, 0});
         m_canvas.Run(
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            camera.SetPosition(Point3D{0, 25, 36});
-            camera.SetRotation(0, -40, 0);
+            camera.SetPosition(Point3D{0, 30, 30});
+            camera.SetRotation(0, -60, 0);
+
+            // camera.SetPosition(Point3D{0, 10, 5});
+            // camera.SetRotation(0, -60, 0);
             
             m_gameController.Update(deltatime);
 

@@ -17,4 +17,5 @@ public:
     }
 private:
     inline static const MeshData m_tankModel = ModelLoader::LoadModel("./models/t34/t34.obj");
+    // inline static const MeshData m_tankModel = ModelLoader::LoadModel("./models/car01/car01.obj");
 };

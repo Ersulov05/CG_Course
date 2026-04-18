@@ -1,9 +1,9 @@
 #pragma once
-#include "./Canvas/ICanvas3D.h"
-#include "./ModelLoader/ModelLoader.h"
-#include "../model/Map/Terrarian/Terrarian.h"
-#include "./Meshes/Mesh.h"
-#include "../model/Constants.h"
+#include "../Canvas/ICanvas3D.h"
+#include "../ModelLoader/ModelLoader.h"
+#include "../../model/Map/Terrarian/Terrarian.h"
+#include "../Meshes/Mesh.h"
+#include "../../model/Constants.h"
 
 class TerrarianView {
 public:

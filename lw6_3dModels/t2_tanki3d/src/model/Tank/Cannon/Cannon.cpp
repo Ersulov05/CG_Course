@@ -77,11 +77,11 @@ Cannon::ShellData Cannon::GetShellData() const
 
     switch (m_cannonType) {
         case CannonType::MM152:
-            speed = 10;
+            speed = 20;
             size = {0.15, 0.15, 0.3};
             return ShellData{ShellType::OF, size, speed};
         case CannonType::MM85:
-            speed = 15;
+            speed = 30;
             size = {0.08, 0.08, 0.2};
             return ShellData{ShellType::BB, size, speed};
         default:

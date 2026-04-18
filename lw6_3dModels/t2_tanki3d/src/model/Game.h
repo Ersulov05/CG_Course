@@ -5,8 +5,8 @@
 #include "./Map/Map.h" 
 #include "./LevelCreator/LevelCreator.h"
 #include "./Shell/ShellManager.h"
-#include "./Collision/CollisionSystem.h"
 #include "./Enemy/EnemyManager.h"
+#include "./Collision/CollisionHandler.h"
 
 class Game {
 public:
@@ -64,19 +64,19 @@ private:
 
     void CheckAndHandleCollisions()
     {
-        for (auto& wall: m_map.GetWalls()) {
+        CollisionHandler::CheckAndHandleCollision(m_playerTank, m_map);
+        for (auto& tank : m_enemyManager.GetEnemies()) {
+            CollisionHandler::CheckAndHandleCollision(tank, m_map);
+            CollisionHandler::CheckAndHandleCollision(tank, m_map);
             for (auto & shell : m_shellManager.GetShells())
             {
-                CollisionSystem::CheckAndHandleCollision(shell, wall);
+                CollisionHandler::CheckAndHandleCollision(shell, tank);
             }
-            CollisionSystem::CheckAndHandleCollision(m_playerTank, wall);
         }
         for (auto & shell : m_shellManager.GetShells())
         {
-            for (auto& tank : m_enemyManager.GetEnemies()) {
-                CollisionSystem::CheckAndHandleCollision(shell, tank);
-            }
-            CollisionSystem::CheckAndHandleCollision(shell, m_playerTank);
+            CollisionHandler::CheckAndHandleCollision(shell, m_playerTank);
+            CollisionHandler::CheckAndHandleCollision(shell, m_map);
         }
     }
 };

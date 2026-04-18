@@ -4,7 +4,7 @@
 #include "../Map/Map.h"
 #include <random>
 #include "../Constants.h"
-#include "../Collision/CollisionSystem.h"
+#include "../Collision/CollisionDetector.h"
 #include <functional>
 
 class EnemyManager {
@@ -64,7 +64,7 @@ private:
         }
 
         auto enemyTank = std::make_shared<Tank>(m_map, TankType::T34, 1, randomPos);
-        if (CheckCollisionSpawnedTank(enemyTank, walls))
+        if (CheckCollisionSpawnedTank(enemyTank))
         {
             return;
         }
@@ -72,12 +72,16 @@ private:
         m_enemies.push_back(enemyTank);
     }
 
-    bool CheckCollisionSpawnedTank(const std::shared_ptr<Tank> tank, const std::vector<Wall>& walls)
+    bool CheckCollisionSpawnedTank(const std::shared_ptr<Tank> tank)
     {
-        for (auto& wall : walls) {
-            if (CollisionSystem::CheckCollision(tank, wall).has_value()) {
+        for (auto& wall : m_map.GetWalls()) {
+            if (CollisionDetector::Detect(tank, wall).has_value()) {
                 return true;
             }
+        }
+        if (CollisionDetector::Detect(tank, m_map.GetHeadquarters()).has_value())
+        {
+            return true;
         }
 
         return false;

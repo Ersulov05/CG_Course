@@ -4,7 +4,7 @@
         "cannonPos": [0, 1.5, -1],
         "levels": [
             {"health": 100, "acceleration": 10, "cannonLevel": 1},
-            {"health": 150, "acceleration": 10, "cannonLevel": 3},
+            {"health": 150, "acceleration": 10, "cannonLevel": 2},
             {"health": 200, "acceleration": 10, "cannonLevel": 3},
             {"health": 250, "acceleration": 10, "cannonLevel": 4}
         ]
