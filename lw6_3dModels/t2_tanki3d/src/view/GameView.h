@@ -39,17 +39,15 @@ public:
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            camera.SetPosition(Point3D{0, 20, 24});
+            camera.SetPosition(Point3D{0, 25, 36});
             camera.SetRotation(0, -40, 0);
             
             m_gameController.Update(deltatime);
 
             TankView::Draw(canvas, m_gameController.GetPlayerTank());
             MapView::Draw(canvas, m_gameController.GetMap());
-            for (auto& shell : m_gameController.GetShells())
-            {
-               ShellView::Draw(canvas, shell); 
-            }
+            DrawEnemies(canvas);
+            DrawShells(canvas);
 
             UIView::Draw(canvas, m_gameController);
         });
@@ -59,4 +57,20 @@ private:
     Canvas3D m_canvas; 
     Vector3D m_rotation;
     GameController& m_gameController;
+
+    void DrawShells(ICanvas3D& canvas)
+    {
+        for (auto& shell : m_gameController.GetShells())
+        {
+            ShellView::Draw(canvas, shell); 
+        }
+    }
+
+    void DrawEnemies(ICanvas3D& canvas)
+    {
+        for (auto& tank : m_gameController.GetEnemyTanks())
+        {
+            TankView::Draw(canvas, tank);
+        }
+    }
 };

@@ -10,10 +10,14 @@
 class CollisionSystem
 {
 public:
-    static bool CheckAndHandleCollision(Tank &tank, const Wall &wall)
+    struct CollisionData {
+        Vector3D normal;
+        float overlap;
+    };
+
+    static bool CheckAndHandleCollision(std::shared_ptr<Tank> tank, const Wall &wall)
     {
-        Size3D rotatedTankSize = GetRotatedSize(tank.GetSize(), tank.GetRotation());
-        auto collisionData = CheckCollision(wall.GetPosition(), wall.GetSize(), tank.GetPosition(), rotatedTankSize);
+        auto collisionData = CheckCollision(tank, wall);
 
         if (!collisionData.has_value()) {
             return false;
@@ -21,7 +25,7 @@ public:
 
         CorrectTankBySpeedAndNormal(tank, *collisionData);
 
-        collisionData = CheckCollision(wall.GetPosition(), wall.GetSize(), tank.GetPosition(), rotatedTankSize);
+        collisionData = CheckCollision(tank, wall);
         if (!collisionData.has_value()) {
             return true;
         }
@@ -33,6 +37,19 @@ public:
 
     static bool CheckAndHandleCollision(Shell& shell, Wall& wall)
     {
+        if (CheckCollision(shell, wall)) {
+            wall.TakeDamage();
+            shell.Boom();
+            return true;
+        }
+        return false;
+    }
+
+    static bool CheckCollision(const Shell& shell, const Wall& wall)
+    {
+        if (!shell.IsAlive()) {
+            return false;
+        }
         Size3D rotatedShellSize = GetRotatedSize(shell.GetSize(), shell.GetRotation());
         auto collisionData = CheckCollision(wall.GetPosition(), wall.GetSize(), shell.GetPosition(), rotatedShellSize);
 
@@ -42,12 +59,54 @@ public:
         return true;
     }
 
-private:
-    struct CollisionData {
-        Vector3D normal;
-        float overlap;
-    };
+    static bool CheckAndHandleCollision(Shell& shell, std::shared_ptr<Tank> tank)
+    {
+        if (CheckCollision(shell, tank))
+        {
+            tank->TakeDamage(shell.GetDamage());
+            shell.Boom();
+            return true;
+        }
+        return false;
+    }
 
+    static bool CheckCollision(const Shell& shell, const std::shared_ptr<Tank> tank)
+    {
+        if (!shell.IsAlive() || tank->GetHealth() == 0) {
+            return false;
+        }
+
+        auto owner = shell.GetOwner().lock();
+        if (owner && owner.get() == tank.get()) {
+            return false;
+        }
+
+        Size3D rotatedShellSize = GetRotatedSize(shell.GetSize(), shell.GetRotation());
+        Size3D rotatedTankSize = GetRotatedSize(tank->GetSize(), tank->GetRotation());
+
+        auto collisionData = CheckCollision(tank->GetPosition(), rotatedTankSize, shell.GetPosition(), rotatedShellSize);
+
+        if (!collisionData.has_value()) {
+            return false;
+        }
+        return true;
+    }
+
+    static std::optional<CollisionData> CheckCollision(const std::shared_ptr<Tank> firstTank, const std::shared_ptr<Tank> secondTank)
+    {
+        Size3D rotatedFirstTankSize = GetRotatedSize(firstTank->GetSize(), firstTank->GetRotation());
+        Size3D rotatedSecondTankSize = GetRotatedSize(secondTank->GetSize(), secondTank->GetRotation());
+
+        return CheckCollision(secondTank->GetPosition(), rotatedSecondTankSize, firstTank->GetPosition(), rotatedFirstTankSize);
+    }
+
+    static std::optional<CollisionData> CheckCollision(const std::shared_ptr<Tank> tank, const Wall &wall)
+    {
+        Size3D rotatedTankSize = GetRotatedSize(tank->GetSize(), tank->GetRotation());
+        return CheckCollision(wall.GetPosition(), wall.GetSize(), tank->GetPosition(), rotatedTankSize);    
+    }
+
+private:
     struct Bound {
         float left;
         float right;
@@ -55,9 +114,9 @@ private:
         float back;
     };
 
-    static void CorrectTankBySpeedAndNormal(Tank& tank, const CollisionData& collisionData)
+    static void CorrectTankBySpeedAndNormal(std::shared_ptr<Tank> tank, const CollisionData& collisionData)
     {
-        Vector3D speed = tank.GetSpeed();
+        Vector3D speed = tank->GetSpeed();
         Vector3D normal = collisionData.normal;
         float overlap = collisionData.overlap + 0.01;
         
@@ -76,10 +135,10 @@ private:
             }
         }
         
-        Point3D newPosition = tank.GetPosition();
+        Point3D newPosition = tank->GetPosition();
         newPosition.x += correction.x;
         newPosition.z += correction.z;
-        tank.SetPosition(newPosition);
+        tank->SetPosition(newPosition);
         
         Vector3D newSpeed = speed;
         if (correction.x != 0) {
@@ -88,21 +147,21 @@ private:
         if (correction.z != 0) {
             newSpeed.z = 0;
         }
-        tank.SetSpeed(newSpeed);
+        tank->SetSpeed(newSpeed);
     }
 
-    static void CorrectTankByNormal(Tank& tank, const CollisionData& collisionData)
+    static void CorrectTankByNormal(std::shared_ptr<Tank> tank, const CollisionData& collisionData)
     {
-        Vector3D speed = tank.GetSpeed();
+        Vector3D speed = tank->GetSpeed();
         Vector3D normal = collisionData.normal;
         float overlap = collisionData.overlap + 0.01;
         
         Vector3D correction = normal * overlap;
         
-        Point3D newPosition = tank.GetPosition();
+        Point3D newPosition = tank->GetPosition();
         newPosition.x += correction.x;
         newPosition.z += correction.z;
-        tank.SetPosition(newPosition);
+        tank->SetPosition(newPosition);
         
         // Vector3D newSpeed = speed;
         // if (normal.x != 0 && speed.x * normal.x > 0) {

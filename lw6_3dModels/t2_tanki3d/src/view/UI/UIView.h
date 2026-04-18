@@ -9,14 +9,15 @@ class UIView {
 public:
     static void Draw(ICanvas3D& canvas, const GameController& controller)
     {
+        auto playerTank = controller.GetPlayerTank();
+        auto& cannon = playerTank->GetCannon();
+
         auto& shaderManager = canvas.GetShaderManager();
         shaderManager.Push("ui");
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().ResetTransform();
-
-        HealthView::Draw(canvas, 75, 100);
-
-        auto cannon = controller.GetPlayerTank().GetCannon();
+        
+        HealthView::Draw(canvas, playerTank->GetHealth(), playerTank->GetTotalHealth());
         CannonReloadView::Draw(canvas, cannon.GetReloadTime(), cannon.GetTotalReloadTime(), (int)cannon.GetMountType());
 
         canvas.GetTransform().PopMatrix();

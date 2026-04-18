@@ -9,6 +9,7 @@
 #include "../Object/GameObject.h"
 #include "./Data/TankData.h"
 #include "./Data/TanksLevelData.h"
+#include <functional>
 
 enum class Direction {
     Forward,
@@ -21,9 +22,9 @@ class Tank
     : public GameObject
     , public std::enable_shared_from_this<Tank> {
 public:
-    Tank(Map& map, TankType type, unsigned int level, const Point3D& position = {0, 0, 0})
+    Tank(const Map& map, TankType type, unsigned int level, const Point3D& position = {0, 0, 0})
         : GameObject(position, {3, 2, 6}),
-          m_map(map),
+          m_map(std::ref(map)),
           m_type(type),
           m_cannon(CannonFactory::CreateCannonByLevel(level))
     {
@@ -82,6 +83,11 @@ public:
         return m_health;
     }
 
+    unsigned int GetTotalHealth() const 
+    {
+        return m_totalHealth;
+    }
+
     unsigned int GetLevel() const 
     {
         return m_level;
@@ -99,6 +105,7 @@ public:
         m_cannon.SetLocalPosition(m_cannonPosition);
         m_acceleration = tankLevelData.acceleration;
         m_totalHealth = tankLevelData.health;
+        m_health = m_totalHealth;
         m_level = level;
     }
 
@@ -113,14 +120,23 @@ public:
         return m_cannon;
     }
 
+    void TakeDamage(unsigned int damage)
+    {
+        if (damage > m_health) {
+            m_health = 0;
+        } else {
+            m_health -= damage;
+        }
+    }
+
 private:
     Vector3D m_speed;
     Cannon m_cannon;
     float m_acceleration = 10;
     float m_sideFrictionCoef = 40;
-    Map& m_map;
+    std::reference_wrapper<const Map> m_map;
     unsigned int m_level;
-    unsigned int m_health;
+    unsigned int m_health = 0;
     unsigned int m_totalHealth;
     Point3D m_cannonPosition = {0, 1.5, -1};
     TankType m_type;
@@ -150,7 +166,7 @@ private:
 
     float GetFriction() const 
     {
-        auto terrarian = m_map.GetTerrarianByPosition(m_position);
+        auto terrarian = m_map.get().GetTerrarianByPosition(m_position);
         if (!terrarian.has_value()) {
             return 0.5;
         }
@@ -168,7 +184,7 @@ private:
 
     float GetTraction() const 
     {
-        auto terrarian = m_map.GetTerrarianByPosition(m_position);
+        auto terrarian = m_map.get().GetTerrarianByPosition(m_position);
         if (!terrarian.has_value()) {
             return 0.5;
         }

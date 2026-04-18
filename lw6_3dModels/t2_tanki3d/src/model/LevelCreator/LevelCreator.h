@@ -14,7 +14,10 @@ public:
         auto terrarians = GetTerrarians(levelMap.terrarianMap);
         auto walls = GetWalls(levelMap.wallMap);
 
-        return Map(terrarians, walls);
+        float width = GetLevelWidth(levelMap.terrarianMap);
+        float height = GetLevelHeight(levelMap.terrarianMap);
+
+        return Map(terrarians, walls, width, height);
     } 
 private:  
     using TerrarianMap = std::vector<std::string>;
@@ -24,48 +27,65 @@ private:
         TerrarianMap terrarianMap;
         WallMap wallMap;
     };
-    // using LevelMap = std::pair<TerrarianMap, WallMap>;
     
     inline static const std::vector<LevelMap> m_levelMaps = 
     {
         LevelMap{
             TerrarianMap{
-                "dddddddd",
-                "diiiiiid",
-                "diiiiiid",
-                "diiiiiid",
-                "diiiiiid",
-                "dddddddd",
-                "dddddddd",
-                "dddddddd",
+                "dddddddddddd",
+                "diiiiiiddddd",
+                "diiiiiiddddd",
+                "diiiiiiddddd",
+                "diiiiiiddddd",
+                "dddddddddddd",
+                "dddddddddddd",
+                "dddddddddddd",
+                "dddddddddddd",
+                "dddddddddddd",
+                "dddddddddddd",
+                "dddddddddddd",
             },
             WallMap{
-                "bbbbbbbb",
-                "b000000b",
-                "b00b000b",
-                "b000000b",
-                "b000000b",
-                "b000000b",
-                "b000000b",
-                "bbbbbbbb",
+                "bbbbbbbbbbbb",
+                "b0000000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "b00b0000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "b0000000000b",
+                "bbbbbbbbbbbb",
             },
         },        
     };
+
+    static float GetLevelWidth(const TerrarianMap& terrarianMap)
+    {
+        return (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width;
+    }
+
+    static float GetLevelHeight(const TerrarianMap& terrarianMap)
+    {
+        return (int)terrarianMap.size() * Constants::TERRARIAN_SIZE.depth;
+    }
 
     static LevelMap GetLevelMap(unsigned int level)
     {
         return m_levelMaps[(level - 1) % m_levelMaps.size()];
     }
 
-    static std::vector<Terrarian> GetTerrarians(TerrarianMap terrarianMap)
+    static std::vector<Terrarian> GetTerrarians(const TerrarianMap& terrarianMap)
     {
         std::vector<Terrarian> terrarians;
-        float xStart = -(int)terrarianMap[0].size() / 2 * Constants::TERRARIAN_SIZE.width;
+        float xStart = -GetLevelWidth(terrarianMap) / 2;
         float x = xStart;
-        float z = -(int)terrarianMap.size() / 2 * Constants::TERRARIAN_SIZE.depth;
+        float z = -GetLevelHeight(terrarianMap) / 2;
 
-        for (auto& row : terrarianMap) {
-            for (char& col : row) {
+        for (const auto& row : terrarianMap) {
+            for (const char& col : row) {
                 auto terrarianType = ConvertCharToTerrarianType(col);
                 Point3D terrarianPosition = {x, 0, z};
                 auto terrarian = Terrarian(terrarianType, {x, 0, z});
@@ -80,15 +100,15 @@ private:
         return terrarians;
     }
 
-    static std::vector<Wall> GetWalls(WallMap wallMap)
+    static std::vector<Wall> GetWalls(const WallMap& wallMap)
     {
         std::vector<Wall> walls;
         float xStart = -(int)wallMap[0].size() / 2 * Constants::DEFAULT_WALL_SIZE.width;
         float x = xStart;
         float z = -(int)wallMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth;
 
-        for (auto& row : wallMap) {
-            for (char& col : row) {
+        for (const auto& row : wallMap) {
+            for (const char& col : row) {
                 auto wallType = ConvertCharToWallType(col);
                 if (!wallType.has_value()) 
                 {

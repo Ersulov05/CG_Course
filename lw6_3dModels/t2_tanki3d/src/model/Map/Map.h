@@ -8,10 +8,18 @@
 class Map {
 public:
     Map() {}
-
-    Map(const std::vector<Terrarian>& terrarians, const std::vector<Wall>& walls)
-        : m_terrarians(terrarians),
-        m_walls(walls) {}
+    Map(
+        const std::vector<Terrarian>& terrarians, 
+        const std::vector<Wall>& walls,
+        float width,
+        float height
+    ) 
+        : m_terrarians(terrarians)
+        , m_walls(walls)
+        , m_width(width)
+        , m_height(height) 
+    {
+    }
 
     void Update() 
     {
@@ -58,7 +66,19 @@ public:
         return std::nullopt;
     }
 
+    float GetWidth() const
+    {
+        return m_width;
+    }
+
+    float GetHeight() const
+    {
+        return m_height;
+    }
+
 private:
     std::vector<Terrarian> m_terrarians;
     std::vector<Wall> m_walls;
+    float m_width;
+    float m_height;
 };
