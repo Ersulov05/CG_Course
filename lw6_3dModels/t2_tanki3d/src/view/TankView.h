@@ -6,7 +6,7 @@
 
 class TankView {
 public:
-    static void Draw(ICanvas3D& canvas, const std::shared_ptr<Tank> tank, bool isEnemy = false) 
+    static void Draw(ICanvas3D& canvas, const std::shared_ptr<Tank>& tank, bool isEnemy = false) 
     {
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(tank->GetPosition());

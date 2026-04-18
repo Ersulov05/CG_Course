@@ -26,12 +26,12 @@ public:
         });
     }
 
-    const std::vector<std::shared_ptr<Tank>> GetEnemies() const
+    const std::vector<std::shared_ptr<Tank>>& GetEnemies() const
     {
         return m_enemies;
     }
 
-    std::vector<std::shared_ptr<Tank>> GetEnemies() 
+    std::vector<std::shared_ptr<Tank>>& GetEnemies() 
     {
         return m_enemies;
     }

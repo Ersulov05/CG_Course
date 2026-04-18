@@ -36,7 +36,7 @@ public:
         return m_playerTank;
     }
 
-    const std::vector<std::shared_ptr<Tank>> GetEnemyTanks() const 
+    const std::vector<std::shared_ptr<Tank>>& GetEnemyTanks() const 
     {
         return m_enemyManager.GetEnemies();
     }
