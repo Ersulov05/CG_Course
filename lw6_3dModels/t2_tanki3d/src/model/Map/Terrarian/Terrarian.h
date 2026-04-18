@@ -1,21 +1,19 @@
 #pragma once
 #include "../../../common/Geometry.h"
 #include "../../Constants.h"
+#include "../../Object/GameObject.h"
 
 enum class TerrarianType {
     Ice,
     Dirt,
 };
 
-class Terrarian {
+class Terrarian : public GameObject {
 public:
     Terrarian(TerrarianType type, const Point3D& position)
-    : m_position(position),
-      m_type(type) {}
-
-    Point3D GetPosition() const
+        : GameObject(position, Constants::TERRARIAN_SIZE)
+        , m_type(type) 
     {
-        return m_position;
     }
 
     TerrarianType GetType() const
@@ -23,10 +21,6 @@ public:
         return m_type;
     }
 
-    static Size3D GetSize() {
-        return Constants::TERRARIAN_SIZE;
-    }
 private:
-    Point3D m_position;
     TerrarianType m_type;
 };

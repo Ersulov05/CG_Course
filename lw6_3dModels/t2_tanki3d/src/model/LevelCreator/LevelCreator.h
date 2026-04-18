@@ -60,9 +60,9 @@ private:
     static std::vector<Terrarian> GetTerrarians(TerrarianMap terrarianMap)
     {
         std::vector<Terrarian> terrarians;
-        float xStart = -(int)terrarianMap[0].size() / 2 * Terrarian::GetSize().width;
+        float xStart = -(int)terrarianMap[0].size() / 2 * Constants::TERRARIAN_SIZE.width;
         float x = xStart;
-        float z = -(int)terrarianMap.size() / 2 * Terrarian::GetSize().depth;
+        float z = -(int)terrarianMap.size() / 2 * Constants::TERRARIAN_SIZE.depth;
 
         for (auto& row : terrarianMap) {
             for (char& col : row) {
@@ -71,9 +71,9 @@ private:
                 auto terrarian = Terrarian(terrarianType, {x, 0, z});
                 terrarians.push_back(terrarian);
 
-                x += Terrarian::GetSize().width;
+                x += Constants::TERRARIAN_SIZE.width;
             }
-            z += Terrarian::GetSize().depth;
+            z += Constants::TERRARIAN_SIZE.depth;
             x = xStart;
         }
 

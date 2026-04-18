@@ -42,7 +42,7 @@ public:
     std::optional<Terrarian> GetTerrarianByPosition(const Point3D position) const
     {
         for (auto& terrarian : m_terrarians) {
-            Size3D size = Terrarian::GetSize();
+            Size3D size = terrarian.GetSize();
         
             float minX = terrarian.GetPosition().x - size.width / 2;
             float maxX = terrarian.GetPosition().x + size.width / 2;

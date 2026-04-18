@@ -3,6 +3,7 @@
 #include "./ModelLoader/ModelLoader.h"
 #include "../model/Map/Terrarian/Terrarian.h"
 #include "./Meshes/Mesh.h"
+#include "../model/Constants.h"
 
 class TerrarianView {
 public:
@@ -18,8 +19,8 @@ public:
         canvas.GetTransform().PopMatrix();
     }
 private:
-    inline static const MeshData m_terrarianDirtModel = Mesh::Cube(0xFFFFFFFF, {"./textures/grass.jpg"}, Terrarian::GetSize());
-    inline static const MeshData m_terrarianIceModel = Mesh::Cube(0xFFFFFFFF, {"./textures/ice.jpg"}, Terrarian::GetSize());
+    inline static const MeshData m_terrarianDirtModel = Mesh::Cube(0xFFFFFFFF, {"./textures/grass.jpg"}, Constants::TERRARIAN_SIZE);
+    inline static const MeshData m_terrarianIceModel = Mesh::Cube(0xFFFFFFFF, {"./textures/ice.jpg"}, Constants::TERRARIAN_SIZE);
 
     static MeshData GetTerrarianMeshByType(TerrarianType type) 
     {

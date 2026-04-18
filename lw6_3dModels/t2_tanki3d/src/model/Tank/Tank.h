@@ -6,6 +6,9 @@
 #include <stdexcept>
 #include <iostream>
 #include <functional>
+#include "../Object/GameObject.h"
+#include "./Data/TankData.h"
+#include "./Data/TanksLevelData.h"
 
 enum class Direction {
     Forward,
@@ -14,15 +17,20 @@ enum class Direction {
     Right
 };
 
-class Tank : public std::enable_shared_from_this<Tank> {
+class Tank 
+    : public GameObject
+    , public std::enable_shared_from_this<Tank> {
 public:
-    Tank(Map& map, const Point3D& position, unsigned int level)
-        : m_map(map), 
-          m_position(position), 
-          m_level(level),
+    Tank(Map& map, TankType type, unsigned int level, const Point3D& position = {0, 0, 0})
+        : GameObject(position, {3, 2, 6}),
+          m_map(map),
+          m_type(type),
           m_cannon(CannonFactory::CreateCannonByLevel(level))
     {
-        m_cannon.SetLocalPosition(m_cannonPosition);
+        auto tankData = TanksLevelData::GetTankDataByTankType(m_type);
+        SetSize(tankData.size);
+        SetCannonPosition(tankData.cannonPos);
+        SetLevel(level);
     }
 
     void Update(float deltatime) 
@@ -31,16 +39,6 @@ public:
         ApplyFrictionToSpeed(deltatime);
         
         m_position -= m_speed * deltatime;
-    }
-
-    Point3D GetPosition() const 
-    {
-        return m_position;
-    }
-
-    Quaternion3D GetRotation() const 
-    {
-        return m_rotation;
     }
 
     std::vector<Shell> Fire() 
@@ -74,11 +72,6 @@ public:
         m_speed += m_rotation.GetForward() * m_acceleration * GetTraction() * deltatime;
     }
 
-    void SetPosition(const Point3D& position)
-    {
-        m_position = position;
-    }
-
     void SetSpeed(const Vector3D& speed)
     {
         m_speed = speed;
@@ -101,8 +94,17 @@ public:
 
     void SetLevel(unsigned int level) 
     {
+        auto tankLevelData = TanksLevelData::GetTankLevelData(m_type, level);
+        m_cannon = CannonFactory::CreateCannonByLevel(tankLevelData.cannonLevel);
+        m_cannon.SetLocalPosition(m_cannonPosition);
+        m_acceleration = tankLevelData.acceleration;
+        m_totalHealth = tankLevelData.health;
         m_level = level;
-        m_cannon = CannonFactory::CreateCannonByLevel(level);
+    }
+
+    void SetCannonPosition(const Point3D& position)
+    {
+        m_cannonPosition = position;
         m_cannon.SetLocalPosition(m_cannonPosition);
     }
 
@@ -111,22 +113,17 @@ public:
         return m_cannon;
     }
 
-    Size3D GetSize() const
-    {
-        return Size3D{3, 2, 6};
-    }
-
 private:
-    Point3D m_position;
     Vector3D m_speed;
     Cannon m_cannon;
-    Quaternion3D m_rotation;
     float m_acceleration = 10;
     float m_sideFrictionCoef = 40;
     Map& m_map;
     unsigned int m_level;
     unsigned int m_health;
-    const Point3D m_cannonPosition = {0, 1.5, -1};
+    unsigned int m_totalHealth;
+    Point3D m_cannonPosition = {0, 1.5, -1};
+    TankType m_type;
 
     template<typename T>
     T sign(T value) 

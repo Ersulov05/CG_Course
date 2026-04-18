@@ -1,21 +1,11 @@
 #pragma once
 #include "../../../common/Geometry.h"
 #include "../../Shell/Shell.h"
+#include "./Data/CannonData.h"
 #include <stdexcept>
 #include <vector>
 #include <string>
 #include <optional>
-#include "./CannonFactory.h"
-
-enum class MountType {
-    SINGLE = 1,
-    TWIN = 2,
-};
-
-enum class CannonType {
-    MM152,
-    MM85
-};
 
 class Cannon {
 public:
@@ -26,6 +16,7 @@ public:
     std::vector<Shell> Fire(const Point3D tankPosition, const Quaternion3D tankRotation);
 
     float GetReloadTime() const;
+
     float GetTotalReloadTime() const;
 
     CannonType GetCannonType() const;

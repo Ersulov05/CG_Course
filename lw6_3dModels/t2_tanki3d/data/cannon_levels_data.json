@@ -1,0 +1,8 @@
+{
+    "levels": [
+        {"cannonType": "MM85", "mountType": "SINGLE", "reloadTime": 2, "damage": 50},
+        {"cannonType": "MM85", "mountType": "TWIN", "reloadTime": 3, "damage": 50},
+        {"cannonType": "MM152", "mountType": "SINGLE", "reloadTime": 4, "damage": 150},
+        {"cannonType": "MM152", "mountType": "TWIN", "reloadTime": 5, "damage": 150}
+    ]
+}

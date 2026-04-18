@@ -3,6 +3,7 @@
 #include "../../common/Geometry.h"
 #include <iostream>
 #include "../Constants.h"
+#include "../Object/GameObject.h"
 
 enum class ShellType {
     BB,
@@ -11,7 +12,7 @@ enum class ShellType {
 
 class Tank;
 
-class Shell {
+class Shell : public GameObject {
 public:
     Shell(
         const Point3D& position, 
@@ -20,9 +21,7 @@ public:
         unsigned int damage, 
         float speed
     )
-        : m_position(position),
-         m_size(size),
-         m_rotation(rotation),
+        : GameObject(position, size, rotation),
          m_damage(damage),
          m_speed(speed)
     {
@@ -34,16 +33,6 @@ public:
             m_livetime -= deltatime;
             m_position -= m_rotation.GetForward() * m_speed * deltatime;
         }   
-    }
-
-    Point3D GetPosition() const 
-    {
-        return m_position;
-    }
-
-    Quaternion3D GetRotation() const 
-    {
-        return m_rotation;
     }
 
     float GetDamage() const 
@@ -66,20 +55,12 @@ public:
         m_owner = owner;
     }
 
-    Size3D GetSize() const
-    {
-        return m_size;
-    }
-
     void Boom()
     {
         m_livetime = 0;
     }
 
 private:
-    Point3D m_position;
-    Quaternion3D m_rotation;
-    Size3D m_size;
     float m_livetime = 5;
     float m_damage;
     float m_speed;

@@ -3,7 +3,6 @@
 #include "../../Shell/Shell.h"
 #include <stdexcept>
 #include <string>
-#include "./CannonFactory.h"
 
 Cannon::Cannon(CannonType cannonType, MountType mountType, float totalReloadTime, unsigned int damage)
     : m_cannonType(cannonType),
