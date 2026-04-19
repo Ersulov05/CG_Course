@@ -31,6 +31,11 @@ public:
         return m_game.GetMap();
     }
 
+    const std::vector<Bonus>& GetBonuses() const
+    {
+        return m_game.GetBonusManager().GetBonuses();
+    }
+
     const std::vector<Shell>& GetShells() const 
     {
         return m_game.GetShellManager().GetShells();

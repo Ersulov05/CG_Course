@@ -6,6 +6,7 @@
 
 #include "../Tank/Tank.h"
 #include "../Map/Wall/Wall.h"
+#include "../Bonus/Bonus.h"
 
 struct CollisionData {
     Vector3D normal;
@@ -81,6 +82,13 @@ public:
         Size3D rotatedTankSize = GetRotatedSize(tank->GetSize(), tank->GetRotation());
         Size3D rotatedHeadquartersSize = GetRotatedSize(headquarters.GetSize(), headquarters.GetRotation());
         return CheckCollision(headquarters.GetPosition(), rotatedHeadquartersSize, tank->GetPosition(), rotatedTankSize);
+    }
+
+    static std::optional<CollisionData> Detect(std::shared_ptr<Tank> tank, const Bonus &bonus)
+    {
+        Size3D rotatedTankSize = GetRotatedSize(tank->GetSize(), tank->GetRotation());
+        Size3D rotatedBonusSize = GetRotatedSize(bonus.GetSize(), bonus.GetRotation());
+        return CheckCollision(bonus.GetPosition(), rotatedBonusSize, tank->GetPosition(), rotatedTankSize);
     }
 
 private:

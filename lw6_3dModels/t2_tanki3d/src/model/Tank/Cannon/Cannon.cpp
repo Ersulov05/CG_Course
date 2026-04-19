@@ -70,6 +70,17 @@ void Cannon::SetLocalPosition(const Point3D& position)
     m_localPosition = position;
 }
 
+void Cannon::SetTotalReloadTime(float totalReloadTime)
+{
+    m_totalReloadTime = totalReloadTime;
+    m_reloadTime = std::max(0.0f, std::min(m_reloadTime, m_totalReloadTime));
+}
+
+void Cannon::SetReloadTime(float reloadTime)
+{
+    m_reloadTime = std::max(0.0f, std::min(reloadTime, m_totalReloadTime));
+}
+
 Cannon::ShellData Cannon::GetShellData() const
 {
     float speed;

@@ -102,6 +102,12 @@ public:
         return m_height;
     }
 
+    void RepairHeadquartersWalls()
+    {
+        m_headquartersWalls.clear();
+        m_headquartersWalls = m_originalHeadquartersWalls;
+    }
+
 private:
     Headquarters m_headquarters;
     std::vector<Terrarian> m_terrarians;

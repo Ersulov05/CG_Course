@@ -29,6 +29,9 @@ public:
 
     void SetLocalPosition(const Point3D& position);
 
+    void SetTotalReloadTime(float totalReloadTime);
+    void SetReloadTime(float reloadTime);
+
 private:
     struct ShellData {
         ShellType type;

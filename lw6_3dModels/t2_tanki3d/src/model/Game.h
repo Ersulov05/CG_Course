@@ -7,13 +7,20 @@
 #include "./Shell/ShellManager.h"
 #include "./Enemy/EnemyManager.h"
 #include "./Collision/CollisionHandler.h"
+#include "./Collision/CollisionDetector.h"
+
+#include "./Bonus/BonusManager.h"
+#include "./Bonus/BonusActionManager.h"
+#include "./Bonus/BonusAction/Factory/BonusActionFactory.h"
 
 class Game {
 public:
     Game() 
         : m_map(LevelCreator::GetMapByLevel(1))
-        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 2))
+        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 4))
         , m_enemyManager(m_map, m_playerTank)
+        , m_bonusManager(m_map)
+        , m_bonusActionFactory(m_map)
     {
     }
 
@@ -22,6 +29,8 @@ public:
         m_playerTank->Update(deltatime);
         m_shellManager.Update(deltatime);
         m_enemyManager.Update(deltatime);
+        m_bonusManager.Update(deltatime);
+        m_bonusActionManager.Update(deltatime);
         m_map.Update();
         CheckAndHandleCollisions();
     }
@@ -56,16 +65,25 @@ public:
         return m_shellManager;
     }
 
+    const BonusManager& GetBonusManager() const
+    {
+        return m_bonusManager;
+    }
+
 private:
     Map m_map;
     ShellManager m_shellManager;
     std::shared_ptr<Tank> m_playerTank;
     EnemyManager m_enemyManager;
+    BonusManager m_bonusManager;
+    BonusActionManager m_bonusActionManager;
+    BonusActionFactory m_bonusActionFactory;
 
     void CheckAndHandleCollisions()
     {
         CollisionHandler::CheckAndHandleCollision(m_playerTank, m_map);
-        for (auto& tank : m_enemyManager.GetEnemies()) {
+        for (auto& tank : m_enemyManager.GetEnemies()) 
+        {
             CollisionHandler::CheckAndHandleCollision(tank, m_map);
             CollisionHandler::CheckAndHandleCollision(tank, m_map);
             for (auto & shell : m_shellManager.GetShells())
@@ -77,6 +95,32 @@ private:
         {
             CollisionHandler::CheckAndHandleCollision(shell, m_playerTank);
             CollisionHandler::CheckAndHandleCollision(shell, m_map);
+        }
+
+
+        for (auto & bonus : m_bonusManager.GetBonuses())
+        {
+            CheckAndHandleCollision(m_playerTank, bonus);
+            if (IsOnlyPlayerBonusAction(bonus.GetType()))
+            {
+                continue;
+            }
+
+            for (auto& tank : m_enemyManager.GetEnemies()) 
+            {
+                CheckAndHandleCollision(tank, bonus);
+            }
+        }
+    }
+
+    void CheckAndHandleCollision(std::shared_ptr<Tank> tank, Bonus& bonus)
+    {
+        if(CollisionDetector::Detect(tank, bonus))
+        {
+            auto bonusActionType = bonus.GetType();
+            auto bonusAction = m_bonusActionFactory.CreateBonusAction(bonusActionType, tank);
+            m_bonusActionManager.ApplyBonus(bonusAction);
+            bonus.Boom();
         }
     }
 };

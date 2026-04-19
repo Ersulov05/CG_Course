@@ -6,6 +6,7 @@
 #include "./Map/MapView.h"
 #include "./ShellView.h"
 #include "./UI/UIView.h"
+#include "./Bonus/BonusView.h"
 
 class GameView {
 public:
@@ -40,9 +41,6 @@ public:
             auto &camera = canvas.GetCamera();
             camera.SetPosition(Point3D{0, 30, 30});
             camera.SetRotation(0, -60, 0);
-
-            // camera.SetPosition(Point3D{0, 10, 5});
-            // camera.SetRotation(0, -60, 0);
             
             m_gameController.Update(deltatime);
 
@@ -50,6 +48,7 @@ public:
             MapView::Draw(canvas, m_gameController.GetMap());
             DrawEnemies(canvas);
             DrawShells(canvas);
+            DrawBonuses(canvas);
 
             UIView::Draw(canvas, m_gameController);
         });
@@ -73,6 +72,14 @@ private:
         for (auto& tank : m_gameController.GetEnemyTanks())
         {
             TankView::Draw(canvas, tank);
+        }
+    }
+
+    void DrawBonuses(ICanvas3D& canvas)
+    {
+        for (auto& bonus : m_gameController.GetBonuses())
+        {
+            BonusView::Draw(canvas, bonus);
         }
     }
 };

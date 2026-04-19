@@ -120,12 +120,25 @@ public:
         return m_cannon;
     }
 
+    Cannon& GetCannon() 
+    {
+        return m_cannon;
+    }
+
     void TakeDamage(unsigned int damage)
     {
         if (damage > m_health) {
             m_health = 0;
         } else {
             m_health -= damage;
+        }
+    }
+
+    void AddHealth(unsigned int health)
+    {
+        m_health += health;
+        if (m_health > m_totalHealth) {
+            m_health = m_totalHealth;
         }
     }
 

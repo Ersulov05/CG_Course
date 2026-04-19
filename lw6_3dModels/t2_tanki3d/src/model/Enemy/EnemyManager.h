@@ -54,8 +54,6 @@ private:
         std::uniform_real_distribution<float> distX(-mapWidth/2, mapWidth/2);
         std::uniform_real_distribution<float> distZ(-mapHeight/2, mapHeight/2);
 
-        auto& walls = m_map.GetWalls();
-
         Point3D randomPos = {distX(m_randomEngine), 0, distZ(m_randomEngine)};
         Vector3D distance = randomPos - m_player->GetPosition();
         if (MIN_DISTANCE_TO_PLAYER2 < distance.x * distance.x + distance.z * distance.z)
