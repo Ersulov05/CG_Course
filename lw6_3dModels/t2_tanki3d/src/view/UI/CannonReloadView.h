@@ -13,12 +13,13 @@ public:
 
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(width - RELOAD_BAR_WIDTH/2 - RELOAD_BAR_PADDING, height - RELOAD_BAR_HEIGHT/2 - RELOAD_BAR_PADDING, 0);
-        canvas.GetTransform().RotateZ(-90);
 
         BarData barData = {totalReloadTime - reloadTime, totalReloadTime};
         for (int i = 0; i < count; ++i)
-        {
+        {   canvas.GetTransform().PushMatrix();
+            canvas.GetTransform().RotateZ(-90);
             BarView::Draw(canvas, BAR_PARAM, barData);
+            canvas.GetTransform().PopMatrix();
             canvas.GetTransform().Translate(-RELOAD_BAR_WIDTH - OFFSET, 0, 0);
         }
 

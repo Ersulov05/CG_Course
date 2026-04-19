@@ -7,4 +7,5 @@ public:
     inline static const unsigned int HEADQUARTERS_HEALTH = 200;
     inline static const Size3D DEFAULT_WALL_SIZE = {6, 6, 6};
     inline static const Size3D BONUS_SIZE = {2, 2, 2};
+    inline static const float BONUS_LIFETIME = 20;
 };

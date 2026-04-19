@@ -22,12 +22,31 @@ public:
             return false;
         }
         Size3D rotatedShellSize = GetRotatedSize(shell.GetSize(), shell.GetRotation());
-        auto collisionData = CheckCollision(wall.GetPosition(), wall.GetSize(), shell.GetPosition(), rotatedShellSize);
+        Size3D rotatedWallSize = GetRotatedSize(wall.GetSize(), wall.GetRotation());
+        auto collisionData = CheckCollision(wall.GetPosition(), rotatedWallSize, shell.GetPosition(), rotatedShellSize);
 
         return collisionData.has_value();
     }
 
-    static bool Detect(Shell& shell, Headquarters& headquarters)
+    static bool Detect(const Bonus& bonus, const Wall& wall)
+    {
+        Size3D rotatedBonusSize = GetRotatedSize(bonus.GetSize(), bonus.GetRotation());
+        Size3D rotatedWallSize = GetRotatedSize(wall.GetSize(), wall.GetRotation());
+        auto collisionData = CheckCollision(wall.GetPosition(), rotatedWallSize, bonus.GetPosition(), rotatedBonusSize);
+
+        return collisionData.has_value();
+    }
+
+    static bool Detect(const Bonus& bonus, const Headquarters& headquarters)
+    {
+        Size3D rotatedBonusSize = GetRotatedSize(bonus.GetSize(), bonus.GetRotation());
+        Size3D rotatedHeadquartersSize = GetRotatedSize(headquarters.GetSize(), headquarters.GetRotation());
+        auto collisionData = CheckCollision(headquarters.GetPosition(), rotatedHeadquartersSize, bonus.GetPosition(), rotatedBonusSize);
+
+        return collisionData.has_value();
+    }
+
+    static bool Detect(const Shell& shell, const Headquarters& headquarters)
     {
         if (!shell.IsAlive()) {
             return false;

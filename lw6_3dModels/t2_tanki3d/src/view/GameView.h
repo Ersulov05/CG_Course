@@ -39,7 +39,7 @@ public:
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            camera.SetPosition(Point3D{0, 30, 30});
+            camera.SetPosition(Point3D{0, 35, 30});
             camera.SetRotation(0, -55, 0);
             
             m_gameController.Update(deltatime);

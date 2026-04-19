@@ -12,6 +12,13 @@ public:
     {
     }
 
+    void Update(float deltatime)
+    {
+        if (IsAlive()) {
+            m_lifetime -= deltatime;
+        }
+    }
+
     BonusActionType GetType() const
     {
         return m_bonusActionType;
@@ -19,15 +26,15 @@ public:
 
     bool IsAlive() const
     {
-        return isAlive;
+        return m_lifetime > 0;
     }
 
     void Boom()
     {
-        isAlive = false;
+        m_lifetime = 0;
     }
 
 private:
     BonusActionType m_bonusActionType;
-    bool isAlive = true;
+    float m_lifetime = Constants::BONUS_LIFETIME;
 };

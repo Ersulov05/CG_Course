@@ -37,43 +37,45 @@ private:
     {
         LevelMap{
             TerrarianMap{
-                "dddddddddddd",
-                "diiiiiiddddd",
-                "diiiiiiddddd",
-                "diiiiiiddddd",
-                "diiiiiiddwdd",
-                "dddddddddddd",
-                "dddddddddddd",
-                "dddddddddddd",
-                "dddddddddddd",
-                "dddddddddddd",
-                "dddddddddddd",
-                "dddddddddddd",
+                "ddddddddddddd",
+                "diiiiiidddddd",
+                "diiiiiidddddd",
+                "diiiiiidddddd",
+                "diiiiiiddwddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
+                "ddddddddddddd",
             },
             ObjectsMap{
-                "ssssssssssss",
-                "b0000000000b",
-                "b0000000000b",
-                "b0000000000b",
-                "b0000000000b",
-                "b0000000000b",
-                "b00b0000000b",
-                "b0000000000b",
-                "b0000000000b",
-                "b0000BBB000b",
-                "b0000BHB000b",
-                "bbbbbbbbbbbb",
+                "sssssssssssss",
+                "s00000000000s",
+                "s00000000000s",
+                "s00000000000s",
+                "s00000000000s",
+                "s00000000000s",
+                "s00b00000000s",
+                "s00000000000s",
+                "s00000000000s",
+                "s0000BBB0000s",
+                "s0000BHB0000s",
+                "sssssssssssss",
             },
         },        
     };
 
     static float GetLevelWidth(const TerrarianMap& terrarianMap)
     {
+        std::cout << (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width << std::endl;
         return (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width;
     }
 
     static float GetLevelHeight(const TerrarianMap& terrarianMap)
     {
+        std::cout << (int)terrarianMap.size() * Constants::TERRARIAN_SIZE.depth << std::endl;
         return (int)terrarianMap.size() * Constants::TERRARIAN_SIZE.depth;
     }
 
@@ -93,9 +95,9 @@ private:
 
     static void SetLevelTerrarians(const TerrarianMap& terrarianMap, LevelObjects& levelObjects)
     {
-        float xStart = -GetLevelWidth(terrarianMap) / 2;
+        float xStart = -GetLevelWidth(terrarianMap) / 2 + Constants::TERRARIAN_SIZE.width/2;
         float x = xStart;
-        float z = -GetLevelHeight(terrarianMap) / 2;
+        float z = -GetLevelHeight(terrarianMap) / 2 + Constants::TERRARIAN_SIZE.depth/2;
 
         for (const auto& row : terrarianMap) {
             for (const char& col : row) {
@@ -109,9 +111,9 @@ private:
 
     static void SetLevelObjects(const ObjectsMap& objectsMap, LevelObjects& levelObjects)
     {
-        float xStart = -(int)objectsMap[0].size() / 2 * Constants::DEFAULT_WALL_SIZE.width;
+        float xStart = -(float)objectsMap[0].size() / 2 * Constants::DEFAULT_WALL_SIZE.width + Constants::DEFAULT_WALL_SIZE.width/2;
         float x = xStart;
-        float z = -(int)objectsMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth;
+        float z = -(float)objectsMap.size() / 2 * Constants::DEFAULT_WALL_SIZE.depth + Constants::DEFAULT_WALL_SIZE.depth/2;
 
         for (const auto& row : objectsMap) {
             for (const char& obj : row) {
