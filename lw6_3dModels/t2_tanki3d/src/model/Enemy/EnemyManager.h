@@ -66,15 +66,17 @@ private:
 
         std::uniform_real_distribution<float> distX(-mapWidth/2, mapWidth/2);
         std::uniform_real_distribution<float> distZ(-mapHeight/2, mapHeight/2);
+        std::uniform_int_distribution<unsigned int> distLevel(1, 4);
 
         Point3D randomPos = {distX(m_randomEngine), 0, distZ(m_randomEngine)};
+        unsigned int randomLevel = distLevel(m_randomEngine);
         Vector3D distance = randomPos - m_player->GetPosition();
         if (distance.x * distance.x + distance.z * distance.z < MIN_DISTANCE_TO_PLAYER_SQ)
         {
             return;
         }
 
-        auto enemyTank = std::make_shared<Tank>(m_map, TankType::T34, 1, randomPos);
+        auto enemyTank = std::make_shared<Tank>(m_map, TankType::T34, randomLevel, randomPos);
         if (CheckCollisionSpawnedTank(enemyTank))
         {
             return;
