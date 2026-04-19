@@ -2,6 +2,7 @@
 #include "../Canvas/ICanvas3D.h"
 #include "../Meshes/Mesh.h"
 #include "../../controller/GameController.h"
+#include "../Components/BarView.h"
 
 class CannonReloadView {
 public:
@@ -12,11 +13,12 @@ public:
 
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(width - RELOAD_BAR_WIDTH/2 - RELOAD_BAR_PADDING, height - RELOAD_BAR_HEIGHT/2 - RELOAD_BAR_PADDING, 0);
+        canvas.GetTransform().RotateZ(-90);
 
+        BarData barData = {totalReloadTime - reloadTime, totalReloadTime};
         for (int i = 0; i < count; ++i)
         {
-            DrawReload(canvas, reloadTime, totalReloadTime);
-            DrawReloadBorder(canvas);
+            BarView::Draw(canvas, BAR_PARAM, barData);
             canvas.GetTransform().Translate(-RELOAD_BAR_WIDTH - OFFSET, 0, 0);
         }
 
@@ -31,48 +33,5 @@ private:
     inline static const float RELOAD_BAR_PADDING = 20;
     inline static const float OFFSET = 15;
 
-    static void DrawReload(ICanvas3D& canvas, float reloadTime, float totalReloadTime)
-    {
-        float reloadRate = 1 - (float)reloadTime / (float)totalReloadTime;
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(0, (1 - reloadRate)*RELOAD_BAR_HEIGHT/2, 0);
-        canvas.GetTransform().Scale(RELOAD_BAR_WIDTH, reloadRate * RELOAD_BAR_HEIGHT, 1);
-
-        canvas.DrawMesh(m_healthRect);
-
-        canvas.GetTransform().PopMatrix();   
-    }
-
-    static void DrawReloadBorder(ICanvas3D& canvas)
-    {
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(0, 0, 0.1);
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(0, -RELOAD_BAR_HEIGHT/2, 0);
-        canvas.GetTransform().Scale(RELOAD_BAR_WIDTH, RELOAD_BORDER_SIZE, 1);
-        canvas.DrawMesh(m_healthBorderRect);
-        canvas.GetTransform().PopMatrix(); 
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(0, RELOAD_BAR_HEIGHT/2, 0);
-        canvas.GetTransform().Scale(RELOAD_BAR_WIDTH, RELOAD_BORDER_SIZE, 1);
-        canvas.DrawMesh(m_healthBorderRect);
-        canvas.GetTransform().PopMatrix(); 
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(-RELOAD_BAR_WIDTH/2, 0, 0);
-        canvas.GetTransform().Scale(RELOAD_BORDER_SIZE, RELOAD_BAR_HEIGHT, 1);
-        canvas.DrawMesh(m_healthBorderRect);
-        canvas.GetTransform().PopMatrix(); 
-
-        canvas.GetTransform().PushMatrix();
-        canvas.GetTransform().Translate(RELOAD_BAR_WIDTH/2, 0, 0);
-        canvas.GetTransform().Scale(RELOAD_BORDER_SIZE, RELOAD_BAR_HEIGHT, 1);
-        canvas.DrawMesh(m_healthBorderRect);
-        canvas.GetTransform().PopMatrix();         
-
-        canvas.GetTransform().PopMatrix(); 
-    }
+    inline static const BarParam BAR_PARAM = {RELOAD_BAR_HEIGHT, RELOAD_BAR_WIDTH, RELOAD_BORDER_SIZE, 0xBFBF00FF, 0xFFFFFFFF};
 };

@@ -1,6 +1,6 @@
 {
     "T34": {
-        "size": [3, 2, 6],
+        "size": [3, 3, 6],
         "cannonPos": [0, 1.5, -1],
         "levels": [
             {"health": 100, "acceleration": 10, "cannonLevel": 1},

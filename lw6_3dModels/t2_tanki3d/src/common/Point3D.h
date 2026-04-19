@@ -2,10 +2,13 @@
 #include <cmath>
 #include "./Vector3D.h"
 #include <ostream>
+#include <glm/glm.hpp>
 
 struct Point3D
 {
     float x, y, z;
+
+    Point3D(const glm::vec3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 
     Point3D(float x = 0, float y = 0, float z = 0): x(x), y(y), z(z) {}
 
@@ -48,6 +51,10 @@ struct Point3D
     Point3D operator/(float scalar) const
     {
         return Point3D(x / scalar, y / scalar, z / scalar);
+    }
+
+    operator glm::vec3() const {
+        return glm::vec3(x, y, z);
     }
 };
 

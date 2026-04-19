@@ -127,6 +127,8 @@ public:
 
     void TakeDamage(unsigned int damage)
     {
+
+        std::cout << damage << std::endl;
         if (damage > m_health) {
             m_health = 0;
         } else {

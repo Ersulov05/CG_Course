@@ -1,7 +1,7 @@
 #pragma once
-#include "./Canvas/ICanvas3D.h"
-#include "./ModelLoader/ModelLoader.h"
-#include "../model/Tank/Cannon/Cannon.h"
+#include "../Canvas/ICanvas3D.h"
+#include "../ModelLoader/ModelLoader.h"
+#include "../../model/Tank/Cannon/Cannon.h"
 
 class CannonView {
 public:

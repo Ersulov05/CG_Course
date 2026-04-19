@@ -17,7 +17,7 @@ class Game {
 public:
     Game() 
         : m_map(LevelCreator::GetMapByLevel(1))
-        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 4))
+        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 1))
         , m_enemyManager(m_map, m_playerTank)
         , m_bonusManager(m_map)
         , m_bonusActionFactory(m_map)

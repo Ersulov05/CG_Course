@@ -2,7 +2,7 @@
 #include "./Canvas/Canvas3D.h"
 #include "./ModelLoader/ModelLoader.h"
 #include "../controller/GameController.h"
-#include "./TankView.h"
+#include "./TankView/TankView.h"
 #include "./Map/MapView.h"
 #include "./ShellView.h"
 #include "./UI/UIView.h"
@@ -44,9 +44,9 @@ public:
             
             m_gameController.Update(deltatime);
 
-            TankView::Draw(canvas, m_gameController.GetPlayerTank());
+            TankView::Draw(canvas, m_gameController.GetPlayerTank(), camera);
             MapView::Draw(canvas, m_gameController.GetMap());
-            DrawEnemies(canvas);
+            DrawEnemies(canvas, camera);
             DrawShells(canvas);
             DrawBonuses(canvas);
 
@@ -67,11 +67,11 @@ private:
         }
     }
 
-    void DrawEnemies(ICanvas3D& canvas)
+    void DrawEnemies(ICanvas3D& canvas, const FpvCamera3D& camera)
     {
         for (auto& tank : m_gameController.GetEnemyTanks())
         {
-            TankView::Draw(canvas, tank);
+            TankView::Draw(canvas, tank, camera, true);
         }
     }
 

@@ -58,7 +58,8 @@ public:
         UpdateViewMatrix();
     }
 
-    const glm::vec3& GetPosition() const { return m_position; }
+    Point3D GetPosition() const { return m_position; }
+    Quaternion3D GetRotation() const { return m_rotation; }
 
     glm::vec3 GetForward() const
     {
