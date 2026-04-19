@@ -93,7 +93,6 @@ void main() {
     
     if (newIndex >= MAX_FRAGMENTS) {
         discard;
-        return;
     }
 
     ivec2 screenPos = ivec2(gl_FragCoord.xy);
