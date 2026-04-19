@@ -21,10 +21,13 @@ public:
 private:
     inline static const MeshData m_terrarianDirtModel = Mesh::Cube(0xFFFFFFFF, {"./textures/grass.jpg"}, Constants::TERRARIAN_SIZE/2);
     inline static const MeshData m_terrarianIceModel = Mesh::Cube(0xFFFFFFFF, {"./textures/ice.jpg"});
+    inline static const MeshData m_terrarianWaterModel = Mesh::Cube(0xFFFFFFFF, {"./textures/water.jpg"}, Constants::TERRARIAN_SIZE/2);
 
     static MeshData GetTerrarianMeshByType(TerrarianType type) 
     {
         switch (type) {
+            case TerrarianType::Water:
+                return m_terrarianWaterModel;
             case TerrarianType::Dirt:
                 return m_terrarianDirtModel;
             case TerrarianType::Ice:

@@ -193,7 +193,7 @@ private:
             case TerrarianType::Ice:
                 return 0.1;
             default:
-                throw std::invalid_argument("Unknown terrarianType: " + (int)terrarianType);
+                return 0.5;
         }
     }
 
@@ -211,7 +211,7 @@ private:
             case TerrarianType::Ice:
                 return 0.15;
             default:
-                throw std::invalid_argument("Unknown terrarianType: " + (int)terrarianType);
+                return 0.5;
         }
     }
 };

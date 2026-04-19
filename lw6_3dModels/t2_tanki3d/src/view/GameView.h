@@ -40,7 +40,7 @@ public:
         {
             auto &camera = canvas.GetCamera();
             camera.SetPosition(Point3D{0, 30, 30});
-            camera.SetRotation(0, -60, 0);
+            camera.SetRotation(0, -55, 0);
             
             m_gameController.Update(deltatime);
 

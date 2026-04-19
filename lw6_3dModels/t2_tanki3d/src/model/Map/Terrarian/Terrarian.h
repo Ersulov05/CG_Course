@@ -6,6 +6,7 @@
 enum class TerrarianType {
     Ice,
     Dirt,
+    Water,
 };
 
 class Terrarian : public GameObject {

@@ -6,5 +6,5 @@ public:
     inline static const Size3D HEADQUARTERS_SIZE = {5, 2, 5};
     inline static const unsigned int HEADQUARTERS_HEALTH = 200;
     inline static const Size3D DEFAULT_WALL_SIZE = {6, 6, 6};
-    inline static const Size3D BONUS_SIZE = {3, 3, 3};
+    inline static const Size3D BONUS_SIZE = {2, 2, 2};
 };

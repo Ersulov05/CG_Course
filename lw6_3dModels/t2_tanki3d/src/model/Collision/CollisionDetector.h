@@ -18,7 +18,7 @@ class CollisionDetector
 public:
     static bool Detect(const Shell& shell, const Wall& wall)
     {
-        if (!shell.IsAlive()) {
+        if (!shell.IsAlive() || wall.GetType() == WallType::Empty) {
             return false;
         }
         Size3D rotatedShellSize = GetRotatedSize(shell.GetSize(), shell.GetRotation());
