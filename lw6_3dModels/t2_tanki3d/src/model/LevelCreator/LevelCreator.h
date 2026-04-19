@@ -69,13 +69,11 @@ private:
 
     static float GetLevelWidth(const TerrarianMap& terrarianMap)
     {
-        std::cout << (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width << std::endl;
         return (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width;
     }
 
     static float GetLevelHeight(const TerrarianMap& terrarianMap)
     {
-        std::cout << (int)terrarianMap.size() * Constants::TERRARIAN_SIZE.depth << std::endl;
         return (int)terrarianMap.size() * Constants::TERRARIAN_SIZE.depth;
     }
 

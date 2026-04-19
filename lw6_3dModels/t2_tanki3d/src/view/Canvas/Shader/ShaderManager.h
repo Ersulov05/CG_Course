@@ -21,10 +21,9 @@ public:
 
     bool SetCurrent(const std::string &name)
     {
-        auto it = shaders.find(name);
-        if (it != shaders.end())
-        {
-            current = it->second.get();
+        auto shader = GetByName(name);
+        if (shader != nullptr) {
+            current = shader;
             return true;
         }
         return false;
@@ -37,6 +36,14 @@ public:
         return SetCurrent(name);
     }
 
+    bool Push(Shader* shader)
+    {
+        if (current)
+            stack.push(current);
+        current = shader;
+        return true;
+    }
+
     bool Pop()
     {
         if (stack.empty())
@@ -44,6 +51,16 @@ public:
         current = stack.top();
         stack.pop();
         return true;
+    }
+
+    Shader* GetByName(const std::string &name)
+    {
+        auto it = shaders.find(name);
+        if (it != shaders.end())
+        {
+            return it->second.get();
+        }
+        return nullptr;
     }
 
     Shader *GetCurrent() { return current; }

@@ -6,12 +6,14 @@
 #include "./LevelCreator/LevelCreator.h"
 #include "./Shell/ShellManager.h"
 #include "./Enemy/EnemyManager.h"
+#include "./Effect/EffectManager.h"
 #include "./Collision/CollisionHandler.h"
 #include "./Collision/CollisionDetector.h"
 
 #include "./Bonus/BonusManager.h"
 #include "./Bonus/BonusActionManager.h"
 #include "./Bonus/BonusAction/Factory/BonusActionFactory.h"
+#include "./Effect/EffectFactory.h"
 
 class Game {
 public:
@@ -31,6 +33,7 @@ public:
         m_enemyManager.Update(deltatime);
         m_bonusManager.Update(deltatime);
         m_bonusActionManager.Update(deltatime);
+        m_effectManager.Update(deltatime);
         m_map.Update();
         CheckAndHandleCollisions();
     }
@@ -70,6 +73,11 @@ public:
         return m_bonusManager;
     }
 
+    const EffectManager& GetEffectManager() const
+    {
+        return m_effectManager;
+    }
+
 private:
     Map m_map;
     ShellManager m_shellManager;
@@ -78,6 +86,7 @@ private:
     BonusManager m_bonusManager;
     BonusActionManager m_bonusActionManager;
     BonusActionFactory m_bonusActionFactory;
+    EffectManager m_effectManager;
 
     void CheckAndHandleCollisions()
     {
@@ -85,18 +94,24 @@ private:
         for (auto& tank : m_enemyManager.GetEnemies()) 
         {
             CollisionHandler::CheckAndHandleCollision(tank, m_map);
-            CollisionHandler::CheckAndHandleCollision(tank, m_map);
             for (auto & shell : m_shellManager.GetShells())
             {
-                CollisionHandler::CheckAndHandleCollision(shell, tank);
+                if (CollisionHandler::CheckAndHandleCollision(shell, tank))
+                {
+                    m_effectManager.AddEffect(EffectFactory::CreateEffect(EffectType::Boom, shell.GetPosition()));
+                }
             }
         }
         for (auto & shell : m_shellManager.GetShells())
         {
-            CollisionHandler::CheckAndHandleCollision(shell, m_playerTank);
-            CollisionHandler::CheckAndHandleCollision(shell, m_map);
+            if (
+                CollisionHandler::CheckAndHandleCollision(shell, m_playerTank) ||
+                CollisionHandler::CheckAndHandleCollision(shell, m_map)
+            )
+            {
+                m_effectManager.AddEffect(EffectFactory::CreateEffect(EffectType::Boom, shell.GetPosition()));
+            }
         }
-
 
         for (auto & bonus : m_bonusManager.GetBonuses())
         {

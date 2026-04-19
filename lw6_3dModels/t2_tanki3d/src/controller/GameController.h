@@ -51,6 +51,11 @@ public:
         return m_game.GetEnemyTanks();
     }
 
+    const std::vector<std::shared_ptr<IEffect>>& GetEffects() const
+    {
+        return m_game.GetEffectManager().GetEffects();
+    }
+
 private:
     Game& m_game;
 };

@@ -11,26 +11,38 @@
 class CollisionHandler
 {
 public:
-    static void CheckAndHandleCollision(Shell& shell, std::shared_ptr<Tank> tank)
+    static bool CheckAndHandleCollision(Shell& shell, std::shared_ptr<Tank> tank)
     {
         if (CollisionDetector::Detect(shell, tank))
         {
             tank->TakeDamage(shell.GetDamage());
             shell.Boom();
+            return true;
         }
+
+        return false;
     }
 
-    static void CheckAndHandleCollision(Shell& shell, Map& map)
+    static bool CheckAndHandleCollision(Shell& shell, Map& map)
     {
-        CheckAndHandleCollision(shell, map.GetHeadquarters());
+        if (CheckAndHandleCollision(shell, map.GetHeadquarters()))
+        {
+            return true;
+        }
         for (auto& wall : map.GetWalls()) 
         {
-            CheckAndHandleCollision(shell, wall);
+            if (CheckAndHandleCollision(shell, wall)) {
+                return true;
+            }
         }
         for (auto& wall : map.GetHeadquartersWalls()) 
         {
-            CheckAndHandleCollision(shell, wall);
+            if (CheckAndHandleCollision(shell, wall)) {
+                return true;
+            }
         }
+
+        return false;
     }
 
     static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, Map& map)
@@ -46,12 +58,14 @@ public:
     }
 
 private:
-    static void CheckAndHandleCollision(Shell& shell, Wall& wall)
+    static bool CheckAndHandleCollision(Shell& shell, Wall& wall)
     {
         if (CollisionDetector::Detect(shell, wall)) {
             wall.TakeDamage();
             shell.Boom();
+            return true;
         }
+        return false;
     }
 
     static void CheckAndHandleCollision(std::shared_ptr<Tank> tank, const Wall &wall)
@@ -88,13 +102,15 @@ private:
         CorrectTankByNormal(tank, *collisionData);
     }
 
-    static void CheckAndHandleCollision(Shell& shell, Headquarters& headquarters)
+    static bool CheckAndHandleCollision(Shell& shell, Headquarters& headquarters)
     {
         if (CollisionDetector::Detect(shell, headquarters))
         {
             headquarters.TakeDamage(shell.GetDamage());
             shell.Boom();
+            return true;
         }
+        return false;
     }
 
     static void CorrectTankBySpeedAndNormal(std::shared_ptr<Tank> tank, const CollisionData& collisionData)

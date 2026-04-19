@@ -36,7 +36,7 @@ public:
 
     BonusActionType GetType() const override
     {
-        return BonusActionType::Star;
+        return BonusActionType::Machingan;
     }
 
     bool IsActionEnd() const override

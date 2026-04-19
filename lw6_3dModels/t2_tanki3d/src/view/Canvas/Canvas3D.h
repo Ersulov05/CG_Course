@@ -16,6 +16,7 @@
 
 #include "./Shader/BasicShader.h"
 #include "./Shader/UIShader.h"
+#include "./Shader/BoomShader.h"
 #include "./Transform.h"
 
 #include "./Controller/KeyboardController.h"
@@ -214,6 +215,13 @@ private:
             m_transform.GetTransform().GetGLMMatrix(), 
             m_uiMatrixManager.GetPixelMatrix(),
             m_textureCount
+        );
+
+        m_shaderManager.AddShader<BoomShader>(
+            "boom", 
+            m_transform.GetTransform().GetGLMMatrix(), 
+            m_camera.GetProjectionMatrix(), 
+            m_camera.GetViewMatrix()
         );
         m_shaderManager.SetCurrent("basic");
     }

@@ -8,6 +8,8 @@
 #include "./UI/UIView.h"
 #include "./BonusView/BonusView.h"
 
+#include "./EffectView/EffectView.h"
+
 class GameView {
 public:
     GameView(GameController& gameController): m_gameController(gameController) {
@@ -49,8 +51,10 @@ public:
             DrawEnemies(canvas, camera);
             DrawShells(canvas);
             DrawBonuses(canvas);
+            DrawEffects(canvas);
 
             UIView::Draw(canvas, m_gameController);
+
         });
     }
 
@@ -80,6 +84,14 @@ private:
         for (auto& bonus : m_gameController.GetBonuses())
         {
             BonusView::Draw(canvas, bonus);
+        }
+    }
+
+    void DrawEffects(ICanvas3D& canvas)
+    {
+        for (auto& effect : m_gameController.GetEffects())
+        {
+            EffectView::Draw(canvas, effect);
         }
     }
 };
