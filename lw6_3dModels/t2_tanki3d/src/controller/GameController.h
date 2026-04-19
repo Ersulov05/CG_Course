@@ -34,8 +34,7 @@ public:
         auto tank = m_game.GetPlayerTank();
         auto newShells = tank->Fire();
 
-        auto& shells = m_game.GetShellManager().GetShells();
-        shells.insert(shells.end(), newShells.begin(), newShells.end());
+        m_game.GetShellManager().AddShells(newShells);
     }
 
     const Map& GetMap() const 

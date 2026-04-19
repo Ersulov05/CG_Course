@@ -25,6 +25,11 @@ public:
         m_shells.push_back(shell);
     }
 
+    void AddShells(const std::vector<Shell>& shells)
+    {
+        m_shells.insert(m_shells.end(), shells.begin(), shells.end());
+    }
+
     std::vector<Shell>& GetShells()
     {
         return m_shells;

@@ -6,12 +6,18 @@
 #include "../Constants.h"
 #include "../Collision/CollisionDetector.h"
 #include <functional>
+#include "./EnemyStrategy.h"
 
 class EnemyManager {
 public:
-    EnemyManager(const Map& map, const std::shared_ptr<Tank> player)
+    EnemyManager(
+        const Map& map, 
+        const std::shared_ptr<Tank> player,
+        ShellManager& shellManager
+    )
         : m_map(map)
         , m_player(player)
+        , m_enemyStrategy(shellManager)
     {
     }
 
@@ -24,6 +30,12 @@ public:
         std::erase_if(m_enemies, [](const std::shared_ptr<Tank>& tank) { 
             return !tank || tank->GetHealth() == 0; 
         });
+
+        m_enemyStrategy.Update(deltatime);
+        for (auto& enemy : m_enemies) {
+            m_enemyStrategy.ApplyStrategy(enemy);
+            enemy->Update(deltatime);
+        }
     }
 
     const std::vector<std::shared_ptr<Tank>>& GetEnemies() const
@@ -38,6 +50,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<Tank>> m_enemies;
+    EnemyStrategy m_enemyStrategy;
 
     const Map& m_map;
     const std::shared_ptr<Tank> m_player;

@@ -22,7 +22,7 @@ public:
     }
 private:
     Map& m_map;
-    std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());;
+    std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());
 
     BonusActionType GetRandomBonusActionType()
     {

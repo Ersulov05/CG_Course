@@ -159,8 +159,14 @@ public:
         m_isProtected = isProtected;
     }
 
-    bool GetProtected() const {
+    bool GetProtected() const 
+    {
         return m_isProtected;
+    }
+
+    bool IsMoved() const
+    {
+        return m_isMoved;
     }
 
     void SetFreezed(bool isFreezed)
