@@ -3,10 +3,10 @@
 #include "./ModelLoader/ModelLoader.h"
 #include "../controller/GameController.h"
 #include "./TankView/TankView.h"
-#include "./Map/MapView.h"
+#include "./MapView/MapView.h"
 #include "./ShellView.h"
 #include "./UI/UIView.h"
-#include "./Bonus/BonusView.h"
+#include "./BonusView/BonusView.h"
 
 class GameView {
 public:
@@ -45,7 +45,7 @@ public:
             m_gameController.Update(deltatime);
 
             TankView::Draw(canvas, m_gameController.GetPlayerTank(), camera);
-            MapView::Draw(canvas, m_gameController.GetMap());
+            MapView::Draw(canvas, m_gameController.GetMap(), camera);
             DrawEnemies(canvas, camera);
             DrawShells(canvas);
             DrawBonuses(canvas);

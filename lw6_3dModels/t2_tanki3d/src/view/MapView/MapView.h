@@ -4,10 +4,11 @@
 #include "./TerrarianView.h"
 #include "./WallView.h"
 #include "./HeadquartersView.h"
+#include "../Canvas/FpvCamera3D.h"
 
 class MapView {
 public:
-    static void Draw(ICanvas3D& canvas, const Map& map) 
+    static void Draw(ICanvas3D& canvas, const Map& map, const FpvCamera3D& camera) 
     {
         for (auto& terrarian : map.GetTerrarians()) 
         {
@@ -21,7 +22,7 @@ public:
         {
             WallView::Draw(canvas, wall);
         }
-        HeadquartersView::Draw(canvas, map.GetHeadquarters());
+        HeadquartersView::Draw(canvas, map.GetHeadquarters(), camera);
     }
 private:
 };

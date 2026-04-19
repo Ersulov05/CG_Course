@@ -7,16 +7,16 @@ public:
     Headquarters(const Point3D& position = {0, 0, 0})
         : GameObject(position, Constants::HEADQUARTERS_SIZE)
         , m_totalHealth(Constants::HEADQUARTERS_HEALTH)
-        , m_health(m_totalHealth)
+        , m_health(Constants::HEADQUARTERS_HEALTH)
     {
     }
 
-    unsigned int GetHealth() 
+    unsigned int GetHealth() const
     {
         return m_health;
     }
 
-    unsigned int GetTotalHealth() 
+    unsigned int GetTotalHealth() const 
     {
         return m_totalHealth;
     }
