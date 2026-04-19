@@ -37,7 +37,7 @@ public:
     void Update(float deltatime) 
     {
         m_cannon.Update(deltatime);
-        ApplyFrictionToSpeed(deltatime);
+        UpdateSpeed(deltatime);
         
         m_position -= m_speed * deltatime;
     }
@@ -50,8 +50,8 @@ public:
         }
         return std::move(shells); 
     }
-    
-    void Move(Direction direction, float deltatime) 
+
+    void Rotate(Direction direction)
     {
         switch (direction) {
             case Direction::Forward:
@@ -69,8 +69,16 @@ public:
             default:
                 std::invalid_argument("Unknown direction: " + (int)direction);
         }
+    }
+    
+    void Move() 
+    {
+        m_isMoved = true;
+    }
 
-        m_speed += m_rotation.GetForward() * m_acceleration * GetTraction() * deltatime;
+    void Stop()
+    {
+        m_isMoved = false;
     }
 
     void SetSpeed(const Vector3D& speed)
@@ -146,13 +154,15 @@ private:
     Vector3D m_speed;
     Cannon m_cannon;
     float m_acceleration = 10;
-    float m_sideFrictionCoef = 40;
+    const float m_sideBreackCoef = 2;
     std::reference_wrapper<const Map> m_map;
     unsigned int m_level;
     unsigned int m_health = 0;
     unsigned int m_totalHealth;
     Point3D m_cannonPosition = {0, 1.5, -1};
     TankType m_type;
+    bool m_isMoved = false;
+    float m_maxSpeed = 6;
 
     template<typename T>
     T sign(T value) 
@@ -160,19 +170,35 @@ private:
         return (T(0) < value) - (value < T(0));
     }
 
-    void ApplyFrictionToSpeed(float deltatime) 
+    void UpdateSpeed(float deltatime)
     {
-        float friction = GetFriction();
-        float sideFriction = friction * m_sideFrictionCoef;
-        
+        ApplyFrictionToSpeed(deltatime);
         Vector3D forward = m_rotation.GetForward();
         Vector3D right = m_rotation.GetRight();
-        
+        float forwardSpeed = forward.Dot(m_speed);
+        float rightSpeed = right.Dot(m_speed);
+
+        float acceleration = m_acceleration * GetTraction();
+        if (m_isMoved) {
+            forwardSpeed = std::min(forwardSpeed + acceleration * deltatime, m_maxSpeed);
+        } else {
+            forwardSpeed = std::max(0.0f, std::abs(forwardSpeed) - acceleration * deltatime) * sign(forwardSpeed);
+        }
+
+        rightSpeed = std::max(0.0f, std::abs(rightSpeed) - acceleration * m_sideBreackCoef * deltatime) * sign(rightSpeed);
+        m_speed = forward * forwardSpeed + right * rightSpeed;
+    }
+
+    void ApplyFrictionToSpeed(float deltatime) 
+    {
+        Vector3D forward = m_rotation.GetForward();
+        Vector3D right = m_rotation.GetRight();
         float forwardSpeed = forward.Dot(m_speed);
         float rightSpeed = right.Dot(m_speed);
         
+        float friction = GetFriction();
         forwardSpeed = std::max(0.0f, std::abs(forwardSpeed) - friction * deltatime) * sign(forwardSpeed);
-        rightSpeed = std::max(0.0f, std::abs(rightSpeed) - sideFriction * deltatime) * sign(rightSpeed);
+        rightSpeed = std::max(0.0f, std::abs(rightSpeed) - friction * m_sideBreackCoef * deltatime) * sign(rightSpeed);
         
         m_speed = forward * forwardSpeed + right * rightSpeed;
     }
@@ -183,16 +209,8 @@ private:
         if (!terrarian.has_value()) {
             return 0.5;
         }
-        
-        auto terrarianType = terrarian->GetType();
-        switch (terrarianType) {
-            case TerrarianType::Dirt:
-                return 0.5;
-            case TerrarianType::Ice:
-                return 0.1;
-            default:
-                return 0.5;
-        }
+
+        return Terrarian::GetFriction(terrarian->GetType());
     }
 
     float GetTraction() const 
@@ -202,14 +220,6 @@ private:
             return 0.5;
         }
 
-        auto terrarianType = terrarian->GetType();
-        switch (terrarianType) {
-            case TerrarianType::Dirt:
-                return 0.7;
-            case TerrarianType::Ice:
-                return 0.15;
-            default:
-                return 0.5;
-        }
+        return Terrarian::GetTraction(terrarian->GetType());
     }
 };

@@ -3,13 +3,12 @@
 #include <ostream>
 
 enum class BonusActionType {
-    Grenade, // Не придумал:)
     Helmet, // Даёт щит
     Shovel, // Ремонтирует стены главного штаба
     Star, // Повышает уровень танка
     Timer, // Замораживает врагов
-    Medkit, // лечит танк
-    Machingan, // ускоряет перезарядку
+    Medkit, // Лечит танк
+    Machingan, // Ускоряет перезарядку
 };
 
 class IBonusAction {

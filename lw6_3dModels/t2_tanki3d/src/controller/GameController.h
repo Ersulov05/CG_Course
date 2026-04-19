@@ -11,10 +11,22 @@ public:
         m_game.Update(deltatime);
     }
 
-    void MoveTank(Direction moveDirection, float deltatime)
+    void RotateTank(Direction rotateDirection)
     {
         auto tank = m_game.GetPlayerTank();
-        tank->Move(moveDirection, deltatime);
+        tank->Rotate(rotateDirection);
+    }
+
+    void MoveTank()
+    {
+        auto tank = m_game.GetPlayerTank();
+        tank->Move();
+    }
+
+    void StopTank()
+    {
+        auto tank = m_game.GetPlayerTank();
+        tank->Stop();
     }
 
     void Fire() 

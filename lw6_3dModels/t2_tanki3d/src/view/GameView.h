@@ -13,26 +13,7 @@
 class GameView {
 public:
     GameView(GameController& gameController): m_gameController(gameController) {
-        auto & keyboardController = m_canvas.GetKeyboardController();
-
-        keyboardController.OnKeyHoldSubscribe(this, GLFW_KEY_LEFT, [this](float deltatime){
-            m_gameController.MoveTank(Direction::Left, deltatime);
-        });
-        keyboardController.OnKeyHoldSubscribe(this, GLFW_KEY_RIGHT, [this](float deltatime){
-            m_gameController.MoveTank(Direction::Right, deltatime);
-        });
-
-        keyboardController.OnKeyHoldSubscribe(this, GLFW_KEY_UP, [this](float deltatime){
-            m_gameController.MoveTank(Direction::Forward, deltatime);
-        });
-
-        keyboardController.OnKeyHoldSubscribe(this, GLFW_KEY_DOWN, [this](float deltatime){
-            m_gameController.MoveTank(Direction::Backward, deltatime);
-        });
-
-        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_SPACE, [this](){
-            m_gameController.Fire();
-        });
+        SetSubscribeKeyboard();
     }
 
     void Run() {
@@ -43,7 +24,8 @@ public:
             auto &camera = canvas.GetCamera();
             camera.SetPosition(Point3D{0, 35, 30});
             camera.SetRotation(0, -55, 0);
-            
+
+            UpdateMoveTank();
             m_gameController.Update(deltatime);
 
             TankView::Draw(canvas, m_gameController.GetPlayerTank(), camera);
@@ -62,6 +44,18 @@ private:
     Canvas3D m_canvas; 
     Vector3D m_rotation;
     GameController& m_gameController;
+    std::vector<Direction> m_pressedDirections;
+
+
+    void UpdateMoveTank() 
+    {
+        if (!m_pressedDirections.empty()) {
+            m_gameController.RotateTank(m_pressedDirections.back());
+            m_gameController.MoveTank();
+        } else {
+            m_gameController.StopTank();
+        }
+    }
 
     void DrawShells(ICanvas3D& canvas)
     {
@@ -92,6 +86,53 @@ private:
         for (auto& effect : m_gameController.GetEffects())
         {
             EffectView::Draw(canvas, effect);
+        }
+    }
+
+    void SetSubscribeKeyboard()
+    {
+        auto & keyboardController = m_canvas.GetKeyboardController();
+
+        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_LEFT, [this](){
+            AddPressedDirection(Direction::Left);
+        });
+        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_RIGHT, [this](){
+            AddPressedDirection(Direction::Right);
+        });
+        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_UP, [this](){
+            AddPressedDirection(Direction::Forward);
+        });
+        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_DOWN, [this](){
+            AddPressedDirection(Direction::Backward);
+        });
+
+        keyboardController.OnKeyReleasedSubscribe(this, GLFW_KEY_LEFT, [this](){
+            RemovePressedDirection(Direction::Left);
+        });
+        keyboardController.OnKeyReleasedSubscribe(this, GLFW_KEY_RIGHT, [this](){
+            RemovePressedDirection(Direction::Right);
+        });
+        keyboardController.OnKeyReleasedSubscribe(this, GLFW_KEY_UP, [this](){
+            RemovePressedDirection(Direction::Forward);
+        });
+        keyboardController.OnKeyReleasedSubscribe(this, GLFW_KEY_DOWN, [this](){
+            RemovePressedDirection(Direction::Backward);
+        });
+
+        keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_SPACE, [this](){
+            m_gameController.Fire();
+        });
+    }
+
+    void AddPressedDirection(Direction dir) {
+        RemovePressedDirection(dir);
+        m_pressedDirections.push_back(dir);
+    }
+    
+    void RemovePressedDirection(Direction dir) {
+        auto it = std::find(m_pressedDirections.begin(), m_pressedDirections.end(), dir);
+        if (it != m_pressedDirections.end()) {
+            m_pressedDirections.erase(it);
         }
     }
 };
