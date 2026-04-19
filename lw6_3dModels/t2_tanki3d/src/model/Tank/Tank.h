@@ -29,7 +29,8 @@ public:
           m_cannon(CannonFactory::CreateCannonByLevel(level))
     {
         auto tankData = TanksLevelData::GetTankDataByTankType(m_type);
-        SetSize(tankData.size);
+        m_size = tankData.size;
+        m_maxSpeed = tankData.maxSpeed;
         SetCannonPosition(tankData.cannonPos);
         SetLevel(level);
     }

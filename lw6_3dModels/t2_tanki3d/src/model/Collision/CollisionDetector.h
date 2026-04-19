@@ -61,7 +61,7 @@ public:
 
     static bool Detect(const Shell& shell, const std::shared_ptr<Tank> tank)
     {
-        if (!shell.IsAlive() || tank->GetHealth() == 0) {
+        if (!shell.IsAlive()) {
             return false;
         }
 

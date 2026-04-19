@@ -31,8 +31,9 @@ private:
     {
         Size3D size = ParseSize(value);
         Point3D cannonPos = ParseCannonPos(value);
+        float maxSpeed = ParseMaxSpeed(value);
         std::vector<TankLevelData> tankLevelsData = ParseTankLevelsData(value);
-        TankData tankData = {size, cannonPos};
+        TankData tankData = {size, cannonPos, maxSpeed};
             
         return TankDataMapItem{tankData, tankLevelsData};
     }
@@ -56,6 +57,19 @@ private:
             value["size"][1].get<float>(),
             value["size"][2].get<float>()
         };
+    }
+
+    static float ParseMaxSpeed(const json& value)
+    {
+        if (!value.contains("maxSpeed")) {
+            throw std::invalid_argument("Missing 'maxSpeed' field");
+        }
+        
+        if (!value["maxSpeed"].is_number()) {
+            throw std::invalid_argument("'maxSpeed' must be an nummber");
+        }
+
+        return value["maxSpeed"].get<float>();
     }
 
     static Point3D ParseCannonPos(const json& value)

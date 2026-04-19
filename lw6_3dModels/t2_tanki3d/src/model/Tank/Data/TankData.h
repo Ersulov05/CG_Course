@@ -26,6 +26,7 @@ struct TankLevelData {
 struct TankData {
     Size3D size;
     Point3D cannonPos;
+    float maxSpeed;
 };
 
 struct TankDataMapItem {

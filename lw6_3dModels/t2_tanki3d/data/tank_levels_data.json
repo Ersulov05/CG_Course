@@ -2,6 +2,7 @@
     "T34": {
         "size": [3, 3, 6],
         "cannonPos": [0, 1.5, -1],
+        "maxSpeed": 10,
         "levels": [
             {"health": 100, "acceleration": 10, "cannonLevel": 1},
             {"health": 150, "acceleration": 10, "cannonLevel": 2},
@@ -12,6 +13,7 @@
     "Tiger": {
         "size": [4, 3, 7],
         "cannonPos": [0, 1.5, -1],
+        "maxSpeed": 6,
         "levels": [
             {"health": 200, "acceleration": 8, "cannonLevel": 1},
             {"health": 300, "acceleration": 8, "cannonLevel": 1},
