@@ -6,7 +6,7 @@ enum class BonusActionType {
     Helmet, // Даёт щит
     Shovel, // Ремонтирует стены главного штаба
     Star, // Повышает уровень танка
-    Timer, // Замораживает врагов
+    Freeze, // Замораживает врагов
     Medkit, // Лечит танк
     Machingan, // Ускоряет перезарядку
 };
@@ -27,6 +27,7 @@ public:
 inline static const std::unordered_set<BonusActionType> ONLY_PLAYER_BONUS_ACTIONS = 
 {
     BonusActionType::Shovel,
+    BonusActionType::Freeze,
 };
 
 inline static bool IsOnlyPlayerBonusAction(BonusActionType type)

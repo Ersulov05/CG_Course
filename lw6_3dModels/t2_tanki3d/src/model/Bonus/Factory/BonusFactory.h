@@ -48,5 +48,7 @@ private:
         BonusActionType::Star,
         BonusActionType::Medkit,
         BonusActionType::Machingan,
+        BonusActionType::Freeze,
+        BonusActionType::Helmet,
     };
 };

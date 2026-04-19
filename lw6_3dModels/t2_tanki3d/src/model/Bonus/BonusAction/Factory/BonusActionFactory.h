@@ -4,6 +4,8 @@
 #include "../StarBonusAction.h"
 #include "../MedkitBonusAction.h"
 #include "../MachinganBonusAction.h"
+#include "../FreezeBonusAction.h"
+#include "../HelmetBonusAction.h"
 #include "../IBonusAction.h"
 #include "../../../Map/Map.h"
 #include "../../../Tank/Tank.h"
@@ -15,7 +17,14 @@
 
 class BonusActionFactory {
 public:
-    BonusActionFactory(Map& map): m_map(map) {}
+    BonusActionFactory(
+        Map& map,
+        std::vector<std::shared_ptr<Tank>>& enemies
+    )
+        : m_map(map)
+        , m_enemies(enemies) 
+    {
+    }
 
     std::shared_ptr<IBonusAction> CreateBonusAction(BonusActionType type, std::shared_ptr<Tank> owner) 
     {
@@ -23,6 +32,7 @@ public:
     }
 private:
     Map& m_map;
+    std::vector<std::shared_ptr<Tank>>& m_enemies;
 
     std::shared_ptr<IBonusAction> GetBonusActionByType(BonusActionType type, std::shared_ptr<Tank> owner) 
     {
@@ -43,6 +53,7 @@ private:
         {BonusActionType::Star, [this](std::shared_ptr<Tank> owner){ return std::make_shared<StarBonusAction>(owner); }},
         {BonusActionType::Medkit, [this](std::shared_ptr<Tank> owner){ return std::make_shared<MedkitBonusAction>(owner); }},
         {BonusActionType::Machingan, [this](std::shared_ptr<Tank> owner){ return std::make_shared<MachinganBonusAction>(owner); }},
+        {BonusActionType::Freeze, [this](std::shared_ptr<Tank> owner){ return std::make_shared<FreezeBonusAction>(m_enemies, owner); }},
+        {BonusActionType::Helmet, [this](std::shared_ptr<Tank> owner){ return std::make_shared<HelmetBonusAction>(owner); }},
     };
-
 };

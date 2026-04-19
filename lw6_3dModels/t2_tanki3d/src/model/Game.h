@@ -22,7 +22,7 @@ public:
         , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 1))
         , m_enemyManager(m_map, m_playerTank)
         , m_bonusManager(m_map)
-        , m_bonusActionFactory(m_map)
+        , m_bonusActionFactory(m_map, m_enemyManager.GetEnemies())
     {
     }
 

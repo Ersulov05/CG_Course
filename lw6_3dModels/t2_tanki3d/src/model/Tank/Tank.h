@@ -38,8 +38,9 @@ public:
     void Update(float deltatime) 
     {
         m_cannon.Update(deltatime);
+
+        if (m_isFreezed) return;
         UpdateSpeed(deltatime);
-        
         m_position -= m_speed * deltatime;
     }
 
@@ -54,6 +55,7 @@ public:
 
     void Rotate(Direction direction)
     {
+        if (m_isFreezed) return;
         switch (direction) {
             case Direction::Forward:
                 m_rotation = Quaternion3D::FromDegrees(0, 0, 0);
@@ -136,6 +138,7 @@ public:
 
     void TakeDamage(unsigned int damage)
     {
+        if (m_isProtected) return;
         if (damage > m_health) {
             m_health = 0;
         } else {
@@ -151,10 +154,25 @@ public:
         }
     }
 
+    void SetProtected(bool isProtected)
+    {
+        m_isProtected = isProtected;
+    }
+
+    bool GetProtected() const {
+        return m_isProtected;
+    }
+
+    void SetFreezed(bool isFreezed)
+    {
+        m_isFreezed = isFreezed;
+    }
+
 private:
     Vector3D m_speed;
     Cannon m_cannon;
     float m_acceleration = 10;
+    float m_maxSpeed = 6;
     const float m_sideBreackCoef = 2;
     std::reference_wrapper<const Map> m_map;
     unsigned int m_level;
@@ -163,7 +181,8 @@ private:
     Point3D m_cannonPosition = {0, 1.5, -1};
     TankType m_type;
     bool m_isMoved = false;
-    float m_maxSpeed = 6;
+    bool m_isProtected = false;
+    bool m_isFreezed = false;
 
     template<typename T>
     T sign(T value) 

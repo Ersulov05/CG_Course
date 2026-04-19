@@ -41,8 +41,8 @@ private:
 
     const Map& m_map;
     const std::shared_ptr<Tank> m_player;
-    const int MAX_ENEMIES = 1;
-    float MIN_DISTANCE_TO_PLAYER2 = 30 * 30;
+    const int MAX_ENEMIES = 4;
+    float MIN_DISTANCE_TO_PLAYER_SQ = 12 * 12;
 
     std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());;
 
@@ -56,7 +56,7 @@ private:
 
         Point3D randomPos = {distX(m_randomEngine), 0, distZ(m_randomEngine)};
         Vector3D distance = randomPos - m_player->GetPosition();
-        if (MIN_DISTANCE_TO_PLAYER2 < distance.x * distance.x + distance.z * distance.z)
+        if (distance.x * distance.x + distance.z * distance.z < MIN_DISTANCE_TO_PLAYER_SQ)
         {
             return;
         }

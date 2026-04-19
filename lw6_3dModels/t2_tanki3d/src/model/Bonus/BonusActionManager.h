@@ -89,11 +89,10 @@ private:
 
     bool IsConflicting(BonusActionType firstType, BonusActionType secondType)
     {
+        if (firstType == secondType) return true;
         for (auto& conflictPair : CONFLICTED_BONUS_TYPES) {
             if ((firstType == conflictPair.first && secondType == conflictPair.second) ||
-                (firstType == conflictPair.second && secondType == conflictPair.first) ||
-                (firstType == conflictPair.first && secondType == conflictPair.first) ||
-                (firstType == conflictPair.second && secondType == conflictPair.second)
+                (firstType == conflictPair.second && secondType == conflictPair.first)
             ) {
                 return true;
             }
