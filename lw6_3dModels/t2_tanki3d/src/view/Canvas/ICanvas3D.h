@@ -4,6 +4,7 @@
 #include "./Transform.h"
 #include "./FpvCamera3D.h"
 #include "./Controller/KeyboardController.h"
+#include "./Controller/MouseController.h"
 #include "./Shader/ShaderManager.h"
 
 class ICanvas3D
@@ -19,6 +20,7 @@ public:
     virtual unsigned GetHeight() const = 0;
     virtual Transform &GetTransform() = 0;
     virtual KeyboardController &GetKeyboardController() = 0;
+    virtual MouseController &GetMouseController() = 0;
     virtual FpvCamera3D &GetCamera() = 0;
     virtual ShaderManager &GetShaderManager() = 0;
 };

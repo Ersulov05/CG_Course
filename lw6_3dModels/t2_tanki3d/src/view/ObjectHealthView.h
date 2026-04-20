@@ -20,15 +20,6 @@ public:
 private:
     inline static const BarParam BAR_PARAM = {4, 0.3, 0.08, 0xFF0000AF, 0xFFFFFFAF};
 
-    static Quaternion3D GetYRotationToCamera(const Point3D& cameraPos, const Point3D& objectPos)
-    {
-        Vector3D direction = cameraPos - objectPos;
-        direction.Normalized();
-        
-        float yaw = atan2(direction.x, direction.z);
-        return Quaternion3D(0, yaw, 0);
-    }
-
     static Quaternion3D GetRotationToCamera(const Point3D& cameraPos, const Point3D& objectPos)
     {
         Vector3D direction = cameraPos - objectPos;

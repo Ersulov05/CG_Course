@@ -33,6 +33,45 @@ public:
         }
     };
 
+    void CaptureCursor(GLFWwindow* window)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        m_center = {width / 2.0, height / 2.0};
+        
+        glfwSetCursorPos(window, m_center.x, m_center.y);
+        m_mousePosition = m_center;
+        m_isCursorCaptured = true;
+    }
+    
+    void ReleaseCursor(GLFWwindow* window)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        m_isCursorCaptured = false;
+    }
+    
+    void ToggleCursorCapture(GLFWwindow* window)
+    {
+        if (m_isCursorCaptured)
+        {
+            ReleaseCursor(window);
+        }
+        else
+        {
+            CaptureCursor(window);
+        }
+    }
+    
+    bool IsCursorCaptured() const { return m_isCursorCaptured; }
+
+
+    Point GetPosition() const 
+    {
+        return m_mousePosition;
+    }
+
     Mouse GetMouseData(GLFWwindow *window)
     {
         double xpos, ypos;
@@ -114,6 +153,9 @@ private:
     bool m_isPressed = false;
     bool m_propagate = true;
     Point m_mousePosition;
+    Point m_center;
+    bool m_isCursorCaptured = false;
+
 
     std::unordered_map<unsigned, PrioritizedCallback<OnClickCallback>> m_clickCallbacks;
     std::unordered_map<unsigned, PrioritizedCallback<OnPressCallback>> m_pressCallbacks;

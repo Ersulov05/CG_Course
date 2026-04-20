@@ -19,7 +19,7 @@ struct Quaternion3D {
     }
 
     static Quaternion3D FromDegrees(float pitch, float yaw, float roll) {
-        constexpr float DEG_TO_RAD = 3.14159265359f / 180.0f;
+        constexpr float DEG_TO_RAD = M_PI / 180.0f;
         return Quaternion3D(
             pitch * DEG_TO_RAD,
             yaw * DEG_TO_RAD,
@@ -28,21 +28,18 @@ struct Quaternion3D {
     }
 
     static Quaternion3D FromDirection(const Vector3D& direction) {
-        // Находим угол между направлением и осью Z (0, 0, 1)
         Vector3D forward = Vector3D(0.0f, 0.0f, 1.0f);
         Vector3D dir = direction.Normalized();
         
-        // Вычисляем угол поворота
         float dot = forward.Dot(dir);
-        float angle = acos(dot);  // Угол в радианах
+        float angle = acos(dot);
         
-        // Если векторы противоположны
         if (angle < 0.0001f) {
-            return Quaternion3D(0.0f, 0.0f, 0.0f);  // Нулевой поворот
+            return Quaternion3D(0.0f, 0.0f, 0.0f);
         }
         
         if (angle > 3.14159f - 0.0001f) {
-            return Quaternion3D(0.0f, 3.14159f, 0.0f);  // Разворот на 180 градусов
+            return Quaternion3D(0.0f, 3.14159f, 0.0f);
         }
         
         // Ось вращения = cross(forward, direction)
@@ -94,12 +91,10 @@ struct Quaternion3D {
         return glm::yaw(m_quaternion);
     }
     
-    // Получить угол поворота по оси X (в радианах)
     float GetPitch() const {
         return glm::pitch(m_quaternion);
     }
     
-    // Получить угол поворота по оси Z (в радианах)
     float GetRoll() const {
         return glm::roll(m_quaternion);
     }

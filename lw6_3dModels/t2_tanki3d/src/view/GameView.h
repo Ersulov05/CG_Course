@@ -14,22 +14,21 @@ class GameView {
 public:
     GameView(GameController& gameController): m_gameController(gameController) {
         SetSubscribeKeyboard();
+        SetSubscribeMouse();
     }
 
     void Run() {
         m_canvas.SetLightPos({0, 50, 0});
+        m_canvas.GetCamera().SetRotation(Vector3D{0, -55, 0});
+        m_canvas.GetCamera().SetPosition(Point3D{0, 42, 45});
         m_canvas.Run(
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            camera.SetPosition(Point3D{0, 35, 30});
-            camera.SetRotation(0, -55, 0);
-
-            // camera.SetPosition(Point3D{0, 10, 10});
-            // camera.SetRotation(0, -30, 0);
 
             UpdateMoveTank();
             m_gameController.Update(deltatime);
+            auto& playerTank = m_gameController.GetPlayerTank();
 
             TankView::Draw(canvas, m_gameController.GetPlayerTank(), camera);
             MapView::Draw(canvas, m_gameController.GetMap(), camera);
@@ -44,11 +43,9 @@ public:
     }
 
 private:
-    Canvas3D m_canvas; 
-    Vector3D m_rotation;
+    Canvas3D m_canvas;
     GameController& m_gameController;
     std::vector<Direction> m_pressedDirections;
-
 
     void UpdateMoveTank() 
     {
@@ -90,6 +87,16 @@ private:
         {
             EffectView::Draw(canvas, effect);
         }
+    }
+    
+    void SetSubscribeMouse()
+    {
+        auto& mouseController = m_canvas.GetMouseController();
+
+        mouseController.OnPressSubscribe([this](const Point & point)
+        {
+            m_gameController.Fire();
+        });
     }
 
     void SetSubscribeKeyboard()

@@ -11,7 +11,7 @@ public:
         canvas.GetTransform().PushMatrix();
         canvas.GetTransform().Translate(shell.GetPosition());
         canvas.GetTransform().Rotate(shell.GetRotation());
-        canvas.GetTransform().Scale(shell.GetSize());
+        canvas.GetTransform().Scale(shell.GetSize() * 2);
 
         canvas.DrawMesh(m_shellModel);
 

@@ -20,6 +20,7 @@
 #include "./Transform.h"
 
 #include "./Controller/KeyboardController.h"
+#include "./Controller/MouseController.h"
 #include "./FpvCamera3D.h"
 #include <iostream>
 #include "./UIMatrixManager.h"
@@ -27,7 +28,7 @@
 class Canvas3D : public ICanvas3D, protected Window
 {
 public:
-    Canvas3D(unsigned width = 1280, unsigned height = 1024)
+    Canvas3D(unsigned width = 1680, unsigned height = 1024)
         : Window(width, height, "OpenGL Canvas")
     {
         float aspect = (float)width / (float)height;
@@ -50,6 +51,11 @@ public:
         if (!Initialize())
             return;
 
+        // m_mouseController.CaptureCursor(m_window);
+        // m_keyboardController.OnKeyPressedSubscribe(this, GLFW_KEY_ESCAPE, [this](){
+        //     m_mouseController.ToggleCursorCapture(m_window);
+        // });
+
         m_renderer.InitOIT(m_width, m_height);
         m_lastFrameTime = glfwGetTime();
 
@@ -70,6 +76,7 @@ public:
             float deltaTime = static_cast<float>(currentTime - m_lastFrameTime);
             m_lastFrameTime = currentTime;
             m_keyboardController.Update(deltaTime);
+            m_mouseController.ProcessEvents(m_window);
 
             glBindFramebuffer(GL_FRAMEBUFFER, m_tempFBO);
 
@@ -125,6 +132,11 @@ public:
         return m_keyboardController;
     }
 
+    MouseController &GetMouseController() 
+    {
+        return m_mouseController;
+    }
+
     void SetLightPos(const Point3D& position) 
     {
         m_lightPos = glm::vec3(position.x, position.y, position.z);
@@ -145,6 +157,7 @@ private:
     int m_textureCount;
     ShaderManager m_shaderManager;
     KeyboardController m_keyboardController;
+    MouseController m_mouseController;
     FpvCamera3D m_camera;
     UIMatrixManager m_uiMatrixManager;
     Renderer m_renderer;

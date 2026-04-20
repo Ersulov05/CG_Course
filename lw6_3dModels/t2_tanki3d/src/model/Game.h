@@ -19,7 +19,7 @@ class Game {
 public:
     Game() 
         : m_map(LevelCreator::GetMapByLevel(1))
-        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 1))
+        , m_playerTank(std::make_shared<Tank>(m_map, TankType::T34, 1, Constants::PLAYER_POS))
         , m_shellManager(ShellManager())
         , m_enemyManager(m_map, m_playerTank, m_shellManager)
         , m_bonusManager(m_map)
@@ -104,7 +104,7 @@ private:
         m_enemyManager.Clear();
         m_shellManager.Clear();
         m_map = LevelCreator::GetMapByLevel(m_level);
-        m_playerTank = std::make_shared<Tank>(m_map, TankType::T34, 1);
+        m_playerTank = std::make_shared<Tank>(m_map, TankType::T34, 1, Constants::PLAYER_POS);
     }
 
     void CheckAndHandleCollisions()

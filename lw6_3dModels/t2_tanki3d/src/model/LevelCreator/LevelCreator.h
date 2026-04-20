@@ -4,6 +4,7 @@
 #include <vector>
 #include "../Constants.h"
 #include <optional>
+#include "./LevelData.h"
 
 class LevelCreator {
 public:
@@ -18,55 +19,6 @@ public:
         return Map(levelObjects.terrarians, levelObjects.walls, levelObjects.headquartersWalls, levelObjects.headquarters, width, height);
     } 
 private:  
-    using TerrarianMap = std::vector<std::string>;
-    using ObjectsMap = std::vector<std::string>;
-
-    struct LevelMap {
-        TerrarianMap terrarianMap;
-        ObjectsMap objectsMap;
-    };
-
-    struct LevelObjects {
-        Headquarters headquarters;
-        std::vector<Wall> walls;
-        std::vector<Wall> headquartersWalls;
-        std::vector<Terrarian> terrarians;
-    };
-    
-    inline static const std::vector<LevelMap> m_levelMaps = 
-    {
-        LevelMap{
-            TerrarianMap{
-                "ddddddddddddd",
-                "diiiiiidddddd",
-                "diiiiiidddddd",
-                "diiiiiidddddd",
-                "diiiiiiddwddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-                "ddddddddddddd",
-            },
-            ObjectsMap{
-                "sssssssssssss",
-                "s00000000000s",
-                "s00000000000s",
-                "s00bbbb00000s",
-                "s00b00000000s",
-                "s00b00000000s",
-                "s00b00000000s",
-                "s00000000000s",
-                "s00000000000s",
-                "s0000BBB0000s",
-                "s0000BHB0000s",
-                "sssssssssssss",
-            },
-        },        
-    };
-
     static float GetLevelWidth(const TerrarianMap& terrarianMap)
     {
         return (int)terrarianMap[0].size() * Constants::TERRARIAN_SIZE.width;
@@ -79,7 +31,7 @@ private:
 
     static LevelMap GetLevelMap(unsigned int level)
     {
-        return m_levelMaps[(level - 1) % m_levelMaps.size()];
+        return LevelData::LEVEL_MAPS[(level - 1) % LevelData::LEVEL_MAPS.size()];
     }
 
     static LevelObjects GetLevelObjects(const LevelMap& levelMap)

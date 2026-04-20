@@ -89,15 +89,15 @@ Cannon::ShellData Cannon::GetShellData() const
     switch (m_cannonType) {
         case CannonType::MM152:
             speed = 20;
-            size = {0.17, 0.17, 0.32};
+            size = {0.18, 0.18, 0.32};
             return ShellData{ShellType::OF, size, speed};
         case CannonType::MM85:
             speed = 30;
-            size = {0.1, 0.1, 0.25};
+            size = {0.09, 0.09, 0.26};
             return ShellData{ShellType::BB, size, speed};
         case CannonType::MM100:
             speed = 25;
-            size = {0.12, 0.12, 0.3};
+            size = {0.12, 0.12, 0.32};
             return ShellData{ShellType::BB, size, speed};
         default:
             throw std::invalid_argument("Unknown cannonType: "  + (int)m_cannonType);
