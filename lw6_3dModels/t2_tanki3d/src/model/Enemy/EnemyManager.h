@@ -12,7 +12,7 @@ class EnemyManager {
 public:
     EnemyManager(
         const Map& map, 
-        const std::shared_ptr<Tank> player,
+        const std::shared_ptr<Tank>& player,
         ShellManager& shellManager
     )
         : m_map(map)
@@ -48,12 +48,18 @@ public:
         return m_enemies;
     }
 
+    void Clear()
+    {
+        m_enemyStrategy.Clear();
+        m_enemies.clear();
+    }
+
 private:
     std::vector<std::shared_ptr<Tank>> m_enemies;
     EnemyStrategy m_enemyStrategy;
 
     const Map& m_map;
-    const std::shared_ptr<Tank> m_player;
+    const std::shared_ptr<Tank>& m_player;
     const int MAX_ENEMIES = 4;
     float MIN_DISTANCE_TO_PLAYER_SQ = 12 * 12;
 

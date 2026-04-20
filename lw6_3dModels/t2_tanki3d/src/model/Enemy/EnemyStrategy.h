@@ -40,6 +40,11 @@ public:
             enemyStrategyData.fireTimer = 1;
         }
     }
+
+    void Clear()
+    {
+        m_enemyMap.clear();
+    }
 private:
     ShellManager& m_shellManager;
     inline static std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());

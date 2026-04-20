@@ -39,6 +39,11 @@ public:
     {
         return m_shells;
     }
+
+    void Clear()
+    {
+        m_shells.clear();
+    }
 private:
     std::vector<Shell> m_shells;
 };

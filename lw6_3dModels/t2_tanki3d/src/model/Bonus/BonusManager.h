@@ -44,6 +44,11 @@ public:
         return m_bonuses;
     }
 
+    void Clear()
+    {
+        m_bonuses.clear();
+    }
+
 private:
     std::vector<Bonus> m_bonuses;
     float m_bonusRespawnTime = 5;

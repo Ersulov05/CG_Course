@@ -108,6 +108,13 @@ public:
         m_headquartersWalls = m_originalHeadquartersWalls;
     }
 
+    void Clear()
+    {
+        m_terrarians.clear();
+        m_walls.clear();
+        m_headquartersWalls.clear();
+    }
+
 private:
     Headquarters m_headquarters;
     std::vector<Terrarian> m_terrarians;

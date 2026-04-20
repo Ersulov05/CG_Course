@@ -37,6 +37,13 @@ public:
         m_effectManager.Update(deltatime);
         m_map.Update();
         CheckAndHandleCollisions();
+
+        if (
+            m_map.GetHeadquarters().GetHealth() == 0 ||
+            m_playerTank->GetHealth() == 0
+        ) {
+            Restart();
+        }
     }
 
     std::shared_ptr<Tank> GetPlayerTank() 
@@ -88,6 +95,17 @@ private:
     BonusActionManager m_bonusActionManager;
     BonusActionFactory m_bonusActionFactory;
     EffectManager m_effectManager;
+    unsigned int m_level = 1;
+
+    void Restart() {
+        m_bonusActionManager.Clear();
+        m_effectManager.Clear();
+        m_bonusManager.Clear();
+        m_enemyManager.Clear();
+        m_shellManager.Clear();
+        m_map = LevelCreator::GetMapByLevel(m_level);
+        m_playerTank = std::make_shared<Tank>(m_map, TankType::T34, 1);
+    }
 
     void CheckAndHandleCollisions()
     {

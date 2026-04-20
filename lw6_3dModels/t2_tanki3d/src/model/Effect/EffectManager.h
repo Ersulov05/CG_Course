@@ -27,6 +27,11 @@ public:
         return m_effects;
     }
 
+    void Clear()
+    {
+        m_effects.clear();
+    }
+
 private:
     std::vector<std::shared_ptr<IEffect>> m_effects;
 };
