@@ -1,24 +1,25 @@
 {
     "T34": {
-        "size": [3, 3, 6],
+        "size": [3, 3, 5.8],
         "cannonPos": [0, 1.5, -1],
         "maxSpeed": 12,
         "levels": [
             {"health": 500, "acceleration": 10, "cannonLevel": 1},
             {"health": 750, "acceleration": 10, "cannonLevel": 2},
             {"health": 1000, "acceleration": 10, "cannonLevel": 3},
-            {"health": 1000, "acceleration": 10, "cannonLevel": 4}
+            {"health": 1000, "acceleration": 10, "cannonLevel": 4},
+            {"health": 1000, "acceleration": 10, "cannonLevel": 5}
         ]
     },
     "Tiger": {
-        "size": [3, 3, 6],
+        "size": [3, 3, 5.8],
         "cannonPos": [0, 1.75, -1],
         "maxSpeed": 5,
         "levels": [
-            {"health": 350, "acceleration": 6, "cannonLevel": 5},
-            {"health": 450, "acceleration": 6, "cannonLevel": 5},
-            {"health": 550, "acceleration": 6, "cannonLevel": 6},
-            {"health": 600, "acceleration": 6, "cannonLevel": 6}
+            {"health": 200, "acceleration": 6, "cannonLevel": 6},
+            {"health": 250, "acceleration": 6, "cannonLevel": 6},
+            {"health": 300, "acceleration": 6, "cannonLevel": 7},
+            {"health": 400, "acceleration": 6, "cannonLevel": 7}
         ]
     }
 }

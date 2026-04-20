@@ -24,6 +24,9 @@ private:
         {BonusActionType::Star, Mesh::Cube(0xFF0000FF, {"./textures/wood_box.jpg"})},
         {BonusActionType::Shovel, Mesh::Cube(0xFFFF00FF, {"./textures/wood_box.jpg"})},
         {BonusActionType::Medkit, Mesh::Cube(0x00FF00FF, {"./textures/wood_box.jpg"})},
+        {BonusActionType::Machingan, Mesh::Cube(0x555555FF, {"./textures/wood_box.jpg"})},
+        {BonusActionType::Helmet, Mesh::Cube(0x00FFFFFF, {"./textures/wood_box.jpg"})},
+        {BonusActionType::Freeze, Mesh::Cube(0xFFFFFFFF, {"./textures/wood_box.jpg"})},
     };
 
     static MeshData GetMeshByBonusType(BonusActionType type) {

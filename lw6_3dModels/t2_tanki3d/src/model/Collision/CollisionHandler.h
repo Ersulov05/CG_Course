@@ -57,6 +57,41 @@ public:
         }
     }
 
+    static void CheckAndHandleCollision(std::shared_ptr<Tank> tank1, std::shared_ptr<Tank> tank2)
+    {
+        auto collisionData = CollisionDetector::Detect(tank1, tank2);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        auto firstSpeed = tank1->GetSpeed().GetLength();
+        auto secondSpeed = tank2->GetSpeed().GetLength();
+        auto summ = firstSpeed + secondSpeed;
+        auto firstCoef = summ >= 0 ? firstSpeed / summ : 0.5;
+        auto secondCoef = summ >= 0 ? secondSpeed / summ : 0.5;
+        CollisionData firstCollisionData = *collisionData;
+        CollisionData secondCollisionData = *collisionData;
+        secondCollisionData.normal = secondCollisionData.normal * -1;
+        secondCollisionData.overlap *= secondCoef;
+        firstCollisionData.overlap *= firstCoef;
+
+        CorrectTankBySpeedAndNormal(tank1, firstCollisionData);
+        CorrectTankBySpeedAndNormal(tank2, secondCollisionData);
+
+        collisionData = CollisionDetector::Detect(tank1, tank2);
+        if (!collisionData.has_value()) {
+            return;
+        }
+
+        firstCollisionData, secondCollisionData = *collisionData;
+        secondCollisionData.normal = secondCollisionData.normal * -1;
+        secondCollisionData.overlap *= secondCoef;
+        firstCollisionData.overlap *= firstCoef;
+
+        CorrectTankByNormal(tank1, firstCollisionData);
+        CorrectTankByNormal(tank2, secondCollisionData);
+    }
+
 private:
     static bool CheckAndHandleCollision(Shell& shell, Wall& wall)
     {

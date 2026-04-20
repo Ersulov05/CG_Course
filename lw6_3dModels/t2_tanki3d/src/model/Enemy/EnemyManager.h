@@ -1,12 +1,13 @@
 #pragma once
-#include <vector>
+
 #include "../Tank/Tank.h"
 #include "../Map/Map.h"
-#include <random>
 #include "../Constants.h"
 #include "../Collision/CollisionDetector.h"
-#include <functional>
 #include "./EnemyStrategy.h"
+#include <functional>
+#include <random>
+#include <vector>
 
 class EnemyManager {
 public:
@@ -23,12 +24,20 @@ public:
 
     void Update(float deltatime) 
     {
-        if (m_enemies.size() < MAX_ENEMIES) {
-            SpawnEnemy();
+        if (m_enemies.size() < Constants::MAX_ENEMIES) {
+            if (m_enemyRespawnTime > 0) {
+                m_enemyRespawnTime -= deltatime;
+            } else {
+                SpawnEnemy();
+            }
         }
 
-        std::erase_if(m_enemies, [](const std::shared_ptr<Tank>& tank) { 
-            return !tank || tank->GetHealth() == 0; 
+        std::erase_if(m_enemies, [this](const std::shared_ptr<Tank>& tank) {
+            if (!tank || tank->GetHealth() == 0) {
+                ++m_killCount;
+                return true;
+            }
+            return false; 
         });
 
         m_enemyStrategy.Update(deltatime);
@@ -52,15 +61,23 @@ public:
     {
         m_enemyStrategy.Clear();
         m_enemies.clear();
+        m_killCount = 0;
+        m_enemyRespawnTime = 0;
+    }
+
+    unsigned int GetKillCount() const
+    {
+        return m_killCount;
     }
 
 private:
     std::vector<std::shared_ptr<Tank>> m_enemies;
     EnemyStrategy m_enemyStrategy;
+    unsigned m_killCount = 0;
+    float m_enemyRespawnTime = 0;
 
     const Map& m_map;
     const std::shared_ptr<Tank>& m_player;
-    const int MAX_ENEMIES = 3;
     float MIN_DISTANCE_TO_PLAYER_SQ = 12 * 12;
 
     std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());;
@@ -88,12 +105,18 @@ private:
             return;
         }
 
+        m_enemyRespawnTime = Constants::ENEMY_RESPAWN_TIME;
         m_enemies.push_back(enemyTank);
     }
 
     bool CheckCollisionSpawnedTank(const std::shared_ptr<Tank> tank)
     {
         for (auto& wall : m_map.GetWalls()) {
+            if (CollisionDetector::Detect(tank, wall).has_value()) {
+                return true;
+            }
+        }
+        for (auto& wall : m_map.GetHeadquartersWalls()) {
             if (CollisionDetector::Detect(tank, wall).has_value()) {
                 return true;
             }

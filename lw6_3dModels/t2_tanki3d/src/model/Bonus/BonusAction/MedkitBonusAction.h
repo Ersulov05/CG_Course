@@ -23,5 +23,5 @@ public:
     }
 
 private:
-    const unsigned int HEALTH_COUNT = 100;
+    const unsigned int HEALTH_COUNT = 250;
 };

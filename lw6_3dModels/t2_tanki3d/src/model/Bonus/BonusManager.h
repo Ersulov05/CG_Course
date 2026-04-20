@@ -1,9 +1,10 @@
 #pragma once
 #include "./Bonus.h"
 #include "./BonusActionManager.h"
-#include <vector>
 #include "./Factory/BonusFactory.h"
 #include "../Collision/CollisionDetector.h"
+#include "../Constants.h"
+#include <vector>
 
 class BonusManager
 {
@@ -21,7 +22,7 @@ public:
             bonus.Update(deltatime);
         }
 
-        if (m_bonuses.size() < 2) {
+        if (m_bonuses.size() < Constants::MAX_BONUSES) {
             if (m_bonusRespawnTime > 0) {
                 m_bonusRespawnTime -= deltatime;
             } else {
@@ -51,7 +52,7 @@ public:
 
 private:
     std::vector<Bonus> m_bonuses;
-    float m_bonusRespawnTime = 5;
+    float m_bonusRespawnTime = Constants::BONUS_RESPAWN_TIME;
     BonusFactory m_bonusFactory;
     Map& m_map;
 
@@ -63,12 +64,17 @@ private:
             return;
         }
         m_bonuses.push_back(bonus);
-        m_bonusRespawnTime = 5;
+        m_bonusRespawnTime = Constants::BONUS_RESPAWN_TIME;
     }
 
     bool CheckCollisionSpawnedBonus(const Bonus& bonus)
     {
         for (auto& wall : m_map.GetWalls()) {
+            if (CollisionDetector::Detect(bonus, wall)) {
+                return true;
+            }
+        }
+        for (auto& wall : m_map.GetHeadquartersWalls()) {
             if (CollisionDetector::Detect(bonus, wall)) {
                 return true;
             }

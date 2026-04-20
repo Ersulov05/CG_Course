@@ -59,12 +59,27 @@ public:
 
     const std::vector<std::shared_ptr<Tank>>& GetEnemyTanks() const
     {
-        return m_game.GetEnemyTanks();
+        return m_game.GetEnemyManager().GetEnemies();
     }
 
     const std::vector<std::shared_ptr<IEffect>>& GetEffects() const
     {
         return m_game.GetEffectManager().GetEffects();
+    }
+
+    GameState GetGameState() const
+    {
+        return m_game.GetGameState();
+    }
+
+    float GetReloadTime() const
+    {
+        return m_game.GetReloadTime();
+    }
+
+    unsigned int GetKillCount() const
+    {
+        return m_game.GetEnemyManager().GetKillCount();
     }
 
 private:

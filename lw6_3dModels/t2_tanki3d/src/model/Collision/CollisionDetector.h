@@ -83,6 +83,9 @@ public:
 
     static std::optional<CollisionData> Detect(const std::shared_ptr<Tank> firstTank, const std::shared_ptr<Tank> secondTank)
     {
+        if (firstTank == secondTank) {
+            return std::nullopt;
+        }
         Size3D rotatedFirstTankSize = GetRotatedSize(firstTank->GetSize(), firstTank->GetRotation());
         Size3D rotatedSecondTankSize = GetRotatedSize(secondTank->GetSize(), secondTank->GetRotation());
 
@@ -177,6 +180,9 @@ private:
         }
         
         float overlap = (overlapXDepth < overlapZDepth) ? overlapXDepth : overlapZDepth;
+        if (std::isnan(normal.x) || std::isnan(normal.y) || std::isnan(normal.z)) {
+            return std::nullopt;
+        }
         return CollisionData{normal, overlap};
     }
 

@@ -15,6 +15,12 @@
 #include "./Bonus/BonusAction/Factory/BonusActionFactory.h"
 #include "./Effect/EffectFactory.h"
 
+enum class GameState {
+    Win,
+    Over,
+    Play
+};
+
 class Game {
 public:
     Game() 
@@ -24,11 +30,19 @@ public:
         , m_enemyManager(m_map, m_playerTank, m_shellManager)
         , m_bonusManager(m_map)
         , m_bonusActionFactory(m_map, m_enemyManager.GetEnemies())
+        , m_state(GameState::Play)
     {
     }
 
     void Update(float deltatime) 
     {
+        if (m_state != GameState::Play) {
+            if (m_reloadTime > 0) {
+                m_reloadTime -= deltatime;
+                return;
+            }
+            Restart();
+        }
         m_playerTank->Update(deltatime);
         m_shellManager.Update(deltatime);
         m_enemyManager.Update(deltatime);
@@ -37,13 +51,7 @@ public:
         m_effectManager.Update(deltatime);
         m_map.Update();
         CheckAndHandleCollisions();
-
-        if (
-            m_map.GetHeadquarters().GetHealth() == 0 ||
-            m_playerTank->GetHealth() == 0
-        ) {
-            Restart();
-        }
+        UpdateGameState();
     }
 
     std::shared_ptr<Tank> GetPlayerTank() 
@@ -55,10 +63,9 @@ public:
     {
         return m_playerTank;
     }
-
-    const std::vector<std::shared_ptr<Tank>>& GetEnemyTanks() const 
+    const EnemyManager& GetEnemyManager() const
     {
-        return m_enemyManager.GetEnemies();
+        return m_enemyManager;
     }
 
     const Map& GetMap() const 
@@ -86,6 +93,19 @@ public:
         return m_effectManager;
     }
 
+    GameState GetGameState() const
+    {
+        return m_state;
+    }
+
+    float GetReloadTime() const
+    {
+        return m_reloadTime;
+    }
+
+    inline static const float TOTAL_RELOAD_TIME = 3;
+    inline static const float WIN_KILL_COUNT = 20;
+
 private:
     Map m_map;
     ShellManager m_shellManager;
@@ -96,6 +116,23 @@ private:
     BonusActionFactory m_bonusActionFactory;
     EffectManager m_effectManager;
     unsigned int m_level = 1;
+    GameState m_state;
+    float m_reloadTime = 0;
+
+    void UpdateGameState() 
+    {
+        if (m_enemyManager.GetKillCount() >= WIN_KILL_COUNT) {
+            m_state = GameState::Win;
+            m_reloadTime = TOTAL_RELOAD_TIME;
+        }
+        if (
+            m_map.GetHeadquarters().GetHealth() == 0 ||
+            m_playerTank->GetHealth() == 0
+        ) {
+            m_state = GameState::Over;
+            m_reloadTime = TOTAL_RELOAD_TIME;
+        }
+    }
 
     void Restart() {
         m_bonusActionManager.Clear();
@@ -105,6 +142,7 @@ private:
         m_shellManager.Clear();
         m_map = LevelCreator::GetMapByLevel(m_level);
         m_playerTank = std::make_shared<Tank>(m_map, TankType::T34, 1, Constants::PLAYER_POS);
+        m_state = GameState::Play;
     }
 
     void CheckAndHandleCollisions()
@@ -144,6 +182,14 @@ private:
             {
                 CheckAndHandleCollision(tank, bonus);
             }
+        }
+        for (auto& firstTank : m_enemyManager.GetEnemies())
+        {
+            for (auto& secondTank : m_enemyManager.GetEnemies())
+            {
+                CollisionHandler::CheckAndHandleCollision(firstTank, secondTank);
+            }
+            CollisionHandler::CheckAndHandleCollision(m_playerTank, firstTank);
         }
     }
 

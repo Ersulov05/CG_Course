@@ -46,6 +46,6 @@ public:
 
 private:
     float m_prevTotalReloadTime;
-    const float MACHINEGAN_RELOAD_TIME = 0.5;
-    float lifetime = 5;
+    const float MACHINEGAN_RELOAD_TIME = 0.4;
+    float lifetime = 8;
 };

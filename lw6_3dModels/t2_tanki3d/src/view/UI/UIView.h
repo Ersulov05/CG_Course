@@ -4,6 +4,8 @@
 #include "../../controller/GameController.h"
 #include "./HealthView.h"
 #include "./CannonReloadView.h"
+#include "./GameStateView.h"
+#include "./ProgressView.h"
 
 class UIView {
 public:
@@ -19,6 +21,8 @@ public:
         
         HealthView::Draw(canvas, playerTank->GetHealth(), playerTank->GetTotalHealth());
         CannonReloadView::Draw(canvas, cannon.GetReloadTime(), cannon.GetTotalReloadTime(), (int)cannon.GetMountType());
+        GameStateView::Draw(canvas, controller.GetGameState(), controller.GetReloadTime());
+        ProgressView::Draw(canvas, controller.GetKillCount());
 
         canvas.GetTransform().PopMatrix();
         shaderManager.Pop();
