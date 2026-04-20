@@ -287,6 +287,12 @@ private:
                 iss >> r >> g >> b;
                 material.diffuse = Color(r, g, b, 1.0f);
             }
+            else if (prefix == "d") {
+                float a;
+                iss >> a;
+                material.diffuse.a = a;
+                material.ambient.a = a;
+            }
             else if (prefix == "map_Kd") {
                 std::string textureFile;
                 iss >> textureFile;

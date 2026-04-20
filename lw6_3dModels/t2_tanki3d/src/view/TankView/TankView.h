@@ -1,5 +1,6 @@
 #pragma once
 #include "../Canvas/ICanvas3D.h"
+#include "../Meshes/Mesh.h"
 #include "../ModelLoader/ModelLoader.h"
 #include "../../model/Tank/Tank.h"
 #include "./CannonView.h"
@@ -18,6 +19,11 @@ public:
 
         canvas.DrawMesh(GetTankMesh(tank->GetType()));
         CannonView::Draw(canvas, tank->GetCannon());
+        if (tank->GetProtected()) {
+            auto scale = tank->GetSize().depth + 1;
+            canvas.GetTransform().Scale(scale);
+            canvas.DrawMesh(m_shieldModel);
+        }
 
         canvas.GetTransform().PopMatrix();
 
@@ -28,6 +34,7 @@ public:
 private:
     inline static const MeshData m_tankT34Model = ModelLoader::LoadModel("./models/t34/t34.obj");
     inline static const MeshData m_tankTigerModel = ModelLoader::LoadModel("./models/tiger1/tiger1.obj");
+    inline static const MeshData m_shieldModel = Mesh::Sphere(0x00FFFF4F);
     inline static const float HEALTH_Y_OFFSET = 2;
 
     static void DrawHealth(ICanvas3D& canvas, const std::shared_ptr<Tank>& tank, const FpvCamera3D& camera)
