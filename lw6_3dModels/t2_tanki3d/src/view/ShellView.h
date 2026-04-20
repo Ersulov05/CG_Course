@@ -18,5 +18,5 @@ public:
         canvas.GetTransform().PopMatrix();
     }
 private:
-    inline static const MeshData m_shellModel = Mesh::Cube(0xFFFFFFFF, {"./textures/bonus.jpg"}, {0.2, 0.2, 0.4});
+    inline static const MeshData m_shellModel = Mesh::Sphere(0x2F2F2FFF, {"./textures/metal2.jpg"});
 };

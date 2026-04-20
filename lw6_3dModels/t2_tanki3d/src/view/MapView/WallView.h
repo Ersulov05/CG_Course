@@ -23,7 +23,7 @@ public:
         canvas.GetTransform().PopMatrix();
     }
 private:
-    inline static const MeshData m_wallBrickModel = Mesh::Cube(0xFFFFFFFF, {"./textures/brick.jpg"}, Constants::DEFAULT_WALL_SIZE/4);
+    inline static const MeshData m_wallBrickModel = ModelLoader::LoadModel("./models/wall/brick_wall2.obj");
     inline static const MeshData m_wallSteelModel = Mesh::Cube(0xFFFFFFFF, {"./textures/steel_glass.jpg"});
 
     static MeshData GetWallMeshByType(WallType type) 

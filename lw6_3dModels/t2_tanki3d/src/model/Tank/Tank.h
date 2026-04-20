@@ -33,6 +33,7 @@ public:
         m_maxSpeed = tankData.maxSpeed;
         SetCannonPosition(tankData.cannonPos);
         SetLevel(level);
+        m_position.y = 0.5;
     }
 
     void Update(float deltatime) 
