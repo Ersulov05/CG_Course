@@ -25,6 +25,9 @@ public:
             camera.SetPosition(Point3D{0, 35, 30});
             camera.SetRotation(0, -55, 0);
 
+            // camera.SetPosition(Point3D{0, 10, 10});
+            // camera.SetRotation(0, -30, 0);
+
             UpdateMoveTank();
             m_gameController.Update(deltatime);
 

@@ -26,6 +26,7 @@ public:
 private:
     inline static const MeshData m_cannon85mmModel = ModelLoader::LoadModel("./models/cannon/cannon85mm.obj");
     inline static const MeshData m_cannon152mmModel = ModelLoader::LoadModel("./models/cannon/cannon152mm.obj");
+    inline static const MeshData m_cannon100mmModel = ModelLoader::LoadModel("./models/cannon/cannon100mm.obj");
 
     static MeshData GetCannonMeshByType(CannonType type) 
     {
@@ -34,6 +35,8 @@ private:
                 return m_cannon85mmModel;
             case CannonType::MM152:
                 return m_cannon152mmModel;
+            case CannonType::MM100:
+                return m_cannon100mmModel;
             default:
                 return m_cannon85mmModel;
         }

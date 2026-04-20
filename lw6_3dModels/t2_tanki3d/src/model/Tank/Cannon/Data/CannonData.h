@@ -10,13 +10,15 @@ enum class MountType {
 
 enum class CannonType {
     MM152,
-    MM85
+    MM85,
+    MM100
 };
 
 inline static std::unordered_map<std::string, CannonType> STRING_TO_CANNON_TYPE = 
 {
     {"MM85", CannonType::MM85},
     {"MM152", CannonType::MM152},
+    {"MM100", CannonType::MM100},
 };
 
 inline static std::unordered_map<std::string, MountType> STRING_TO_MOUNT_TYPE = 

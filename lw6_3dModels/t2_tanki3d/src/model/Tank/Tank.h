@@ -174,6 +174,11 @@ public:
         m_isFreezed = isFreezed;
     }
 
+    TankType GetType() const
+    {
+        return m_type;
+    }
+
 private:
     Vector3D m_speed;
     Cannon m_cannon;

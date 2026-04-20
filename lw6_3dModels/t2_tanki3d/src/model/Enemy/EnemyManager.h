@@ -60,7 +60,7 @@ private:
 
     const Map& m_map;
     const std::shared_ptr<Tank>& m_player;
-    const int MAX_ENEMIES = 4;
+    const int MAX_ENEMIES = 3;
     float MIN_DISTANCE_TO_PLAYER_SQ = 12 * 12;
 
     std::mt19937 m_randomEngine = std::mt19937(std::random_device{}());;
@@ -82,7 +82,7 @@ private:
             return;
         }
 
-        auto enemyTank = std::make_shared<Tank>(m_map, TankType::T34, randomLevel, randomPos);
+        auto enemyTank = std::make_shared<Tank>(m_map, TankType::TIGER, randomLevel, randomPos);
         if (CheckCollisionSpawnedTank(enemyTank))
         {
             return;

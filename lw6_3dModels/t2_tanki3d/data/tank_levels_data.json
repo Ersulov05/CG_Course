@@ -4,22 +4,21 @@
         "cannonPos": [0, 1.5, -1],
         "maxSpeed": 10,
         "levels": [
-            {"health": 100, "acceleration": 10, "cannonLevel": 1},
-            {"health": 150, "acceleration": 10, "cannonLevel": 2},
-            {"health": 200, "acceleration": 10, "cannonLevel": 3},
-            {"health": 250, "acceleration": 10, "cannonLevel": 4}
+            {"health": 250, "acceleration": 10, "cannonLevel": 1},
+            {"health": 350, "acceleration": 10, "cannonLevel": 2},
+            {"health": 500, "acceleration": 10, "cannonLevel": 3},
+            {"health": 700, "acceleration": 10, "cannonLevel": 4}
         ]
     },
     "Tiger": {
-        "size": [4, 3, 7],
-        "cannonPos": [0, 1.5, -1],
+        "size": [3, 3, 6],
+        "cannonPos": [0, 1.75, -1],
         "maxSpeed": 6,
         "levels": [
-            {"health": 200, "acceleration": 8, "cannonLevel": 1},
-            {"health": 300, "acceleration": 8, "cannonLevel": 1},
-            {"health": 450, "acceleration": 8, "cannonLevel": 2},
-            {"health": 600, "acceleration": 8, "cannonLevel": 3},
-            {"health": 800, "acceleration": 8, "cannonLevel": 4}
+            {"health": 350, "acceleration": 8, "cannonLevel": 5},
+            {"health": 450, "acceleration": 8, "cannonLevel": 5},
+            {"health": 550, "acceleration": 8, "cannonLevel": 6},
+            {"health": 600, "acceleration": 8, "cannonLevel": 6}
         ]
     }
 }

@@ -95,6 +95,10 @@ Cannon::ShellData Cannon::GetShellData() const
             speed = 30;
             size = {0.08, 0.08, 0.2};
             return ShellData{ShellType::BB, size, speed};
+        case CannonType::MM100:
+            speed = 25;
+            size = {0.08, 0.08, 0.2};
+            return ShellData{ShellType::BB, size, speed};
         default:
             throw std::invalid_argument("Unknown cannonType: "  + (int)m_cannonType);
     }

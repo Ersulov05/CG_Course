@@ -107,10 +107,9 @@ private:
                 meshData.subMeshes.push_back(subMeshData);
 
                 currentMaterial = GetMaterial(materialMap, materialName);
+                vertexMap.clear();
+                subMeshData = SubMeshData();
                 if (currentMaterial.hasTexture()) {
-                    vertexMap.clear();
-                    subMeshData.indices = {};
-                    subMeshData.vertices = {};
                     subMeshData.textures = {currentMaterial.diffuseTexture};
                 }
             }
