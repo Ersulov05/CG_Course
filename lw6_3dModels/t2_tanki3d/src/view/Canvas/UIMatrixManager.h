@@ -19,35 +19,7 @@ public:
         UpdateMatrix();
     }
 
-    // Пиксельные координаты (0,0) в левом верхнем углу
     const glm::mat4& GetPixelMatrix() const { return m_pixelMatrix; }
-    
-    glm::mat4 GetNormalizedMatrix() const { return glm::mat4(1.0f); }
-    
-    glm::mat4 GetWorldMatrix(float worldSize) const
-    {
-        float aspect = (float)m_screenWidth / (float)m_screenHeight;
-        return glm::ortho(
-            -worldSize * aspect, worldSize * aspect,
-            -worldSize, worldSize,
-            -1.0f, 1.0f
-        );
-    }
-    
-    glm::mat4 GetCustomMatrix(float left, float right, float bottom, float top) const
-    {
-        return glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-    }
-    
-    glm::mat4 GetCenteredMatrix(float size = 200.0f) const
-    {
-        float aspect = (float)m_screenWidth / (float)m_screenHeight;
-        return glm::ortho(
-            -size * aspect / 2.0f, size * aspect / 2.0f,
-            -size / 2.0f, size / 2.0f,
-            -1.0f, 1.0f
-        );
-    }
 
 private:
     void UpdateMatrix()

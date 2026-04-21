@@ -2,7 +2,7 @@
 
 out vec4 FragColor;
 
-uniform float uTime;  // 0..1
+uniform float uTime;
 
 struct OITFragment {
     vec4 color;
