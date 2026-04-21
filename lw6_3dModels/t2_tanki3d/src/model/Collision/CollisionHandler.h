@@ -196,14 +196,5 @@ private:
         newPosition.x += correction.x;
         newPosition.z += correction.z;
         tank->SetPosition(newPosition);
-        
-        // Vector3D newSpeed = speed;
-        // if (normal.x != 0 && speed.x * normal.x > 0) {
-        //     newSpeed.x = 0;
-        // }
-        // if (normal.z != 0 && speed.z * normal.z > 0) {
-        //     newSpeed.z = 0;
-        // }
-        // tank.SetSpeed(newSpeed);
     }
 };
