@@ -14,7 +14,7 @@
 #include <functional>
 #include <cmath>
 
-#include "./Shader/SinShader.h"
+#include "./Shader/FlagShader.h"
 #include "./Shader/BasicShader.h"
 #include "./Transform.h"
 
@@ -101,16 +101,6 @@ public:
     void DrawMesh(const MeshData &mesh)
     {
         for (auto& subMesh : mesh.subMeshes) {
-            m_textureLoader.LoadTextures(subMesh.textures);
-            m_textureCount = 0;
-            if (subMesh.textures.empty()) {
-                m_textureLoader.unbindTextures();
-            } else {
-                m_textureCount = std::min((int)subMesh.textures.size(), 2);
-                for (int i = 0; i < m_textureCount; i++) {
-                    m_textureLoader.bindTexture(m_textureLoader.getTexture(subMesh.textures[i]), i);
-                }
-            }
             m_shaderManager.Use();
             m_renderer.DrawMesh(subMesh);
         }
@@ -228,19 +218,17 @@ private:
             m_lightPos,
             m_textureCount
         );
-        m_shaderManager.AddShader<SinShader>(
-            "sin", 
+        m_shaderManager.AddShader<FlagShader>(
+            "flag", 
             m_transform.GetTransform().GetGLMMatrix(), 
             m_camera.GetProjectionMatrix(), 
             m_camera.GetViewMatrix()
         );
-        m_shaderManager.SetCurrent("sin");
+        m_shaderManager.SetCurrent("flag");
     }
 
     void LoadTextures()
     {
-        m_textureLoader.LoadTexture("./textures/wood2.jpg");
-        m_textureLoader.LoadTexture("./textures/grass.jpg");
     }
 
     void CreateFBO()

@@ -3,13 +3,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class SinShader : public BaseShader
+class FlagShader : public BaseShader
 {
 public:
-    SinShader(const glm::mat4 &transform,
-                const glm::mat4 &projection,
-                const glm::mat4 &view
-            )
+    FlagShader(
+        const glm::mat4 &transform,
+        const glm::mat4 &projection,
+        const glm::mat4 &view
+    )
         : BaseShader(transform, projection, view)
     {
         Load();
@@ -22,7 +23,6 @@ public:
 
     bool Load() override
     {
-        return LoadFromFiles("sin.vert", "sin.frag");
+        return LoadFromFiles("flag.vert", "flag.frag");
     }
-private:
 };
