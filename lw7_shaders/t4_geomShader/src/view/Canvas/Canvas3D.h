@@ -14,7 +14,7 @@
 #include <functional>
 #include <cmath>
 
-#include "./Shader/SinShader.h"
+#include "./Shader/ArrowShader.h"
 #include "./Shader/BasicShader.h"
 #include "./Transform.h"
 
@@ -228,13 +228,13 @@ private:
             m_lightPos,
             m_textureCount
         );
-        m_shaderManager.AddShader<SinShader>(
-            "sin", 
+        m_shaderManager.AddShader<ArrowShader>(
+            "arrow", 
             m_transform.GetTransform().GetGLMMatrix(), 
             m_camera.GetProjectionMatrix(), 
             m_camera.GetViewMatrix()
         );
-        m_shaderManager.SetCurrent("sin");
+        m_shaderManager.SetCurrent("arrow");
     }
 
     void LoadTextures()
