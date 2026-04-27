@@ -13,12 +13,17 @@ out vec3 worldNormal;
 out vec4 vertexColor;
 
 const float SPHERE_RADIUS = 2;
-const float TORUS_MAJOR_RADIUS = 2;
-const float TORUS_MINOR_RADIUS = 0.5;
+const float TORUS_MAJOR_RADIUS = 3;
+const float TORUS_MINOR_RADIUS = 1;
+const float M_PI = 3.1415926;
 
-vec3 toSphere(vec2 uv) {
-    float theta = uv.x * 3.14159265;
-    float phi = uv.y * 3.14159265;
+float getFactor() {
+    return clamp(uTime, 0.0, 1.0);
+}
+
+vec3 getSpherePos(vec2 uv) {
+    float theta = uv.x * M_PI;
+    float phi = uv.y * M_PI;
     
     float r = SPHERE_RADIUS;
     
@@ -29,9 +34,9 @@ vec3 toSphere(vec2 uv) {
     );
 }
 
-vec3 toTorus(vec2 uv) {
-    float u = uv.x * 3.14159265;
-    float v = uv.y * 3.14159265;
+vec3 getTorPos(vec2 uv) {
+    float u = uv.x * M_PI;
+    float v = uv.y * M_PI;
     
     float R = TORUS_MAJOR_RADIUS;
     float r = TORUS_MINOR_RADIUS;
@@ -48,11 +53,9 @@ vec3 getSphereNormal(vec3 pos) {
 }
 
 vec3 getTorusNormal(vec3 pos) {
-    // Аналитическое вычисление нормали для тора
     float R = TORUS_MAJOR_RADIUS;
     float r = TORUS_MINOR_RADIUS;
     
-    // Находим параметры тора для данной точки
     float x = pos.x;
     float y = pos.y;
     float z = pos.z;
@@ -60,7 +63,6 @@ vec3 getTorusNormal(vec3 pos) {
     float u = atan(z, x);
     float theta = atan(y, sqrt(x*x + z*z) - R);
     
-    // Нормаль для тора
     vec3 normal;
     normal.x = cos(u) * cos(theta);
     normal.y = sin(theta);
@@ -69,21 +71,18 @@ vec3 getTorusNormal(vec3 pos) {
     return normal;
 }
 
-
-
 void main() {    
     vec2 uv = vec2(aPos.x + 1.0, aPos.y + 1.0);
+    float factor = getFactor();
+
+    vec3 spherePos = getSpherePos(uv);
+    vec3 torusPos = getTorPos(uv);
     
-    float morfFactor = clamp(uTime, 0.002, 1.0);
-
-    vec3 spherePos = toSphere(uv);
-    vec3 torusPos = toTorus(uv);
-    vec3 finalPos = mix(spherePos, torusPos, morfFactor);
-
     vec3 sphereNormal = getSphereNormal(spherePos);
     vec3 torusNormal = getTorusNormal(torusPos);
-    vec3 finalNormal = mix(sphereNormal, torusNormal, morfFactor);
-    finalNormal = normalize(finalNormal);
+
+    vec3 finalPos = mix(spherePos, torusPos, factor);
+    vec3 finalNormal = normalize(mix(sphereNormal, torusNormal, factor));
 
     worldPos = vec3(uTransform * vec4(finalPos, 1.0));
     worldNormal = mat3(transpose(inverse(uTransform))) * finalNormal;

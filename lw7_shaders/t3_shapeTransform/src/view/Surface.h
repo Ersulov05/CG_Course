@@ -1,13 +1,12 @@
-// MeshData.h
 #pragma once
 #include <vector>
 #include "./Canvas/ICanvas3D.h"
 #include "./Canvas/Shader/BasicShader.h"
 
-class MorphingSurface {
+class Surface {
 public:
-    MorphingSurface(int gridSize = 50) : m_gridSize(gridSize) {
-        GenerateBaseGrid();
+    Surface(int gridSize = 32) : m_gridSize(gridSize) {
+        GenerateSurface();
     }
     
     void Draw(ICanvas3D& canvas, float time) {
@@ -24,20 +23,17 @@ private:
     MeshData m_mesh;
     int m_gridSize;
     
-    void GenerateBaseGrid() {
+    void GenerateSurface() {
         m_mesh.subMeshes.clear();
         SubMeshData subMesh;
+        Color color = 0x0000FFFF;
         
-        // Генерируем вершины на плоскости XOY в диапазоне [-2, 2]
         float step = 2.0f / m_gridSize;
         
         for (int i = 0; i <= m_gridSize; i++) {
             float x = -1.0f + i * step;
-            float hue = fmod((x + 1) * 180.0f, 360.0f);
             for (int j = 0; j <= m_gridSize; j++) {
                 float y = -1.0f + j * step;
-
-                Color color = Color::FromHSV(hue, 0.9f, 1.0f);
                 
                 Vertex vertex;
                 vertex.position = Point3D(x, y, 0.0f);
@@ -45,8 +41,6 @@ private:
                 vertex.color = color;
                 
                 subMesh.vertices.push_back(vertex);
-                vertex.color = 0x000000FF;
-                subMesh.edgeVertices.push_back(vertex);
             }
         }
         
@@ -65,13 +59,6 @@ private:
                 subMesh.indices.push_back(idx1);
                 subMesh.indices.push_back(idx3);
                 subMesh.indices.push_back(idx2);
-
-                subMesh.edgeIndices.push_back(idx0);
-                subMesh.edgeIndices.push_back(idx1);
-                subMesh.edgeIndices.push_back(idx1);
-                subMesh.edgeIndices.push_back(idx2);
-                subMesh.edgeIndices.push_back(idx2);
-                subMesh.edgeIndices.push_back(idx0);
             }
         }
 

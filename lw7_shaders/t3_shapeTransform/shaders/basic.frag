@@ -34,7 +34,7 @@ vec4 calculateLighting(vec3 pos, vec3 normal, vec4 albedo) {
     
     float attenuation = 1.0 / (distance);
     
-    float brightness = ambient + diffuse * attenuation;
+    float brightness = ambient + diffuse * attenuation * 2;
     
     brightness = min(brightness, 1.0);
     
