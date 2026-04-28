@@ -7,7 +7,6 @@ public:
     }
 
     void Run() {
-        // m_canvas.SetLightPos({0, 50, 0});
         m_canvas.GetCamera().SetPosition(Point3D{0, 0, 10});
         m_canvas.Run(
         [this](ICanvas3D &canvas, float deltatime)
