@@ -6,6 +6,7 @@ in vec4 vertexColor[];
 out vec4 geometryColor;
 
 const float ARROW_ANGLE_RAD = 30.0 * 3.1415926 / 180.0;
+const float ARROW_SIZE_COEF = 0.2;
 
 void drawLine(vec4 p1, vec4 p2, vec4 color)
 {
@@ -24,7 +25,7 @@ void main() {
     vec4 P2 = gl_in[1].gl_Position;  
 
     vec2 dir = vec2(P1.x - P2.x, P1.y - P2.y);
-    float arrowSize = length(dir) * 0.2;
+    float arrowSize = length(dir) * ARROW_SIZE_COEF;
     dir = normalize(dir);
 
     vec2 leftDir = vec2(
