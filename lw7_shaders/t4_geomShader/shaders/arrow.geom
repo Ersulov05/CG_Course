@@ -20,6 +20,14 @@ void drawLine(vec4 p1, vec4 p2, vec4 color)
     EndPrimitive();
 }
 
+vec2 rotate(vec2 dir, float radAngle)
+{
+    return vec2(
+        dir.x * cos(radAngle) - dir.y * sin(radAngle),
+        dir.x * sin(radAngle) + dir.y * cos(radAngle)
+    );
+}
+
 void main() {
     vec4 P1 = gl_in[0].gl_Position;
     vec4 P2 = gl_in[1].gl_Position;  
@@ -28,14 +36,8 @@ void main() {
     float arrowSize = length(dir) * ARROW_SIZE_COEF;
     dir = normalize(dir);
 
-    vec2 leftDir = vec2(
-        dir.x * cos(-ARROW_ANGLE_RAD) - dir.y * sin(-ARROW_ANGLE_RAD),
-        dir.x * sin(-ARROW_ANGLE_RAD) + dir.y * cos(-ARROW_ANGLE_RAD)
-    );
-    vec2 rightDir = vec2(
-        dir.x * cos(ARROW_ANGLE_RAD) - dir.y * sin(ARROW_ANGLE_RAD),
-        dir.x * sin(ARROW_ANGLE_RAD) + dir.y * cos(ARROW_ANGLE_RAD)
-    );
+    vec2 leftDir = rotate(dir, -ARROW_ANGLE_RAD);
+    vec2 rightDir = rotate(dir, ARROW_ANGLE_RAD);
 
     vec2 tip = vec2(P2.x, P2.y);
     vec4 leftEnd = vec4(tip + leftDir * arrowSize, P2.z, P2.w);
