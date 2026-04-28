@@ -12,25 +12,27 @@ out vec4 FragColor;
 
 const float M_PI = 3.1415926;
 const float SQRT_OF_TWO = 1.4142;
+const float WAVE_COEF = 0.7;
+const float WAVE_INTENSITY_COEF = 0.65;
 
 float waveEffect(vec2 uv, vec2 center, float progress, out float waveIntensity) 
 {
     float dist = distance(uv, center);
     
     float waveRadius = progress * SQRT_OF_TWO;
-    float rippleWidth = sqrt(progress) * 0.7;
+    float waveWidth = sqrt(progress) * WAVE_COEF;
 
     float mixFactor;
     if (dist < waveRadius) {
         mixFactor = 0.0;
         waveIntensity = 1.0;
-    } else if (dist > waveRadius + rippleWidth) {
+    } else if (dist > waveRadius + waveWidth) {
         mixFactor = 1.0;
         waveIntensity = 1.0;
     } else {
-        float factor = (dist - waveRadius) / rippleWidth;
+        float factor = (dist - waveRadius) / waveWidth;
         mixFactor = min(factor, 1.0);
-        waveIntensity = 1.0 - sin(factor * M_PI) * 0.65;
+        waveIntensity = 1.0 - sin(factor * M_PI) * WAVE_INTENSITY_COEF;
     }
         
     return mixFactor;

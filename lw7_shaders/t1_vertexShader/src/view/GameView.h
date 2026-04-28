@@ -7,12 +7,12 @@ public:
     }
 
     void Run() {
-        m_canvas.GetCamera().SetPosition(Point3D{0, 0, 10});
+        m_canvas.GetCamera().SetPosition(Point3D{0, 0, 4});
         m_canvas.Run(
         [this](ICanvas3D &canvas, float deltatime)
         {
             auto &camera = canvas.GetCamera();
-            auto line = GetLine(Point3D{-10, 0, 0}, Point3D{10, 0, 0});
+            auto line = GetLine(Point3D{0, 0, 0}, Point3D{3.1415926 * 2, 0, 0}, 2001);
             canvas.DrawLine(line);
         });
     }
